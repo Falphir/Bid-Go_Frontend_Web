@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import './LoginPage.css';
+import '../styles/LoginPage.css';
 import axios from 'axios';
 
 function LoginPage() {

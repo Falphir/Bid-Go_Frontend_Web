@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import './BidGoPage.css';
+import '../styles/BidGoPage.css';
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 function BidGoPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -66,7 +70,14 @@ function BidGoPage() {
                 <div>{req.origin} → {req.destination}</div>
                 <div>{req.maxPrice}</div>
                 <p className="card-time">Tempo Restante: {req.timeRemaining}</p>
-                <button className="bid-btn">Licitações Abertas</button>
+                  <button
+                      className="bid-btn"
+                      onClick={() => {
+                          navigate(`/accept-bids/${req.id}`);
+                      }}
+                  >
+                      Licitações Abertas
+                  </button>
               </div>
             </div>
           ))}
