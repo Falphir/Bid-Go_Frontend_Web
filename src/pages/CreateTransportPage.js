@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './CreateTransportPage.css';
-import axios from "axios";
-
+import axios from 'axios';
 
 function CreateTransportPage() {
   const [imageFile, setImageFile] = useState(null);
@@ -24,12 +23,12 @@ function CreateTransportPage() {
   const [error, setError] = useState(null);
   const abortRef = useRef(null);
 
+  const API_URL = 'https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/transports/createTransport';
+
   // Handles image selection through the hidden file input
   const handleImageChange = (e) => {
     const file = e.target.files && e.target.files[0];
-    if (file) {
-      setImageFile(file);
-    }
+    if (file) setImageFile(file);
   };
 
   // Update the combined dimensions string from parts
@@ -39,114 +38,170 @@ function CreateTransportPage() {
 
   // Compute volume (cm³) automatically when dimensions change
   useEffect(() => {
-    // accept commas as decimal separators
     const parse = (v) => {
-      if (!v && v !== 0) return NaN;
-      const controller = new AbortController();
-      abortRef.current = controller;
+      if (v === '' || v === null || v === undefined) return NaN;
+      const normalized = String(v).replace(',', '.');
+      const n = parseFloat(normalized);
+      return Number.isFinite(n) ? n : NaN;
+    };
 
-      setLoading(true);
-      try {
-        const url = "https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/transports/createTransport";
+    const l = parse(length);
+    const w = parse(width);
+    const h = parse(height);
 
-        let res;
-        // If an image is present, submit as multipart/form-data
-        if (imageFile) {
-          const formData = new FormData();
-          formData.append('image', imageFile);
-          formData.append('origin', origin);
-          formData.append('destination', destination);
-          formData.append('pckg', pckg);
-          formData.append('weight', weight);
-          formData.append('length', length);
-          formData.append('width', width);
-          formData.append('height', height);
-          formData.append('dimensions', dimensions);
-          formData.append('pickupDate', pickupDate);
-          formData.append('deliveryDate', deliveryDate);
-          formData.append('maxPrice', maxPrice);
-          formData.append('biddingStartDate', biddingStartDate);
-          formData.append('biddingEndDate', biddingEndDate);
-          formData.append('volume', volume);
-          formData.append('isAutomaticSelectionEnabled', isAutomaticSelectionEnabled ? 'true' : 'false');
+    const vol = l * w * h;
+    if (Number.isFinite(vol)) setVolume(Math.round(vol));
+    else setVolume('');
+  }, [length, width, height]);
 
-          res = await axios.post(url, formData, {
-            signal: controller.signal,
-            headers: {
-              // Let axios/browser set the Content-Type with boundary for FormData
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWd1ZWxAZ21haWwuY29tIiwidXNlcklkIjoiMiIsInVzZXJUeXBlIjoiQ29tcGFueSIsImV4cCI6MTc2Mjc3NjY5NCwiaXNzIjoiQmlkR29CYWNrZW5kIiwiYXVkIjoiQmlkR29Gcm9udGVuZCJ9.OJIOZLVMVuzzU7ja6DWG2ROZgvogM_ZZbrzD_ajSQ_4`
-            }
-          });
-        } else {
-          const payload = {
-            origin,
-            destination,
-            pckg,
-            weight,
-            length,
-            width,
-            height,
-            pickupDate,
-            deliveryDate,
-            maxPrice,
-            biddingStartDate,
-            biddingEndDate,
-            volume,
-            isAutomaticSelectionEnabled,
-          };
+  // cleanup ao desmontar
+  useEffect(() => {
+    return () => abortRef.current?.abort();
+  }, []);
 
-          res = await axios.post(url, payload, {
-            signal: controller.signal,
-            headers: { "Content-Type": "application/json", Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWd1ZWxAZ21haWwuY29tIiwidXNlcklkIjoiMiIsInVzZXJUeXBlIjoiQ29tcGFueSIsImV4cCI6MTc2Mjc3NjY5NCwiaXNzIjoiQmlkR29CYWNrZW5kIiwiYXVkIjoiQmlkR29Gcm9udGVuZCJ9.OJIOZLVMVuzzU7ja6DWG2ROZgvogM_ZZbrzD_ajSQ_4` }
-          });
-        }
-        // Optionally handle res here (e.g., show success message)
-      } catch (err) {
-        if (axios.isCancel?.(err) || err.name === 'CanceledError') return;
-        if (err.response) {
-          // Server responded with a non-2xx status
-          setError(`Server error: ${err.response.status} ${err.response.statusText}`);
-        } else if (err.request) {
-          // No response received
-          setError('Network error: no response from server' + err.request);
-        } else {
-          // Something else happened while setting up the request
-          setError(`Request error: ${err.message}`);
-        }
-      } finally {
-        setLoading(false);
-      }
-    abortRef.current = controller;
-    
-
+  // Submission handler: sends FormData if there's an image, otherwise JSON
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
     setLoading(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
-      const res = await axios.post(
-        "https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/transports/createTransport",
-        payload,
-        {
-          signal: controller.signal, // <- usa o controller local
-          headers: { "Content-Type": "application/json", Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWd1ZWxAZ21haWwuY29tIiwidXNlcklkIjoiMiIsInVzZXJUeXBlIjoiQ29tcGFueSIsImV4cCI6MTc2Mjc3NjY5NCwiaXNzIjoiQmlkR29CYWNrZW5kIiwiYXVkIjoiQmlkR29Gcm9udGVuZCJ9.OJIOZLVMVuzzU7ja6DWG2ROZgvogM_ZZbrzD_ajSQ_4` }
+      const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+      if (!token) {
+        setError('Autenticação: token não encontrado. Faz login e tenta de novo.');
+        setLoading(false);
+        return;
+      }
+
+      // Helper to decode JWT payload safely (browser safe)
+      const parseJwt = (tokenStr) => {
+        try {
+          const parts = tokenStr.split('.');
+          if (parts.length < 2) return null;
+          const payload = parts[1];
+          // base64url -> base64
+          const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+          // add padding if needed
+          const pad = b64.length % 4;
+          const padded = pad ? b64 + '='.repeat(4 - pad) : b64;
+          const json = decodeURIComponent(
+            atob(padded)
+              .split('')
+              .map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+              })
+              .join('')
+          );
+          return JSON.parse(json);
+        } catch (e) {
+          console.warn('Failed to parse JWT', e);
+          return null;
         }
-      );
-      } catch (err) {
-        if (axios.isCancel?.(err) || err.name === 'CanceledError') return;
-      if (err.response) {
-        // Server responded with a non-2xx status
-        setError(`Server error: ${err.response.status} ${err.response.statusText}`);
-      } else if (err.request) {
-        // No response received
-        setError('Network error: no response from server' + err.request);
+      };
+
+  const tokenPayload = parseJwt(token);
+  const userIdFromToken = tokenPayload?.userId ?? tokenPayload?.userID ?? tokenPayload?.sub ?? null;
+  // In this system companyId is the same as the user id (user can be a company or driver)
+  const companyIdFromToken = userIdFromToken;
+  // log for debugging (remove in production)
+  console.debug('Extracted userId/companyId from token:', userIdFromToken);
+
+      // normalize numbers: convert numeric-string fields to numbers or null
+      const toNumber = (v) => {
+        if (v === '' || v === null || v === undefined) return null;
+        const n = parseFloat(String(v).replace(',', '.'));
+        return Number.isFinite(n) ? n : null;
+      };
+
+      const weightNum = toNumber(weight);
+      const lengthNum = toNumber(length);
+      const widthNum = toNumber(width);
+      const heightNum = toNumber(height);
+      const maxPriceNum = toNumber(maxPrice);
+      const volumeNum = toNumber(volume);
+
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+
+        // append only non-empty string fields
+        if (origin) formData.append('origin', origin);
+        if (destination) formData.append('destination', destination);
+        if (pckg) formData.append('package', pckg);
+        if (weightNum !== null) formData.append('weight', String(weightNum));
+        if (lengthNum !== null) formData.append('length', String(lengthNum));
+        if (widthNum !== null) formData.append('width', String(widthNum));
+        if (heightNum !== null) formData.append('height', String(heightNum));
+        if (dimensions) formData.append('dimensions', dimensions);
+        if (pickupDate) formData.append('pickupDate', pickupDate);
+        if (deliveryDate) formData.append('deliveryDate', deliveryDate);
+        if (maxPriceNum !== null) formData.append('maxPrice', String(maxPriceNum));
+        if (biddingStartDate) formData.append('biddingStartDate', biddingStartDate);
+        if (biddingEndDate) formData.append('biddingEndDate', biddingEndDate);
+    if (volumeNum !== null) formData.append('volume', String(volumeNum));
+    if (companyIdFromToken) formData.append('companyId', String(companyIdFromToken));
+        formData.append('isAutomaticSelectionEnabled', isAutomaticSelectionEnabled ? 'true' : 'false');
+
+        // debug log entries being sent
+        console.debug('Sending FormData to', API_URL);
+        for (const pair of formData.entries()) console.debug(pair[0], pair[1]);
+
+        await axios.post(API_URL, formData, {
+          signal: controller.signal,
+          headers: {
+            // DO NOT set Content-Type for FormData; the browser will add the boundary
+            Authorization: `Bearer ${token}`,
+          },
+        });
       } else {
-        // Something else happened while setting up the request
+        const payload = {
+          origin: origin || null,
+          destination: destination || null,
+          pckg: pckg || null,
+          weight: weightNum,
+          length: lengthNum,
+          width: widthNum,
+          height: heightNum,
+          dimensions: dimensions || null,
+          pickupDate: pickupDate || null,
+          deliveryDate: deliveryDate || null,
+          maxPrice: maxPriceNum,
+          biddingStartDate: biddingStartDate || null,
+          biddingEndDate: biddingEndDate || null,
+          volume: volumeNum,
+          companyId: companyIdFromToken || null,
+          isAutomaticSelectionEnabled,
+        };
+
+        console.debug('Sending JSON payload to', API_URL, payload);
+
+        await axios.post(API_URL, payload, {
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
+      // Success: you can clear the form or show a message here
+      // For now, reset loading and keep the data for user feedback
+      setLoading(false);
+    } catch (err) {
+      if (axios.isCancel?.(err) || err.name === 'CanceledError') return;
+      if (err.response) {
+        const body = err.response.data ? ` - ${JSON.stringify(err.response.data)}` : '';
+        setError(`Server error: ${err.response.status} ${err.response.statusText}${body}`);
+      } else if (err.request) {
+        setError('Network error: no response from server');
+      } else {
         setError(`Request error: ${err.message}`);
       }
-    } finally {
       setLoading(false);
     }
-
   };
-
 
   return (
     <div className="create-transport-container">
@@ -189,15 +244,10 @@ function CreateTransportPage() {
               <circle cx="16.5" cy="7.5" r="1.5" fill="#7a8fa6" />
             </svg>
             <p className="drop-title">Carregar Imagem</p>
-            <span className="drop-instruction">
-              Arraste e solte ou clique para selecionar
-            </span>
+            <span className="drop-instruction">Arraste e solte ou clique para selecionar</span>
           </label>
-          {imageFile && (
-            <p className="file-name">{imageFile.name}</p>
-          )}
+          {imageFile && <p className="file-name">{imageFile.name}</p>}
         </div>
-
 
         {/* Fields for origin and destination */}
         <div className="row">
@@ -255,7 +305,10 @@ function CreateTransportPage() {
                 type="text"
                 placeholder="Comprimento"
                 value={length}
-                onChange={(e) => { setLength(e.target.value); updateDimensionsString(e.target.value, width, height); }}
+                onChange={(e) => {
+                  setLength(e.target.value);
+                  updateDimensionsString(e.target.value, width, height);
+                }}
                 aria-label="Comprimento (cm)"
               />
               <span className="dimensions-sep">/</span>
@@ -264,7 +317,10 @@ function CreateTransportPage() {
                 type="text"
                 placeholder="Largura"
                 value={width}
-                onChange={(e) => { setWidth(e.target.value); updateDimensionsString(length, e.target.value, height); }}
+                onChange={(e) => {
+                  setWidth(e.target.value);
+                  updateDimensionsString(length, e.target.value, height);
+                }}
                 aria-label="Largura (cm)"
               />
               <span className="dimensions-sep">/</span>
@@ -273,12 +329,13 @@ function CreateTransportPage() {
                 type="text"
                 placeholder="Altura"
                 value={height}
-                onChange={(e) => { setHeight(e.target.value); updateDimensionsString(length, width, e.target.value); }}
+                onChange={(e) => {
+                  setHeight(e.target.value);
+                  updateDimensionsString(length, width, e.target.value);
+                }}
                 aria-label="Altura (cm)"
               />
-              
             </div>
-            {/* Hidden combined value kept for convenience */}
             <input type="hidden" value={dimensions} readOnly />
           </div>
         </div>
@@ -287,43 +344,25 @@ function CreateTransportPage() {
         <div className="row">
           <div className="field">
             <label>Data de recolha</label>
-            <input
-              type="date"
-              value={pickupDate}
-              onChange={(e) => setPickupDate(e.target.value)}
-            />
+            <input type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} />
           </div>
           <div className="field">
             <label>Data de entrega</label>
-            <input
-              type="date"
-              value={deliveryDate}
-              onChange={(e) => setDeliveryDate(e.target.value)}
-            />
+            <input type="date" value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} />
           </div>
         </div>
 
-
-    {/* Auction start/end (moved to top) */}
+        {/* Auction start/end (moved to top) */}
         <div className="row">
           <div className="field">
             <label>Início do Leilão</label>
-            <input
-              type="date"
-              value={biddingStartDate}
-              onChange={(e) => setBiddingStartDate(e.target.value)}
-            />
+            <input type="date" value={biddingStartDate} onChange={(e) => setBiddingStartDate(e.target.value)} />
           </div>
           <div className="field">
             <label>Fim do Leilão</label>
-            <input
-              type="date"
-              value={biddingEndDate}
-              onChange={(e) => setBiddingEndDate(e.target.value)}
-            />
+            <input type="date" value={biddingEndDate} onChange={(e) => setBiddingEndDate(e.target.value)} />
           </div>
         </div>
-
 
         <div className="row">
           <div className="field">
@@ -340,24 +379,21 @@ function CreateTransportPage() {
             <label>Algoritmo Automático</label>
             <div className="auto-algo">
               <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={isAutomaticSelectionEnabled}
-                  onChange={(e) => setIsAutomaticSelectionEnabled(e.target.checked)}
-                />
+                <input type="checkbox" checked={isAutomaticSelectionEnabled} onChange={(e) => setIsAutomaticSelectionEnabled(e.target.checked)} />
                 <span className="slider" />
               </label>
             </div>
           </div>
         </div>
-        {/* Optional submit button; feel free to remove or customize as needed */}
-        <button type="submit" className="submit-button">
-          Criar Pedido
+
+        {error && <div className="error-message">{error}</div>}
+
+        <button type="submit" className="submit-button" disabled={loading}>
+          {loading ? 'Enviando...' : 'Criar Pedido'}
         </button>
       </form>
     </div>
   );
 }
-
 
 export default CreateTransportPage;
