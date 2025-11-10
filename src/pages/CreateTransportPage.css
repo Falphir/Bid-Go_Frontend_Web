@@ -115,6 +115,25 @@
   font-size: 14px;
 }
 
+/* Header for the dimensions field: label on left, volume text on right */
+.dimensions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dimensions-header label {
+  margin-bottom: 6px; /* keep same spacing as other labels */
+}
+
+.volume-inline {
+  font-size: 13px;
+  color: #294766;
+  font-weight: 600;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
 .field input,
 .field textarea {
   border: 1px solid #cdd7e1;

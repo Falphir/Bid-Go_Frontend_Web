@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import './CreateTransportPage.css';
+import axios from "axios";
+
 
 function CreateTransportPage() {
   const [imageFile, setImageFile] = useState(null);
@@ -17,6 +19,10 @@ function CreateTransportPage() {
   const [biddingStartDate, setBiddingStartDate] = useState('');
   const [biddingEndDate, setBiddingEndDate] = useState('');
   const [isAutomaticSelectionEnabled, setIsAutomaticSelectionEnabled] = useState(false);
+  const [volume, setVolume] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const abortRef = useRef(null);
 
   // Handles image selection through the hidden file input
   const handleImageChange = (e) => {
@@ -31,38 +37,116 @@ function CreateTransportPage() {
     setDimensions(`${l || ''}/${w || ''}/${h || ''}`);
   };
 
-  // Submission handler; currently just logs the collected data. Replace
-  // console.log with an API call or state management hook as needed.
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const payload = {
-      origin,
-      destination,
-      pckg,
-      weight,
-      length,
-      width,
-      height,
-      pickupDate,
-      deliveryDate,
-      imageFile,
-      maxPrice,
-      biddingStartDate,
-      biddingEndDate,
-      isAutomaticSelectionEnabled,
-    };
+  // Compute volume (cm³) automatically when dimensions change
+  useEffect(() => {
+    // accept commas as decimal separators
+    const parse = (v) => {
+      if (!v && v !== 0) return NaN;
+      const controller = new AbortController();
+      abortRef.current = controller;
 
-    // For file uploads, consider using FormData to bundle data
-    // e.g., const formData = new FormData();
-    // formData.append('image', imageFile);
-    // formData.append('attachment', attachment);
+      setLoading(true);
+      try {
+        const url = "https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/transports/createTransport";
 
-    console.log('Novo pedido de transporte:', payload);
-    if (imageFile) {
-      console.log('Imagem selecionada:', imageFile.name);
+        let res;
+        // If an image is present, submit as multipart/form-data
+        if (imageFile) {
+          const formData = new FormData();
+          formData.append('image', imageFile);
+          formData.append('origin', origin);
+          formData.append('destination', destination);
+          formData.append('pckg', pckg);
+          formData.append('weight', weight);
+          formData.append('length', length);
+          formData.append('width', width);
+          formData.append('height', height);
+          formData.append('dimensions', dimensions);
+          formData.append('pickupDate', pickupDate);
+          formData.append('deliveryDate', deliveryDate);
+          formData.append('maxPrice', maxPrice);
+          formData.append('biddingStartDate', biddingStartDate);
+          formData.append('biddingEndDate', biddingEndDate);
+          formData.append('volume', volume);
+          formData.append('isAutomaticSelectionEnabled', isAutomaticSelectionEnabled ? 'true' : 'false');
+
+          res = await axios.post(url, formData, {
+            signal: controller.signal,
+            headers: {
+              // Let axios/browser set the Content-Type with boundary for FormData
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWd1ZWxAZ21haWwuY29tIiwidXNlcklkIjoiMiIsInVzZXJUeXBlIjoiQ29tcGFueSIsImV4cCI6MTc2Mjc3NjY5NCwiaXNzIjoiQmlkR29CYWNrZW5kIiwiYXVkIjoiQmlkR29Gcm9udGVuZCJ9.OJIOZLVMVuzzU7ja6DWG2ROZgvogM_ZZbrzD_ajSQ_4`
+            }
+          });
+        } else {
+          const payload = {
+            origin,
+            destination,
+            pckg,
+            weight,
+            length,
+            width,
+            height,
+            pickupDate,
+            deliveryDate,
+            maxPrice,
+            biddingStartDate,
+            biddingEndDate,
+            volume,
+            isAutomaticSelectionEnabled,
+          };
+
+          res = await axios.post(url, payload, {
+            signal: controller.signal,
+            headers: { "Content-Type": "application/json", Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWd1ZWxAZ21haWwuY29tIiwidXNlcklkIjoiMiIsInVzZXJUeXBlIjoiQ29tcGFueSIsImV4cCI6MTc2Mjc3NjY5NCwiaXNzIjoiQmlkR29CYWNrZW5kIiwiYXVkIjoiQmlkR29Gcm9udGVuZCJ9.OJIOZLVMVuzzU7ja6DWG2ROZgvogM_ZZbrzD_ajSQ_4` }
+          });
+        }
+        // Optionally handle res here (e.g., show success message)
+      } catch (err) {
+        if (axios.isCancel?.(err) || err.name === 'CanceledError') return;
+        if (err.response) {
+          // Server responded with a non-2xx status
+          setError(`Server error: ${err.response.status} ${err.response.statusText}`);
+        } else if (err.request) {
+          // No response received
+          setError('Network error: no response from server' + err.request);
+        } else {
+          // Something else happened while setting up the request
+          setError(`Request error: ${err.message}`);
+        }
+      } finally {
+        setLoading(false);
+      }
+    abortRef.current = controller;
+    
+
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        "https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/transports/createTransport",
+        payload,
+        {
+          signal: controller.signal, // <- usa o controller local
+          headers: { "Content-Type": "application/json", Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWd1ZWxAZ21haWwuY29tIiwidXNlcklkIjoiMiIsInVzZXJUeXBlIjoiQ29tcGFueSIsImV4cCI6MTc2Mjc3NjY5NCwiaXNzIjoiQmlkR29CYWNrZW5kIiwiYXVkIjoiQmlkR29Gcm9udGVuZCJ9.OJIOZLVMVuzzU7ja6DWG2ROZgvogM_ZZbrzD_ajSQ_4` }
+        }
+      );
+      } catch (err) {
+        if (axios.isCancel?.(err) || err.name === 'CanceledError') return;
+      if (err.response) {
+        // Server responded with a non-2xx status
+        setError(`Server error: ${err.response.status} ${err.response.statusText}`);
+      } else if (err.request) {
+        // No response received
+        setError('Network error: no response from server' + err.request);
+      } else {
+        // Something else happened while setting up the request
+        setError(`Request error: ${err.message}`);
+      }
+    } finally {
+      setLoading(false);
     }
-    // Reset or redirect as desired
+
   };
+
 
   return (
     <div className="create-transport-container">
@@ -114,6 +198,7 @@ function CreateTransportPage() {
           )}
         </div>
 
+
         {/* Fields for origin and destination */}
         <div className="row">
           <div className="field">
@@ -160,7 +245,10 @@ function CreateTransportPage() {
           </div>
 
           <div className="field">
-            <label>Dimensões (cm)</label>
+            <div className="dimensions-header">
+              <label>Dimensões (cm)</label>
+              <div className="volume-inline">{volume ? `${volume} cm³` : ''}</div>
+            </div>
             <div className="dimensions-group">
               <input
                 className="dimensions-input"
@@ -188,6 +276,7 @@ function CreateTransportPage() {
                 onChange={(e) => { setHeight(e.target.value); updateDimensionsString(length, width, e.target.value); }}
                 aria-label="Altura (cm)"
               />
+              
             </div>
             {/* Hidden combined value kept for convenience */}
             <input type="hidden" value={dimensions} readOnly />
@@ -213,17 +302,54 @@ function CreateTransportPage() {
             />
           </div>
         </div>
-          <div className="auto-algo">
-            <span className="auto-label">Algoritmo Automático</span>
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={isAutomaticSelectionEnabled}
-                onChange={(e) => setIsAutomaticSelectionEnabled(e.target.checked)}
-              />
-              <span className="slider" />
-            </label>
+
+
+    {/* Auction start/end (moved to top) */}
+        <div className="row">
+          <div className="field">
+            <label>Início do Leilão</label>
+            <input
+              type="date"
+              value={biddingStartDate}
+              onChange={(e) => setBiddingStartDate(e.target.value)}
+            />
           </div>
+          <div className="field">
+            <label>Fim do Leilão</label>
+            <input
+              type="date"
+              value={biddingEndDate}
+              onChange={(e) => setBiddingEndDate(e.target.value)}
+            />
+          </div>
+        </div>
+
+
+        <div className="row">
+          <div className="field">
+            <label>Preço Máximo (€)</label>
+            <input
+              type="number"
+              step="0.01"
+              placeholder="Ex.: 150.00"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+            />
+          </div>
+          <div className="field">
+            <label>Algoritmo Automático</label>
+            <div className="auto-algo">
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={isAutomaticSelectionEnabled}
+                  onChange={(e) => setIsAutomaticSelectionEnabled(e.target.checked)}
+                />
+                <span className="slider" />
+              </label>
+            </div>
+          </div>
+        </div>
         {/* Optional submit button; feel free to remove or customize as needed */}
         <button type="submit" className="submit-button">
           Criar Pedido
@@ -232,5 +358,6 @@ function CreateTransportPage() {
     </div>
   );
 }
+
 
 export default CreateTransportPage;
