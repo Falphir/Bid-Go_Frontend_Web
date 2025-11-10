@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import '../styles/LoginPage.css';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import api from '../api/axiosConfig';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,6 +11,8 @@ function LoginPage() {
   const [remember, setRemember] = useState(true);
 
   const abortRef = useRef(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     // cleanup ao desmontar
@@ -33,18 +36,16 @@ function LoginPage() {
     abortRef.current = controller;
 
     setLoading(true);
-    try {
-      const res = await axios.post(
-          'https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/auth/login',
-          { email, password },
-          {
-            signal: controller.signal,            // <- usa o controller local
-            headers: { 'Content-Type': 'application/json' },
-          }
-      );
+      try {
+          const res = await api.post(
+              '/auth/login',
+              { email, password },
+              { signal: controller.signal }
+          );
+
 
       const { token, user } = res.data || {};
-      if (remember && token) localStorage.setItem('access_token', token);
+      if (remember && token) localStorage.setItem('token', token);
       // TODO: navegar para a área autenticada, ex.: navigate('/dashboard')
     } catch (err) {
       if (err.name === 'CanceledError') return;
