@@ -47,7 +47,7 @@
 }
 
 /* Hide the native file input */
-.drop-zone-wrapper input[type='file'] {
+.drop-zone-wrapper input[type="file"] {
   display: none;
 }
 
@@ -246,6 +246,9 @@
 .auto-algo {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  height: 34px;
+  margin-top: 6px;
   gap: 12px;
 }
 

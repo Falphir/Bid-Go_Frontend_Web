@@ -3,7 +3,6 @@ import "../styles/LoginPage.css";
 import axios from "axios";
 import { useNavigate } from "react-router";
 
-
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,7 +10,6 @@ function LoginPage() {
   const [error, setError] = useState(null);
   const [remember, setRemember] = useState(true);
   const navigate = useNavigate();
-
 
   const abortRef = useRef(null);
 
