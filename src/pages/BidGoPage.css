@@ -1,0 +1,206 @@
+/*
+ * Styling for the BidGoPage component.
+ *
+ * The layout mimics the design shown in the reference image: a clean header
+ * with a logo and user/company details, a central button to create a new
+ * transport request, a section title, and three cards with images and
+ * information about active requests.  The colour palette uses blues and
+ * light greys reminiscent of the original mock‑up.
+ */
+
+/* Global container styles */
+.page-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7fbff;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Header styling */
+.header {
+  background-color: #eef4fb;
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 40px;
+}
+
+/* Logo section */
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.truck-icon {
+  font-size: 28px;
+  margin-right: 8px;
+  color: #0066cc;
+}
+
+.site-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #062e5c;
+}
+
+/* User/company area */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notifications {
+  font-size: 20px;
+  position: relative;
+  color: #0066cc;
+  cursor: pointer;
+}
+
+.notifications::after {
+  /* Red dot indicator for new notifications */
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  background: #ff4d4f;
+  border-radius: 50%;
+}
+
+.company {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.company-logo {
+  font-size: 26px;
+  color: #ff4d4f;
+}
+
+.company-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.company-name {
+  font-weight: 600;
+  color: #062e5c;
+  font-size: 16px;
+}
+
+.company-type {
+  font-size: 12px;
+  color: #7a8fa6;
+}
+
+/* Main content styling */
+.main-content {
+  text-align: center;
+}
+
+.new-request-btn {
+  background-color: #0066cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 32px;
+  transition: background-color 0.2s ease;
+}
+
+.new-request-btn:hover {
+  background-color: #004fa1;
+}
+
+.section-title {
+  color: #0a43a5;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+/* Cards layout */
+.cards-container {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-image img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #062e5c;
+}
+
+.card-route {
+  font-size: 14px;
+  color: #0066cc;
+  text-decoration: underline;
+  margin-bottom: 6px;
+}
+
+.card-time {
+  font-size: 13px;
+  color: #7a8fa6;
+  margin-bottom: 16px;
+}
+
+.bid-btn {
+  background-color: #eef4fb;
+  color: #0066cc;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: stretch;
+}
+
+.bid-btn:hover {
+  background-color: #d8e4f7;
+}
