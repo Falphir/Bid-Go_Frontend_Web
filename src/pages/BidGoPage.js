@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import './BidGoPage.css';
+import '../styles/BidGoPage.css';
 import axios from "axios";
 
 function BidGoPage() {

@@ -1,13 +1,17 @@
-import React, { useRef, useState, useEffect } from 'react';
-import './LoginPage.css';
-import axios from 'axios';
+import React, { useRef, useState, useEffect } from "react";
+import "../styles/LoginPage.css";
+import axios from "axios";
+import { useNavigate } from "react-router";
+
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [remember, setRemember] = useState(true);
+  const navigate = useNavigate();
+
 
   const abortRef = useRef(null);
 
@@ -21,7 +25,7 @@ function LoginPage() {
     setError(null);
 
     if (!email || !password) {
-      setError('Preenche email e password.');
+      setError("Preenche email e password.");
       return;
     }
 
@@ -35,26 +39,26 @@ function LoginPage() {
     setLoading(true);
     try {
       const res = await axios.post(
-          'https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/auth/login',
-          { email, password },
-          {
-            signal: controller.signal,            // <- usa o controller local
-            headers: { 'Content-Type': 'application/json' },
-          }
+        "https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/auth/login",
+        { email, password },
+        {
+          signal: controller.signal, // <- usa o controller local
+          headers: { "Content-Type": "application/json" },
+        }
       );
 
       const { token, user } = res.data || {};
-      if (remember && token) localStorage.setItem('access_token', token);
-      // TODO: navegar para a área autenticada, ex.: navigate('/dashboard')
+      if (remember && token) localStorage.setItem("access_token", token);
+      navigate("/", { replace: true, state: { user } });
     } catch (err) {
-      if (err.name === 'CanceledError') return;
+      if (err.name === "CanceledError") return;
       if (err.response) {
         const msg =
-            err.response.data?.message ||
-            `Erro ${err.response.status}: ${err.response.statusText}`;
+          err.response.data?.message ||
+          `Erro ${err.response.status}: ${err.response.statusText}`;
         setError(msg);
       } else if (err.request) {
-        setError('Falha de rede: sem resposta do servidor.');
+        setError("Falha de rede: sem resposta do servidor.");
       } else {
         setError(`Erro: ${err.message}`);
       }
@@ -64,52 +68,56 @@ function LoginPage() {
   };
 
   return (
-      <div className="login-container">
-        <form className="login-form" onSubmit={handleSubmit}>
-          <h2 className="login-title">Iniciar Sessão</h2>
+    <div className="login-container">
+      <form className="login-form" onSubmit={handleSubmit}>
+        <h2 className="login-title">Iniciar Sessão</h2>
 
-          <label className="login-label">
-            Email
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="introduza o seu email"
-                autoComplete="email"
-                required
-            />
-          </label>
+        <label className="login-label">
+          Email
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder=""
+            autoComplete="email"
+            required
+          />
+        </label>
 
-          <label className="login-label">
-            Palavra-passe
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                autoComplete="current-password"
-                required
-            />
-          </label>
+        <label className="login-label">
+          Palavra-passe
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder=""
+            autoComplete="current-password"
+            required
+          />
+        </label>
 
-          <label className="login-remember">
-            <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-            />
-            Manter sessão
-          </label>
+        <label className="login-remember" htmlFor="remember">
+          <input
+            id="remember"
+            type="checkbox"
+            checked={remember}
+            onChange={(e) => setRemember(e.target.checked)}
+            aria-label="Manter sessão iniciada"
+          />
+          <span className="remember-text">Manter sessão iniciada</span>
+        </label>
 
-          {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message">{error}</p>}
 
-          <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'A entrar…' : 'Entrar'}
-          </button>
+        <button type="submit" className="login-button" disabled={loading}>
+          {loading ? "A entrar…" : "Entrar"}
+        </button>
 
-          <a href="#forgot" className="forgot-password">Esqueceu-se da palavra-passe?</a>
-        </form>
-      </div>
+        <a href="#forgot" className="forgot-password">
+          Esqueceu-se da palavra-passe?
+        </a>
+      </form>
+    </div>
   );
 }
 

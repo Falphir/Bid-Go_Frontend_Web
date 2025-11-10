@@ -1,0 +1,296 @@
+/*
+ * Styling for the CreateTransportPage component.
+ *
+ * The layout closely follows the provided mockup: a centered form with
+ * generous whitespace, a dashed border drop zone for image upload (using
+ * an invisible input and styled label) as suggested by MDN【350331217813325†L195-L206】,
+ * input fields arranged in rows, and a custom switch for toggling the
+ * automatic selection algorithm.  Colours and typography are consistent
+ * with the rest of the BidGo design.
+ */
+
+/* Overall container */
+.create-transport-container {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #f7fbff;
+  min-height: calc(100vh - 80px);
+  box-sizing: border-box;
+}
+
+.create-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #062e5c;
+  margin-bottom: 32px;
+}
+
+/* Form wrapper */
+.transport-form {
+  background-color: #ffffff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Drop zone styling */
+.drop-zone-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* Hide the native file input */
+.drop-zone-wrapper input[type='file'] {
+  display: none;
+}
+
+.drop-zone {
+  width: 100%;
+  max-width: 500px;
+  height: 180px;
+  border: 2px dashed #cdd7e1;
+  border-radius: 16px;
+  background-color: #f7fbff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #7a8fa6;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.drop-zone:hover {
+  background-color: #eff5fd;
+  border-color: #aac4e5;
+}
+
+.upload-icon {
+  margin-bottom: 12px;
+}
+
+.drop-title {
+  font-weight: 600;
+  color: #294766;
+  margin-bottom: 4px;
+}
+
+.drop-instruction {
+  font-size: 13px;
+  color: #7a8fa6;
+}
+
+.file-name {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #294766;
+}
+
+/* Row layout for paired fields */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 250px;
+}
+
+.field label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #062e5c;
+  font-size: 14px;
+}
+
+.field input,
+.field textarea {
+  border: 1px solid #cdd7e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #294766;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #a3b1c2;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Dimensions group that visually appears as a single input */
+.dimensions-group {
+  display: flex;
+  align-items: center;
+  gap: 0; /* separators are separate elements */
+}
+
+.dimensions-group .dimensions-input {
+  width: 88px;
+  padding: 8px 10px;
+  border: 1px solid #cdd7e1;
+  background-color: #ffffff;
+  color: #294766;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 8px;
+  outline: none;
+}
+
+.dimensions-group .dimensions-input:focus {
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.08);
+}
+
+/* Remove double borders so inputs look connected */
+.dimensions-group .dimensions-input:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+}
+.dimensions-group .dimensions-input:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.dimensions-sep {
+  padding: 0 8px;
+  color: #294766;
+  user-select: none;
+}
+
+/* Bottom row containing attachment and algorithm toggle */
+.bottom-row {
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-upload-button {
+  background-color: #f0f4fc;
+  color: #062e5c;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+}
+
+.file-upload-button:hover {
+  background-color: #e3ebfa;
+}
+
+.attachment-name {
+  font-size: 13px;
+  color: #294766;
+  margin-top: 4px;
+}
+
+.auto-algo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auto-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #062e5c;
+}
+
+/* Toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cdd7e1;
+  transition: 0.2s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+.switch input:checked + .slider {
+  background-color: #0066cc;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Submit button */
+.submit-button {
+  margin-top: 24px;
+  align-self: flex-end;
+  padding: 12px 24px;
+  background-color: #0066cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #004fa1;
+}
