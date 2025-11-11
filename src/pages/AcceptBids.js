@@ -126,6 +126,17 @@ function AcceptBids() {
         }
     };
 
+    const isTransportCanceled = () => {
+        if (!transport) return false;
+        const s =
+            transport.status ??
+            "";
+        if (typeof s === "string") return s.toLowerCase().includes("cancel");
+        if (typeof s === "boolean") return !!s;
+        if (typeof s === "number") return s === 1; 
+        return false;
+    };
+
 
     if (loading) return <p className="status-message">Carregando…</p>;
     if (error) return <p className="status-message error">Erro: {error}</p>;
@@ -151,13 +162,17 @@ function AcceptBids() {
                             {transport.description ? ` (${transport.description})` : ""}
                         </h2>
                         <div className="title-actions">
-                            <button
-                                className="cancel-request-btn"
-                                onClick={() => setConfirmCancel(true)}
-                                disabled={processing === 'cancel'}
-                            >
-                                {processing === 'cancel' ? 'Cancelando...' : 'Cancelar Pedido'}
-                            </button>
+                            {isTransportCanceled() ? (
+                                <span className="canceled-badge">Pedido Cancelado</span>
+                            ) : (
+                                <button
+                                    className="cancel-request-btn"
+                                    onClick={() => setConfirmCancel(true)}
+                                    disabled={processing === 'cancel'}
+                                >
+                                    {processing === 'cancel' ? 'Cancelando...' : 'Cancelar Pedido'}
+                                </button>
+                            )}
                         </div>
                     </div>
 

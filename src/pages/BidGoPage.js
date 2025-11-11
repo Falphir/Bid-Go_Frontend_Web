@@ -63,24 +63,50 @@ function BidGoPage() {
         <div className="cards-container">
           {requests.map((req) => {
             const transport = req; // manter nomenclatura 'transport' como pedido
+            // resolve status from multiple possible fields
+            const statusRaw = req?.status ?? req?.statusId ?? req?.statusCode ?? req?.statusName ?? req?.state ?? req?.isCanceled ?? req?.canceled ?? null;
+            const statusText = (() => {
+              if (statusRaw == null) return null;
+              if (typeof statusRaw === 'number') {
+                // Map numeric enum values to names (matches backend ERequestStatus)
+                switch (statusRaw) {
+                  case 0: return 'Active';
+                  case 1: return 'Canceled';
+                  case 2: return 'Completed';
+                  case 3: return 'Pending';
+                  case 4: return 'InTransit';
+                  case 5: return 'Draft';
+                  case 6: return 'WaitingPickup';
+                  default: return String(statusRaw);
+                }
+              }
+              if (typeof statusRaw === 'boolean') return statusRaw ? 'Canceled' : 'Active';
+              return String(statusRaw);
+            })();
+
+            const statusClass = statusText ? `status-${statusText.toLowerCase()}` : '';
+
             return (
             <div className="card" key={req.id}>
               <div className="card-image">
                 <img src={req.image} alt={req.package} />
               </div>
               <div className="card-body">
-                <h3 className="card-title">{req.package}</h3>
+                <div className="title-with-badge">
+                  <h3 className="card-title">{req.package}</h3>
+                  {statusText && (
+                    <span className={`status-badge ${statusClass}`}>{statusText}</span>
+                  )}
+                </div>
                 <p className="card-route">{req.route}</p>
                 <div>
                   {req.origin} → {req.destination}
                 </div>
                 <div>{req.maxPrice}</div>
-                {/* Resolve possíveis diferenças no shape retornado pela API */}
                 {(() => {
-                  // Tentativa de localizar a data de fim do leilão em vários nomes comuns
+
                   const endDate = transport?.biddingEndDate ?? transport?.biddingEnd ?? transport?.bidding_end_date ?? transport?.biddingEndDateUtc ?? transport?.biddingEnd?.date ?? null;
-                  // debug: facilita ver o objecto retornado durante o desenvolvimento
-                  // console.debug('Transport item', transport, 'resolved endDate:', endDate);
+
 
                   return (
                     <>

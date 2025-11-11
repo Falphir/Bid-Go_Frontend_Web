@@ -175,6 +175,24 @@
   color: #062e5c;
 }
 
+/* Status badge shown under the package title */
+.status-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.status-active { background: #10b981; } /* green */
+.status-canceled { background: #ef4444; } /* red */
+.status-completed { background: #0ea5e9; } /* blue */
+.status-pending { background: #f59e0b; } /* amber */
+.status-intransit { background: #6366f1; } /* indigo */
+.status-draft { background: #94a3b8; } /* gray */
+.status-waitingpickup { background: #f97316; } /* orange */
+
 .card-route {
   font-size: 14px;
   color: #0066cc;
