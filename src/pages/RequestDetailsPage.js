@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/RequestDetails.css";
-import { useParams } from "react-router";
+import { useParams, useNavigate  } from "react-router";
 import api from "../api/axiosConfig";
 import {useMe} from "../hooks/useMe";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -11,6 +11,7 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import AddBidModal from "../components/AddBidModal";
 
 function RequestDetailsPage() {
+    const navigate = useNavigate();
     const { role, userId, isDriver, isCompany, loading: meLoading } = useMe();
     const { id } = useParams();
     const transportId = id;
@@ -27,6 +28,8 @@ function RequestDetailsPage() {
     const [addOpen, setAddOpen] = useState(false);
     const [savingAdd, setSavingAdd] = useState(false);
 
+    const [confirmAction, setConfirmAction] = useState(null); // {type, bidId}
+    const [processing, setProcessing] = useState(null); // bidId que está em ação
     const [toast, setToast] = useState(null);
 
     useEffect(() => {
@@ -52,6 +55,18 @@ function RequestDetailsPage() {
                     `/bids/bidsActive?transportRequestId=${transportId}`,
                     { signal: controller.signal }
                 );
+
+                const updatedBids = await Promise.all(
+                    bidsRes.data.map(async (bid) => {
+                        try {
+                            const ratingRes = await api.get(`/reviewRequest/average/driver/${bid.driver.driverId}`);
+                            return { ...bid, driver: { ...bid.driver, averageRating: ratingRes.data.average } };
+                        } catch {
+                            return { ...bid, driver: { ...bid.driver, averageRating: null } };
+                        }
+                    })
+                );
+
                 setBids(bidsRes.data);
             } catch (err) {
                 if (axios.isCancel(err)) return;
@@ -148,6 +163,41 @@ function RequestDetailsPage() {
             setTimeout(() => setToast(null), 2500);
         }
     };
+
+    // Função para confirmar ação de aceitar/rejeitar licitação
+    const showToast = (msg, type = "success") => {
+        setToast({ msg, type });
+        setTimeout(() => setToast(null), 3000);
+    };
+
+    const confirmBidAction = (type, bidId) => {
+        setConfirmAction({ type, bidId });
+    };
+
+    const executeAction = async (bidId, type) => {
+        setProcessing(bidId);
+        try {
+            await api.post(`/bids/manual/${bidId}/${type}`);
+            showToast(
+                type === "accept"
+                    ? " Licitação aceite com sucesso!"
+                    : " Licitação rejeitada com sucesso!"
+            );
+
+            // Remove imediatamente a bid localmente (feedback instantâneo)
+            setBids((prev) => prev.filter((b) => b.bidId !== bidId));
+            navigate(0);
+
+        } catch (err) {
+            console.error(err);
+            showToast("Erro ao processar a ação.", "error");
+        } finally {
+            setProcessing(null);
+            setConfirmAction(null);
+            setTimeout(() => setToast(null), 2500);
+        }
+    };
+
 
     return (
         <>
@@ -298,59 +348,56 @@ function RequestDetailsPage() {
                     {isCompany && (
                         <div className="bids-list">
                             {sortedBids.length === 0 ? (
-                                <p className="no-bids">No Bid was found</p>
+                                <p className="no-bids">Nenhuma licitação ativa encontrada.</p>
                             ) : (
                                 sortedBids.map((bid) => (
                                     <div className="bid-card" key={bid.bidId}>
-                                    {/* ESQUERDA: info da bid */}
-                                    <div className="bid-info">
-                                        <h4 className="bid-title">Bid nº{bid.bidId}</h4>
+                                        <div className="bid-info">
+                                            <h4 className="bid-title">Licitação nº{bid.bidId}</h4>
+                                            <p className="bid-driver">
+                                                Motorista: {bid.driver?.name || "—"}{" "}
+                                                {bid.driver?.averageRating > 0 && (
+                                                    <span
+                                                        className="driver-rating">⭐ {bid.driver.averageRating.toFixed(1)}</span>
+                                                )}
+                                            </p>
 
-                                        <p className="bid-driver">
-                                            Driver: {bid.driver?.name || "—"}
-                                            <span className="bid-rating">★ 4.8</span>
-                                        </p>
-
-                                        <p className="bid-value">
-                                            Bid Price: <span>{bid.value}€</span>
-                                        </p>
-
-                                        <p className="bid-deadline">
-                                            Deadline:{" "}
-                                            {new Date(bid.deliveryDeadline).toLocaleDateString()}
-                                        </p>
-                                    </div>
-
-                                    {/* DIREITA: notas + botões */}
-                                    <div className="bid-right">
-                                        <div className="bid-actions">
-
-                                            {/* botões de ação */}
-                                            {/*{isOwnerDriver && (*/}
-                                                <div className="bid-buttons">
-                                                    <button
-                                                        className="accept-btn"
-                                                        // onClick={() => handleEditBid(bid)}
-                                                        // disabled={actionId === bid.bidId}
-                                                    >
-                                                        ✏️ Edit
-                                                    </button>
-
-                                                    <button
-                                                        className="reject-btn"
-                                                        // onClick={() => handleAskCancelBid(bid.bidId)}
-                                                        // disabled={actionId === bid.bidId}
-                                                    >
-                                                        {/*{actionId === bid.bidId ? "A cancelar…" : "🗑️ Cancelar"}*/}
-                                                    </button>
-                                                </div>
-                                            {/*)}*/}
+                                            <p className="bid-value">
+                                                Valor da Licitação: <span>{bid.value}€</span>
+                                            </p>
+                                            <p className="bid-deadline">
+                                                Prazo de Entrega:{" "}
+                                                {new Date(bid.deliveryDeadline).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                        <div className="bid-right">
+                                            <div className="bid-buttons">
+                                                <button
+                                                    className="accept-btn"
+                                                    onClick={() => confirmBidAction("accept", bid.bidId)}
+                                                    disabled={processing === bid.bidId}
+                                                >
+                                                    {processing === bid.bidId &&
+                                                    confirmAction?.type === "accept"
+                                                        ? "Aceitando..."
+                                                        : "Aceitar"}
+                                                </button>
+                                                <button
+                                                    className="reject-btn"
+                                                    onClick={() => confirmBidAction("reject", bid.bidId)}
+                                                    disabled={processing === bid.bidId}
+                                                >
+                                                    {processing === bid.bidId &&
+                                                    confirmAction?.type === "reject"
+                                                        ? "Rejeitando..."
+                                                        : "Rejeitar"}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
+                                ))
+                            )}
+                        </div>
                     )}
                 </div>
             </div>
@@ -379,8 +426,38 @@ function RequestDetailsPage() {
                 onCancel={() => setConfirmBidId(null)}
             />
 
+            {confirmAction && (
+                <div className="confirm-overlay">
+                    <div className="confirm-modal">
+                        <p>
+                            Tens a certeza que queres{" "}
+                            <strong>
+                                {confirmAction.type === "accept" ? "ACEITAR" : "RECUSAR"}
+                            </strong>{" "}
+                            a licitação nº{confirmAction.bidId}?
+                        </p>
+                        <div className="confirm-buttons">
+                            <button
+                                className="confirm-yes"
+                                onClick={() =>
+                                    executeAction(confirmAction.bidId, confirmAction.type)
+                                }
+                            >
+                                Sim
+                            </button>
+                            <button
+                                className="confirm-no"
+                                onClick={() => setConfirmAction(null)}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {toast && <div className={`toast ${toast.type}`}>{toast.msg}</div>}
-    </>
+        </>
     );
 }
 
