@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../styles/AcceptBids.css";
+import "../styles/RequestDetails.css";
 import { useParams, useNavigate } from "react-router";
 import api from "../api/axiosConfig";
 import Countdown from "../components/Countdown";

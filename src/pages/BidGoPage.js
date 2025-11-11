@@ -4,14 +4,16 @@ import api from "../api/axiosConfig";
 import { useNavigate } from "react-router";
 import Countdown from "../components/Countdown";
 import { useMe } from "../hooks/useMe";
-function BidGoPage() {
-  const [requests, setRequests] = useState([]);
-  const [isRequestsEmpty, setIsRequestsEmpty] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
-  const { role, userId, isDriver, isCompany, loading: meLoading } = useMe();
 
+function BidGoPage() {
+    const [requests, setRequests] = useState([]);
+    const [isRequestsEmpty, setIsRequestsEmpty] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const { role, userId, isDriver, isCompany, loading: meLoading } = useMe();
+
+    // 🧩 Função para normalizar o formato da resposta da API
     const normalizeList = (data) => {
         const arr = Array.isArray(data)
             ? data
@@ -30,160 +32,158 @@ function BidGoPage() {
             destination: t.destination ?? t.to ?? "—",
             maxPrice: t.maxPrice ?? t.maxBudget ?? "—",
             timeRemaining: t.timeRemaining ?? "",
+            biddingEndDate: t.biddingEndDate ?? t.biddingEnd ?? t.bidding_end_date ?? null,
+            status: t.status ?? null,
         }));
     };
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      console.log("Fetched transports for company ID:", userId);
-      try {
-        const res = await api.get(`/transports/company/${userId}`, {
-          signal: controller.signal,
-        });
+    // 🧠 Buscar transportes da empresa do utilizador
+    useEffect(() => {
+        if (!userId) return; // Aguarda userId
 
-          setRequests(normalizeList(res?.data));
+        const controller = new AbortController();
 
-          console.log(res.data);
-          console.log(requests);
+        const fetchData = async () => {
+            setLoading(true);
+            setError(null);
+            console.log("Fetched transports for company ID:", userId);
 
-          if (res.data.length === 0) {
-              console.log('No active requests found.');
-              setIsRequestsEmpty(true);
-          }
-      } catch (err) {
-        if (api.isCancel?.(err) || err.name === "CanceledError") return;
-        if (err.response) {
-          // Server responded with a non-2xx status
-          setError(
-            `Server error: ${err.response.status} ${err.response.statusText}`
-          );
-        } else if (err.request) {
-          // No response received
-          setError("Network error: no response from server" + err.request);
-        } else {
-          // Something else happened while setting up the request
-          setError(`Request error: ${err.message}`);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-    return () => controller.abort();
-  }, []);
-  // Data for each of the active requests.  In a real application this might
-  // come from an API, but here it's hard‑coded for clarity and simplicity
-  if (meLoading) return <p className="status-message">A validar sessão…</p>;
-  if (loading) return <p>Loading users…</p>;
-  if (error) return <p role="alert">{error}</p>;
+            try {
+                const res = await api.get(`/transports/company/${userId}`, {
+                    signal: controller.signal,
+                });
+
+                const normalized = normalizeList(res?.data);
+                setRequests(normalized);
+
+                if (normalized.length === 0) {
+                    console.log("No active requests found.");
+                    setIsRequestsEmpty(true);
+                }
+            } catch (err) {
+                if (api.isCancel?.(err) || err.name === "CanceledError") return;
+
+                if (err.response) {
+                    setError(`Server error: ${err.response.status} ${err.response.statusText}`);
+                } else if (err.request) {
+                    setError("Network error: no response from server");
+                } else {
+                    setError(`Request error: ${err.message}`);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+        return () => controller.abort();
+    }, [userId]);
+
+    // 🕐 Estados de carregamento
+    if (meLoading) return <p className="status-message">A validar sessão…</p>;
+    if (loading) return <p className="status-message">A carregar transportes…</p>;
+    if (error) return <p className="status-message error">{error}</p>;
 
     const list = Array.isArray(requests) ? requests : [];
-    const isEmpty = list.length === 0;
+    const isEmpty = list.length === 0 || isRequestsEmpty;
 
-  return (
-    <div className="page-container">
-      {/* Header */}
+    return (
+        <div className="page-container">
+            <main className="main-content">
+                <h2 className="section-title">Pedidos de Transporte</h2>
+                <button
+                    className="new-request-btn"
+                    onClick={() => navigate("/createRequest")}
+                >
+                    Novo Pedido de Transporte
+                </button>
 
-      {/* Main content */}
-      <main className="main-content">
-        <h2 className="section-title">Pedidos de Transporte</h2>
-        <button className="new-request-btn">Novo Pedido de Transporte</button>
-        <div className="cards-container">
-          {list.map((req) => {
-            const transport = req; // manter nomenclatura 'transport' como pedido
-            // resolve status from multiple possible fields
-            const statusRaw = req?.status ?? null;
-            const statusText = (() => {
-              if (statusRaw == null) return null;
-              if (typeof statusRaw === "number") {
-                // Map numeric enum values to names (matches backend ERequestStatus)
-                switch (statusRaw) {
-                  case 0:
-                    return "Active";
-                  case 1:
-                    return "Canceled";
-                  case 2:
-                    return "Completed";
-                  case 3:
-                    return "Pending";
-                  case 4:
-                    return "InTransit";
-                  case 5:
-                    return "Draft";
-                  case 6:
-                    return "WaitingPickup";
-                  default:
-                    return String(statusRaw);
-                }
-              }
-              if (typeof statusRaw === "boolean")
-                return statusRaw ? "Canceled" : "Active";
-              return String(statusRaw);
-            })();
+                <div className="cards-container">
+                    {isEmpty ? (
+                        <p className="no-bids">Nenhum pedido encontrado.</p>
+                    ) : (
+                        list.map((req) => {
+                            const transport = req;
 
-            const statusClass = statusText
-              ? `status-${statusText.toLowerCase()}`
-              : "";
+                            // Resolver o status
+                            const statusRaw = req?.status ?? null;
+                            const statusText = (() => {
+                                if (statusRaw == null) return null;
+                                if (typeof statusRaw === "number") {
+                                    switch (statusRaw) {
+                                        case 0: return "Active";
+                                        case 1: return "Canceled";
+                                        case 2: return "Completed";
+                                        case 3: return "Pending";
+                                        case 4: return "InTransit";
+                                        case 5: return "Draft";
+                                        case 6: return "WaitingPickup";
+                                        default: return String(statusRaw);
+                                    }
+                                }
+                                if (typeof statusRaw === "boolean")
+                                    return statusRaw ? "Canceled" : "Active";
+                                return String(statusRaw);
+                            })();
 
-            return (
-              <div className="card" key={req.id}>
-                <div className="card-image">
-                  <img src={req.image} alt={req.package} />
-                </div>
-                <div className="card-body">
-                  <div className="title-with-badge">
-                    <h3 className="card-title">{req.package}</h3>
-                    {statusText && (
-                      <span className={`status-badge ${statusClass}`}>
-                        {statusText}
-                      </span>
+                            const statusClass = statusText
+                                ? `status-${statusText.toLowerCase()}`
+                                : "";
+
+                            // Corrigir data de fim de leilão
+                            const endDate = transport?.biddingEndDate
+                                ? new Date(transport.biddingEndDate)
+                                : null;
+
+                            return (
+                                <div className="card" key={req.id}>
+                                    <div className="card-image">
+                                        <img src={req.image} alt={req.package} />
+                                    </div>
+
+                                    <div className="card-body">
+                                        <div className="title-with-badge">
+                                            <h3 className="card-title">{req.package}</h3>
+                                            {statusText && (
+                                                <span className={`status-badge ${statusClass}`}>
+                                                    {statusText}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <p className="card-route">{req.route}</p>
+                                        <div>
+                                            {req.origin} → {req.destination}
+                                        </div>
+                                        <div>
+                                            <span className="label-small">Max Price:</span>{" "}
+                                            {req.maxPrice}€
+                                        </div>
+
+                                        <p className="card-time">
+                                            Tempo Restante:{" "}
+                                            {endDate ? (
+                                                <Countdown endDate={endDate} />
+                                            ) : (
+                                                "—"
+                                            )}
+                                        </p>
+
+                                        <button
+                                            className="bid-btn"
+                                            onClick={() => navigate(`/accept-bids/${req.id}`)}
+                                        >
+                                            Licitações Abertas
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })
                     )}
-                  </div>
-                  <p className="card-route">{req.route}</p>
-                  <div>
-                    {req.origin} → {req.destination}
-                  </div>
-                  <div>
-                    <span className="label-small">Max Price:</span>{" "}
-                    {req.maxPrice}€
-                  </div>
-                  {(() => {
-                    const endDate =
-                      transport?.biddingEndDate ??
-                      transport?.biddingEnd ??
-                      transport?.bidding_end_date ??
-                      transport?.biddingEndDateUtc ??
-                      transport?.biddingEnd?.date ??
-                      null;
-
-                    return (
-                      <>
-                        <p className="card-time">
-                          Tempo Restante:{" "}
-                          {endDate ? <Countdown endDate={endDate} /> : "—"}
-                        </p>
-                      </>
-                    );
-                  })()}
-                  <button
-                    className="bid-btn"
-                    onClick={() => {
-                      navigate(`/accept-bids/${req.transportRequestId}`);
-                    }}
-                  >
-                    Licitações Abertas
-                  </button>
                 </div>
-              </div>
-            );
-          })}
+            </main>
         </div>
-      </main>
-    </div>
-  );
+    );
 }
 
 export default BidGoPage;
