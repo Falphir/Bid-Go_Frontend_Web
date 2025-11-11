@@ -1,16 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import '../styles/BidGoPage.css';
+import React, { useEffect, useState } from "react";
+import "../styles/BidGoPage.css";
 import api from "../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
-
-
+import Countdown from "../components/Countdown";
 
 function BidGoPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const controller = new AbortController();
@@ -19,25 +17,26 @@ function BidGoPage() {
       setError(null);
 
       try {
-          const res = await api.get("/pageTransports/filters", {
-              signal: controller.signal,
-          });
+        const res = await api.get("/pageTransports/filters", {
+          signal: controller.signal,
+        });
 
-          setRequests(res.data);
+        setRequests(res.data);
       } catch (err) {
-
-              if (api.isCancel?.(err) || err.name === 'CanceledError') return;
-      if (err.response) {
-        // Server responded with a non-2xx status
-        setError(`Server error: ${err.response.status} ${err.response.statusText}`);
-      } else if (err.request) {
-        // No response received
-        setError('Network error: no response from server' + err.request);
-      } else {
-        // Something else happened while setting up the request
-        setError(`Request error: ${err.message}`);
-      }
-    } finally {
+        if (api.isCancel?.(err) || err.name === "CanceledError") return;
+        if (err.response) {
+          // Server responded with a non-2xx status
+          setError(
+            `Server error: ${err.response.status} ${err.response.statusText}`
+          );
+        } else if (err.request) {
+          // No response received
+          setError("Network error: no response from server" + err.request);
+        } else {
+          // Something else happened while setting up the request
+          setError(`Request error: ${err.message}`);
+        }
+      } finally {
         setLoading(false);
       }
     };
@@ -59,7 +58,9 @@ function BidGoPage() {
         <button className="new-request-btn">+ Novo Pedido de Transporte</button>
         <h2 className="section-title">Pedidos Ativos:</h2>
         <div className="cards-container">
-          {requests.map((req) => (
+          {requests.map((req) => {
+            const transport = req; // manter nomenclatura 'transport' como pedido
+            return (
             <div className="card" key={req.id}>
               <div className="card-image">
                 <img src={req.image} alt={req.package} />
@@ -71,18 +72,25 @@ function BidGoPage() {
                   {req.origin} → {req.destination}
                 </div>
                 <div>{req.maxPrice}</div>
-                <p className="card-time">Tempo Restante: {req.timeRemaining}</p>
-                  <button
-                      className="bid-btn"
-                      onClick={() => {
-                          navigate(`/accept-bids/${req.id}`);
-                      }}
-                  >
-                      Licitações Abertas
-                  </button>
+                <p className="card-time">
+                  Tempo Restante: <Countdown endDate={transport.biddingEndDate} />
+                </p>
+                <div className="card-time">
+                  <span className="detail-label">Fim do leilão:</span>{" "}
+                  <Countdown endDate={transport.biddingEndDate} />
+                </div>
+                <button
+                  className="bid-btn"
+                  onClick={() => {
+                    navigate(`/accept-bids/${req.id}`);
+                  }}
+                >
+                  Licitações Abertas
+                </button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </main>
     </div>
