@@ -228,9 +228,14 @@ function RequestDetailsPage() {
                                         {transport.destination}
                                     </div>
                                     <div>
-                                        <span className="detail-label">Peso (kg):</span>{" "}
-                                        {transport.weight}
+                                        <span className="detail-label">Preço máximo:</span>{" "}
+                                        {transport.maxPrice ? `${transport.maxPrice}€` : "—"}
+                                        <span style={{ marginLeft: "20px" }}>
+                                        <span className="detail-label">Peso:</span>{" "}
+                                            {transport.weight ? `${transport.weight} kg` : "—"}
+                                     </span>
                                     </div>
+
                                     <div>
                                         <span className="detail-label">Dimensões:</span>{" "}
                                         {transport.length && transport.width && transport.height
@@ -376,9 +381,9 @@ function RequestDetailsPage() {
                                 sortedBids.map((bid) => (
                                     <div className="bid-card" key={bid.bidId}>
                                         <div className="bid-info">
-                                            <h4 className="bid-title">Licitação nº{bid.bidId}</h4>
+                                            <h4 className="bid-title">Licitação de {bid.driver.name}</h4>
                                             <p className="bid-driver">
-                                                Motorista: {bid.driver?.name || "—"}{" "}
+                                                Email do Motorista: {bid.driver?.email || "—"}{" "}
                                                 {bid.driver?.averageRating > 0 && (
                                                     <span
                                                         className="driver-rating">⭐ {bid.driver.averageRating.toFixed(1)}</span>
