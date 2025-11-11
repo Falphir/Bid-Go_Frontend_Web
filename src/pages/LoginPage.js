@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import '../styles/LoginPage.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import api from '../api/axiosConfig';
 
 function LoginPage() {
@@ -46,7 +46,7 @@ function LoginPage() {
 
       const { token, user } = res.data || {};
       if (remember && token) localStorage.setItem('token', token);
-      navigate("/listagemBids")
+      navigate('/')
     } catch (err) {
       if (err.name === 'CanceledError') return;
       if (err.response) {

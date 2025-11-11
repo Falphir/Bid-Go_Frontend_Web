@@ -1,0 +1,38 @@
+.abm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+.abm-modal {
+    background: #fff;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 14px;
+    padding: 24px 32px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+.abm-title { margin: 0 0 4px; font-size: 18px; color: #0f172a; }
+.abm-sub { margin: 0 0 12px; color: #475569; }
+
+.abm-form { display: flex; flex-direction: column; gap: 12px; }
+.abm-label { display: flex; flex-direction: column; gap: 6px; color: #1e293b; font-weight: 600; }
+.abm-input, .abm-textarea {
+    border: 1px solid #ccd6e2; border-radius: 8px; padding: 10px; font-size: 14px;
+    background: #f8fafc; color: #062e5c;
+}
+.abm-input:focus, .abm-textarea:focus { outline: 2px solid #3b82f6; outline-offset: 1px; }
+
+.abm-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 6px; }
+.abm-btn { border: none; border-radius: 8px; padding: 10px 16px; font-weight: 600; cursor: pointer;
+    transition: background-color .2s ease, transform .15s ease, box-shadow .2s ease; }
+.abm-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 12px rgba(0,0,0,.08); }
+.abm-btn:active { transform: translateY(0); box-shadow: none; }
+.abm-btn:disabled { opacity: .6; cursor: default; transform: none; box-shadow: none; }
+.abm-cancel { background: #e2e8f0; color: #0f172a; }
+.abm-cancel:hover { background: #d7dee7; }
+.abm-save { background: #16a34a; color: #fff; }
+.abm-save:hover { background: #169447; }
