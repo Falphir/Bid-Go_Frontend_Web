@@ -45,7 +45,7 @@ function LoginPage() {
 
       const { token, user } = res.data || {};
       if (remember && token) localStorage.setItem('token', token);
-      navigate("/listagemBids")
+      navigate('/')
     } catch (err) {
       if (err.name === "CanceledError") return;
       if (err.response) {
