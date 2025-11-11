@@ -35,24 +35,32 @@ function AcceptBids() {
                 setLoading(true);
                 setError(null);
 
-                const transportRes = await api.get(`/transports/${transportId}`, {
-                    signal: controller.signal,
-                });
+                const transportRes = await api.get(`/transports/${transportId}`);
                 setTransport(transportRes.data);
 
-                const bidsRes = await api.get(
-                    `/bids/bidsActive?transportRequestId=${transportId}`,
-                    { signal: controller.signal }
+                const bidsRes = await api.get(`/bids/bidsActive?transportRequestId=${transportId}`);
+                const bidsData = bidsRes.data;
+
+
+                const updatedBids = await Promise.all(
+                    bidsData.map(async (bid) => {
+                        try {
+                            const ratingRes = await api.get(`/reviewRequest/average/driver/${bid.driver.driverId}`);
+                            return { ...bid, driver: { ...bid.driver, averageRating: ratingRes.data.average } };
+                        } catch {
+                            return { ...bid, driver: { ...bid.driver, averageRating: null } };
+                        }
+                    })
                 );
-                setBids(bidsRes.data);
+
+                setBids(updatedBids);
             } catch (err) {
-                if (axios.isCancel(err)) return;
+                console.error(err);
                 setError("Erro ao carregar dados.");
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
         return () => controller.abort();
     }, [transportId]);
@@ -74,8 +82,8 @@ function AcceptBids() {
             await api.post(`/bids/manual/${bidId}/${type}`);
             showToast(
                 type === "accept"
-                    ? "✅ Licitação aceite com sucesso!"
-                    : "❌ Licitação rejeitada com sucesso!"
+                    ? " Licitação aceite com sucesso!"
+                    : " Licitação rejeitada com sucesso!"
             );
 
             // Remove imediatamente a bid localmente (feedback instantâneo)
@@ -222,8 +230,12 @@ function AcceptBids() {
                                 <div className="bid-info">
                                     <h4 className="bid-title">Licitação nº{bid.bidId}</h4>
                                     <p className="bid-driver">
-                                        Motorista: {bid.driver?.name || "—"}
+                                        Motorista: {bid.driver?.name || "—"}{" "}
+                                        {bid.driver?.averageRating > 0 && (
+                                            <span className="driver-rating">⭐ {bid.driver.averageRating.toFixed(1)}</span>
+                                        )}
                                     </p>
+
                                     <p className="bid-value">
                                         Valor da Licitação: <span>{bid.value}€</span>
                                     </p>
