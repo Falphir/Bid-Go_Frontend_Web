@@ -25,7 +25,7 @@ function BidGoPage() {
           setRequests(res.data);
       } catch (err) {
 
-      if (api.isCancel?.(err) || err.name === 'CanceledError') return;
+              if (api.isCancel?.(err) || err.name === 'CanceledError') return;
       if (err.response) {
         // Server responded with a non-2xx status
         setError(`Server error: ${err.response.status} ${err.response.statusText}`);

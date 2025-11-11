@@ -3,6 +3,8 @@ import axios from "axios";
 import "../styles/AcceptBids.css";
 import { useParams } from "react-router-dom";
 import api from "../api/axiosConfig";
+import Countdown from "../components/Countdown";
+
 
 function AcceptBids() {
     const { id } = useParams();
@@ -149,23 +151,39 @@ function AcceptBids() {
                                     {transport.weight}
                                 </div>
                                 <div>
-                                    <span className="detail-label">Dimensões (cm):</span>{" "}
+                                    <span className="detail-label">Dimensões:</span>{" "}
                                     {transport.length && transport.width && transport.height
-                                        ? `${transport.length} x ${transport.width} x ${transport.height}`
+                                        ? `${transport.length} x ${transport.width} x ${transport.height} cm`
                                         : "—"}
+                                    {"  "}
+                                    {transport.volume
+                                        ? `(${transport.volume.toLocaleString("pt-PT")} cm³)`
+                                        : ""}
                                 </div>
                                 <div>
-                                    <span className="detail-label">Prazo máximo:</span>{" "}
+                                    <span className="detail-label">Prazo de entrega:</span>{" "}
                                     {transport.deliveryDate
                                         ? new Date(transport.deliveryDate).toLocaleDateString()
                                         : "—"}
                                 </div>
                                 <div>
-                                    <span className="detail-label">Volume (cm³):</span>{" "}
-                                    {transport.volume
-                                        ? transport.volume.toLocaleString("pt-PT")
+                                    <span className="detail-label">Prazo de recolha:</span>{" "}
+                                    {transport.pickupDate
+                                        ? new Date(transport.pickupDate).toLocaleDateString()
                                         : "—"}
                                 </div>
+                                <div>
+                                    <span className="detail-label">Data do início do leilão:</span>{" "}
+                                    {transport.biddingStartDate
+                                        ? new Date(transport.biddingStartDate).toLocaleDateString()
+                                        : "—"}
+                                </div>
+                                <div>
+                                    <span className="detail-label">Fim do leilão:</span>{" "}
+                                    <Countdown endDate={transport.biddingEndDate} />
+
+                                </div>
+
                             </div>
                         </div>
                     </div>

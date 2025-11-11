@@ -46,7 +46,7 @@ function LoginPage() {
 
       const { token, user } = res.data || {};
       if (remember && token) localStorage.setItem('token', token);
-      // TODO: navegar para a área autenticada, ex.: navigate('/dashboard')
+      navigate("/listagemBids")
     } catch (err) {
       if (err.name === 'CanceledError') return;
       if (err.response) {
@@ -64,54 +64,58 @@ function LoginPage() {
     }
   };
 
-  return (
-      <div className="login-container">
-        <form className="login-form" onSubmit={handleSubmit}>
-          <h2 className="login-title">Iniciar Sessão</h2>
+    return (
+        <div className="login-container">
+            <form className="login-form" onSubmit={handleSubmit}>
+                <h2 className="login-title">Iniciar Sessão</h2>
 
-          <label className="login-label">
-            Email
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="introduza o seu email"
-                autoComplete="email"
-                required
-            />
-          </label>
+                <label className="login-label">
+                    Email
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder=""
+                        autoComplete="email"
+                        required
+                    />
+                </label>
 
-          <label className="login-label">
-            Palavra-passe
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                autoComplete="current-password"
-                required
-            />
-          </label>
+                <label className="login-label">
+                    Palavra-passe
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder=""
+                        autoComplete="current-password"
+                        required
+                    />
+                </label>
 
-          <label className="login-remember">
-            <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-            />
-            Manter sessão
-          </label>
+                <label className="login-remember" htmlFor="remember">
+                    <input
+                        id="remember"
+                        type="checkbox"
+                        checked={remember}
+                        onChange={(e) => setRemember(e.target.checked)}
+                        aria-label="Manter sessão iniciada"
+                    />
+                    <span className="remember-text">Manter sessão iniciada</span>
+                </label>
 
-          {error && <p className="error-message">{error}</p>}
+                {error && <p className="error-message">{error}</p>}
 
-          <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'A entrar…' : 'Entrar'}
-          </button>
+                <button type="submit" className="login-button" disabled={loading}>
+                    {loading ? "A entrar…" : "Entrar"}
+                </button>
 
-          <a href="#forgot" className="forgot-password">Esqueceu-se da palavra-passe?</a>
-        </form>
-      </div>
-  );
+                <a href="#forgot" className="forgot-password">
+                    Esqueceu-se da palavra-passe?
+                </a>
+            </form>
+        </div>
+    );
 }
 
 export default LoginPage;
