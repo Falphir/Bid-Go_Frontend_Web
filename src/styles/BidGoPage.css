@@ -29,6 +29,38 @@
   margin-bottom: 0px;
 }
 
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;       
+  justify-content: center;   
+  background-color: #f7fbff;
+  min-height: 100vh;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.page-logo {
+  width: 180px;
+  margin-bottom: 10px;    
+}
+
+.login-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-form {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 350px;
+}
+
+
 /* Logo section */
 .logo {
   display: flex;

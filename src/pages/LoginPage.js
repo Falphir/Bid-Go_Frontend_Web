@@ -2,16 +2,18 @@ import React, { useRef, useState, useEffect } from "react";
 import "../styles/LoginPage.css";
 import { useNavigate } from "react-router";
 import api from "../api/axiosConfig";
+import logo from "../assets/logo.png";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [remember, setRemember] = useState(true);
   const abortRef = useRef(null);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     // cleanup ao desmontar
@@ -35,17 +37,16 @@ function LoginPage() {
     abortRef.current = controller;
 
     setLoading(true);
-      try {
-          const res = await api.post(
-              '/auth/login',
-              { email, password },
-              { signal: controller.signal }
-          );
-
+    try {
+      const res = await api.post(
+        "/auth/login",
+        { email, password },
+        { signal: controller.signal }
+      );
 
       const { token, user } = res.data || {};
-      if (remember && token) localStorage.setItem('token', token);
-      navigate('/')
+      if (remember && token) localStorage.setItem("token", token);
+      navigate("/");
     } catch (err) {
       if (err.name === "CanceledError") return;
       if (err.response) {
@@ -63,58 +64,77 @@ function LoginPage() {
     }
   };
 
-    return (
-        <div className="login-container">
-            <form className="login-form" onSubmit={handleSubmit}>
-                <h2 className="login-title">Iniciar Sessão</h2>
+  return (
+    <div className="login-page">
+      <img src={logo} alt="Bid&Go logo" className="page-logo" />
+      <div className="login-container">
+        <form className="login-form" onSubmit={handleSubmit}>
+          <h2 className="login-title">Iniciar Sessão</h2>
 
-                <label className="login-label">
-                    Email
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder=""
-                        autoComplete="email"
-                        required
-                    />
-                </label>
+          <label className="login-label">
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </label>
 
-                <label className="login-label">
-                    Palavra-passe
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder=""
-                        autoComplete="current-password"
-                        required
-                    />
-                </label>
+          <label className="login-label">
+            Palavra-passe
+            <div className="password-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={
+                  showPassword
+                    ? "Ocultar palavra-passe"
+                    : "Mostrar palavra-passe"
+                }
+                title={
+                  showPassword
+                    ? "Ocultar palavra-passe"
+                    : "Mostrar palavra-passe"
+                }
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </button>
+            </div>
+          </label>
 
-                <label className="login-remember" htmlFor="remember">
-                    <input
-                        id="remember"
-                        type="checkbox"
-                        checked={remember}
-                        onChange={(e) => setRemember(e.target.checked)}
-                        aria-label="Manter sessão iniciada"
-                    />
-                    <span className="remember-text">Manter sessão iniciada</span>
-                </label>
+          <label className="login-remember" htmlFor="remember">
+            <input
+              id="remember"
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            />
+            <span className="remember-text">Manter sessão iniciada</span>
+          </label>
 
-                {error && <p className="error-message">{error}</p>}
+          {error && <p className="error-message">{error}</p>}
 
-                <button type="submit" className="login-button" disabled={loading}>
-                    {loading ? "A entrar…" : "Entrar"}
-                </button>
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? "A entrar…" : "Entrar"}
+          </button>
 
-                <a href="#forgot" className="forgot-password">
-                    Esqueceu-se da palavra-passe?
-                </a>
-            </form>
-        </div>
-    );
+          <a href="#forgot" className="forgot-password">
+            Esqueceu-se da palavra-passe?
+          </a>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default LoginPage;
