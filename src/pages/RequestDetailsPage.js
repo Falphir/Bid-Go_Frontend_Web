@@ -67,7 +67,8 @@ function RequestDetailsPage() {
                     })
                 );
 
-                setBids(bidsRes.data);
+                setBids(updatedBids);
+
             } catch (err) {
                 if (axios.isCancel(err)) return;
                 setError("Failed to load Data.");
@@ -294,9 +295,12 @@ function RequestDetailsPage() {
                                         <h4 className="bid-title">Bid nº{bid.bidId}</h4>
 
                                         <p className="bid-driver">
-                                            Driver: {bid.driver?.name || "—"}
-                                            <span className="bid-rating">★ 4.8</span>
-
+                                            Driver: {bid.driver?.name || "—"}{" "}
+                                            {bid.driver?.averageRating > 0 && (
+                                                <span className="driver-rating">
+        ⭐ {bid.driver.averageRating.toFixed(1)}
+      </span>
+                                            )}
                                         </p>
 
                                         <p className="bid-value">
@@ -308,6 +312,7 @@ function RequestDetailsPage() {
                                             {new Date(bid.deliveryDeadline).toLocaleDateString()}
                                         </p>
                                     </div>
+
 
                                     {/* DIREITA: botões */}
                                     <div className="bid-right">
