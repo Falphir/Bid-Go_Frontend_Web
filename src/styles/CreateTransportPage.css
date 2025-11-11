@@ -320,3 +320,39 @@
 .submit-button:hover {
   background-color: #004fa1;
 }
+
+/* Actions row: place Draft and Create side-by-side aligned to the right */
+.submit-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Draft button style */
+.draft-button {
+  margin-top: 24px;
+  align-self: flex-end;
+  padding: 12px 18px;
+  background-color: #eef3fb;
+  color: #062e5c;
+  border: 1px solid #cdd7e1;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.draft-button:hover {
+  background-color: #e3ebfa;
+  border-color: #aac4e5;
+}
+
+/* Disabled states */
+.submit-button:disabled,
+.draft-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
