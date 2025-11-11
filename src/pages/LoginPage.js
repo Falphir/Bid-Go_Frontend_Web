@@ -35,12 +35,12 @@ function LoginPage() {
     abortRef.current = controller;
 
     setLoading(true);
-    try {
+  try {
       const res = await axios.post(
         "https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/auth/login",
         { email, password },
         {
-          signal: controller.signal, // <- usa o controller local
+          signal: controller.signal, 
           headers: { "Content-Type": "application/json" },
         }
       );
