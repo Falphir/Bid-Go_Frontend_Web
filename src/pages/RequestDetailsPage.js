@@ -9,6 +9,7 @@ import {faPencil, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import EditBidModal from "../components/EditBidModal";
 import ConfirmDialog from "../components/ConfirmDialog";
 import AddBidModal from "../components/AddBidModal";
+import Countdown from "../components/Countdown";
 
 function RequestDetailsPage() {
     const navigate = useNavigate();
@@ -219,40 +220,57 @@ function RequestDetailsPage() {
                             <div className="transport-details">
                                 <div className="details-grid">
                                     <div>
-                                        <span className="detail-label">Origin:</span>{" "}
+                                        <span className="detail-label">Origem:</span>{" "}
                                         {transport.origin}
                                     </div>
                                     <div>
-                                        <span className="detail-label">Destination:</span>{" "}
+                                        <span className="detail-label">Destino:</span>{" "}
                                         {transport.destination}
                                     </div>
                                     <div>
-                                        <span className="detail-label">Weight (kg):</span>{" "}
+                                        <span className="detail-label">Peso (kg):</span>{" "}
                                         {transport.weight}
                                     </div>
                                     <div>
-                                        <span className="detail-label">Dimensions (cm):</span>{" "}
+                                        <span className="detail-label">Dimensões:</span>{" "}
                                         {transport.length && transport.width && transport.height
-                                            ? `${transport.length} x ${transport.width} x ${transport.height}`
+                                            ? `${transport.length} x ${transport.width} x ${transport.height} cm`
                                             : "—"}
+                                        {"  "}
+                                        {transport.volume
+                                            ? `(${transport.volume.toLocaleString("pt-PT")} cm³)`
+                                            : ""}
                                     </div>
                                     <div>
-                                        <span className="detail-label">Delivery Date:</span>{" "}
+                                        <span className="detail-label">Prazo de entrega:</span>{" "}
                                         {transport.deliveryDate
                                             ? new Date(transport.deliveryDate).toLocaleDateString()
                                             : "—"}
                                     </div>
                                     <div>
-                                        <span className="detail-label">Volume (cm³):</span>{" "}
-                                        {transport.volume
-                                            ? transport.volume.toLocaleString("pt-PT")
+                                        <span className="detail-label">Prazo de recolha:</span>{" "}
+                                        {transport.pickupDate
+                                            ? new Date(transport.pickupDate).toLocaleDateString()
                                             : "—"}
                                     </div>
+                                    <div>
+                                        <span className="detail-label">Data do início do leilão:</span>{" "}
+                                        {transport.biddingStartDate
+                                            ? new Date(transport.biddingStartDate).toLocaleDateString()
+                                            : "—"}
+                                    </div>
+                                    <div>
+                                        <span className="detail-label">Fim do leilão:</span>{" "}
+                                        <Countdown endDate={transport.biddingEndDate} />
+
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
                     </>
                 )}
+               
 
                 <div className="bids-section">
                     <div className="bids-header">
