@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
 import "../styles/BidGoPage.css";
 import api from "../api/axiosConfig";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import Countdown from "../components/Countdown";
-
+import { useMe } from "../hooks/useMe";
 function BidGoPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
+  const { role, userId, isDriver, isCompany, loading: meLoading } = useMe();
+  
   useEffect(() => {
+    
     const controller = new AbortController();
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-
+      console.log('Fetched transports for company ID:', userId);
       try {
-        const res = await api.get("/pageTransports/filters", {
+        const res = await api.get(`/transports/company/${userId}`, {
           signal: controller.signal,
         });
+
 
         setRequests(res.data);
       } catch (err) {
@@ -45,7 +48,7 @@ function BidGoPage() {
   }, []);
   // Data for each of the active requests.  In a real application this might
   // come from an API, but here it's hard‑coded for clarity and simplicity
-
+  if (meLoading) return <p className="status-message">A validar sessão…</p>;
   if (loading) return <p>Loading users…</p>;
   if (error) return <p role="alert">{error}</p>;
 
@@ -72,13 +75,21 @@ function BidGoPage() {
                   {req.origin} → {req.destination}
                 </div>
                 <div>{req.maxPrice}</div>
-                <p className="card-time">
-                  Tempo Restante: <Countdown endDate={transport.biddingEndDate} />
-                </p>
-                <div className="card-time">
-                  <span className="detail-label">Fim do leilão:</span>{" "}
-                  <Countdown endDate={transport.biddingEndDate} />
-                </div>
+                {/* Resolve possíveis diferenças no shape retornado pela API */}
+                {(() => {
+                  // Tentativa de localizar a data de fim do leilão em vários nomes comuns
+                  const endDate = transport?.biddingEndDate ?? transport?.biddingEnd ?? transport?.bidding_end_date ?? transport?.biddingEndDateUtc ?? transport?.biddingEnd?.date ?? null;
+                  // debug: facilita ver o objecto retornado durante o desenvolvimento
+                  // console.debug('Transport item', transport, 'resolved endDate:', endDate);
+
+                  return (
+                    <>
+                      <p className="card-time">
+                        Tempo Restante: {endDate ? <Countdown endDate={endDate} /> : '—'}
+                      </p>
+                    </>
+                  );
+                })()}
                 <button
                   className="bid-btn"
                   onClick={() => {
