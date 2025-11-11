@@ -9,8 +9,6 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [remember, setRemember] = useState(true);
-  const navigate = useNavigate();
-
   const abortRef = useRef(null);
   const navigate = useNavigate();
 

@@ -37,8 +37,10 @@ function BidGoPage() {
         // Something else happened while setting up the request
         setError(`Request error: ${err.message}`);
       }
+    } finally {
+        setLoading(false);
+      }
     };
-
     fetchData();
     return () => controller.abort();
   }, []);
