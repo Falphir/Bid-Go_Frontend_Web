@@ -10,19 +10,17 @@ function BidGoPage() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { role, userId, isDriver, isCompany, loading: meLoading } = useMe();
-  
+
   useEffect(() => {
-    
     const controller = new AbortController();
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-      console.log('Fetched transports for company ID:', userId);
+      console.log("Fetched transports for company ID:", userId);
       try {
         const res = await api.get(`/transports/company/${userId}`, {
           signal: controller.signal,
         });
-
 
         setRequests(res.data);
       } catch (err) {
@@ -58,74 +56,95 @@ function BidGoPage() {
 
       {/* Main content */}
       <main className="main-content">
-        <button className="new-request-btn">+ Novo Pedido de Transporte</button>
-        <h2 className="section-title">Pedidos Ativos:</h2>
+        <h2 className="section-title">Pedidos de Transporte</h2>
+        <button className="new-request-btn">Novo Pedido de Transporte</button>
         <div className="cards-container">
           {requests.map((req) => {
             const transport = req; // manter nomenclatura 'transport' como pedido
             // resolve status from multiple possible fields
-            const statusRaw = req?.status ?? req?.statusId ?? req?.statusCode ?? req?.statusName ?? req?.state ?? req?.isCanceled ?? req?.canceled ?? null;
+            const statusRaw = req?.status ?? null;
             const statusText = (() => {
               if (statusRaw == null) return null;
-              if (typeof statusRaw === 'number') {
+              if (typeof statusRaw === "number") {
                 // Map numeric enum values to names (matches backend ERequestStatus)
                 switch (statusRaw) {
-                  case 0: return 'Active';
-                  case 1: return 'Canceled';
-                  case 2: return 'Completed';
-                  case 3: return 'Pending';
-                  case 4: return 'InTransit';
-                  case 5: return 'Draft';
-                  case 6: return 'WaitingPickup';
-                  default: return String(statusRaw);
+                  case 0:
+                    return "Active";
+                  case 1:
+                    return "Canceled";
+                  case 2:
+                    return "Completed";
+                  case 3:
+                    return "Pending";
+                  case 4:
+                    return "InTransit";
+                  case 5:
+                    return "Draft";
+                  case 6:
+                    return "WaitingPickup";
+                  default:
+                    return String(statusRaw);
                 }
               }
-              if (typeof statusRaw === 'boolean') return statusRaw ? 'Canceled' : 'Active';
+              if (typeof statusRaw === "boolean")
+                return statusRaw ? "Canceled" : "Active";
               return String(statusRaw);
             })();
 
-            const statusClass = statusText ? `status-${statusText.toLowerCase()}` : '';
+            const statusClass = statusText
+              ? `status-${statusText.toLowerCase()}`
+              : "";
 
             return (
-            <div className="card" key={req.id}>
-              <div className="card-image">
-                <img src={req.image} alt={req.package} />
-              </div>
-              <div className="card-body">
-                <div className="title-with-badge">
-                  <h3 className="card-title">{req.package}</h3>
-                  {statusText && (
-                    <span className={`status-badge ${statusClass}`}>{statusText}</span>
-                  )}
+              <div className="card" key={req.id}>
+                <div className="card-image">
+                  <img src={req.image} alt={req.package} />
                 </div>
-                <p className="card-route">{req.route}</p>
-                <div>
-                  {req.origin} → {req.destination}
+                <div className="card-body">
+                  <div className="title-with-badge">
+                    <h3 className="card-title">{req.package}</h3>
+                    {statusText && (
+                      <span className={`status-badge ${statusClass}`}>
+                        {statusText}
+                      </span>
+                    )}
+                  </div>
+                  <p className="card-route">{req.route}</p>
+                  <div>
+                    {req.origin} → {req.destination}
+                  </div>
+                  <div>
+                    <span className="label-small">Max Price:</span>{" "}
+                    {req.maxPrice}€
+                  </div>
+                  {(() => {
+                    const endDate =
+                      transport?.biddingEndDate ??
+                      transport?.biddingEnd ??
+                      transport?.bidding_end_date ??
+                      transport?.biddingEndDateUtc ??
+                      transport?.biddingEnd?.date ??
+                      null;
+
+                    return (
+                      <>
+                        <p className="card-time">
+                          Tempo Restante:{" "}
+                          {endDate ? <Countdown endDate={endDate} /> : "—"}
+                        </p>
+                      </>
+                    );
+                  })()}
+                  <button
+                    className="bid-btn"
+                    onClick={() => {
+                      navigate(`/accept-bids/${req.transportRequestId}`);
+                    }}
+                  >
+                    Licitações Abertas
+                  </button>
                 </div>
-                <div>{req.maxPrice}</div>
-                {(() => {
-
-                  const endDate = transport?.biddingEndDate ?? transport?.biddingEnd ?? transport?.bidding_end_date ?? transport?.biddingEndDateUtc ?? transport?.biddingEnd?.date ?? null;
-
-
-                  return (
-                    <>
-                      <p className="card-time">
-                        Tempo Restante: {endDate ? <Countdown endDate={endDate} /> : '—'}
-                      </p>
-                    </>
-                  );
-                })()}
-                <button
-                  className="bid-btn"
-                  onClick={() => {
-                    navigate(`/accept-bids/${req.transportRequestId}`);
-                  }}
-                >
-                  Licitações Abertas
-                </button>
               </div>
-            </div>
             );
           })}
         </div>
