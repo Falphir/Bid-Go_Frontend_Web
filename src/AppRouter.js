@@ -6,6 +6,7 @@ import ListagemBids from "./pages/listagemBids";
 import BidGoPage from "./pages/BidGoPage";
 import LoginPage from "./pages/LoginPage";
 import CreateTransportPage from "./pages/CreateTransportPage";
+import AcceptBids from "./pages/AcceptBids";
 
 export default function AppRouter() {
     return (
@@ -17,7 +18,9 @@ export default function AppRouter() {
                         <Route path="/teste" element={<BidGoPage />} />
                         <Route path="/listagemBids" element={<ListagemBids />} />
                         <Route path="/createRequest" element={<CreateTransportPage />} />
+                        <Route path="/accept-bids/:id" element={<AcceptBids />} />
                     </Route>
+
                     <Route path="/Login" element={<LoginPage />} />
                     <Route path="*" element={<div>NOT FOUND</div>} />
                 </Routes>

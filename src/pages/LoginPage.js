@@ -12,6 +12,8 @@ function LoginPage() {
   const navigate = useNavigate();
 
   const abortRef = useRef(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     // cleanup ao desmontar
@@ -35,18 +37,17 @@ function LoginPage() {
     abortRef.current = controller;
 
     setLoading(true);
-  try {
-      const res = await api.post(
-        "/auth/login",
-        { email, password },
-        {
-          signal: controller.signal,
-        }
-      );
+      try {
+          const res = await api.post(
+              '/auth/login',
+              { email, password },
+              { signal: controller.signal }
+          );
+
 
       const { token, user } = res.data || {};
-      if (remember && token) localStorage.setItem("token", token);
-      navigate("/", { replace: true, state: { user } });
+      if (remember && token) localStorage.setItem('token', token);
+      // TODO: navegar para a área autenticada, ex.: navigate('/dashboard')
     } catch (err) {
       if (err.name === "CanceledError") return;
       if (err.response) {

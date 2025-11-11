@@ -1,3 +1,4 @@
+// src/api/axiosConfig.js
 import axios from "axios";
 
 // Cria uma instância global do Axios

@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
-import "../styles/BidGoPage.css";
-import axios from "axios";
+import React, {useEffect, useState} from 'react';
+import '../styles/BidGoPage.css';
+import api from "../api/axiosConfig";
+import { useNavigate } from "react-router-dom";
+
 
 
 function BidGoPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -15,32 +19,23 @@ function BidGoPage() {
       setError(null);
 
       try {
-        const res = await axios.get(
-          "https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/pageTransports/filters",
-          {
-            signal: controller.signal,
-            headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWd1ZWxAZ21haWwuY29tIiwidXNlcklkIjoiMiIsInVzZXJUeXBlIjoiQ29tcGFueSIsImV4cCI6MTc2Mjc3NjY5NCwiaXNzIjoiQmlkR29CYWNrZW5kIiwiYXVkIjoiQmlkR29Gcm9udGVuZCJ9.OJIOZLVMVuzzU7ja6DWG2ROZgvogM_ZZbrzD_ajSQ_4`,
-            },
-          }
-        );
-        setRequests(res.data);
+          const res = await api.get("/pageTransports/filters", {
+              signal: controller.signal,
+          });
+
+          setRequests(res.data);
       } catch (err) {
-        if (axios.isCancel?.(err) || err.name === "CanceledError") return;
-        if (err.response) {
-          // Server responded with a non-2xx status
-          setError(
-            `Server error: ${err.response.status} ${err.response.statusText}`
-          );
-        } else if (err.request) {
-          // No response received
-          setError("Network error: no response from server" + err.request);
-        } else {
-          // Something else happened while setting up the request
-          setError(`Request error: ${err.message}`);
-        }
-      } finally {
-        setLoading(false);
+
+      if (api.isCancel?.(err) || err.name === 'CanceledError') return;
+      if (err.response) {
+        // Server responded with a non-2xx status
+        setError(`Server error: ${err.response.status} ${err.response.statusText}`);
+      } else if (err.request) {
+        // No response received
+        setError('Network error: no response from server' + err.request);
+      } else {
+        // Something else happened while setting up the request
+        setError(`Request error: ${err.message}`);
       }
     };
 
@@ -75,7 +70,14 @@ function BidGoPage() {
                 </div>
                 <div>{req.maxPrice}</div>
                 <p className="card-time">Tempo Restante: {req.timeRemaining}</p>
-                <button className="bid-btn">Licitações Abertas</button>
+                  <button
+                      className="bid-btn"
+                      onClick={() => {
+                          navigate(`/accept-bids/${req.id}`);
+                      }}
+                  >
+                      Licitações Abertas
+                  </button>
               </div>
             </div>
           ))}
