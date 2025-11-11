@@ -221,31 +221,33 @@ function RequestDetailsPage() {
                                 <div className="details-grid">
                                     <div>
                                         <span className="detail-label">Origem:</span>{" "}
-                                        {transport.origin}
+                                        {transport.origin || "—"}
                                     </div>
                                     <div>
                                         <span className="detail-label">Destino:</span>{" "}
-                                        {transport.destination}
+                                        {transport.destination || "—"}
                                     </div>
-                                    <div>
+
+                                    <div className="span-2">
                                         <span className="detail-label">Preço máximo:</span>{" "}
                                         {transport.maxPrice ? `${transport.maxPrice}€` : "—"}
-                                        <span style={{ marginLeft: "20px" }}>
-                                        <span className="detail-label">Peso:</span>{" "}
-                                            {transport.weight ? `${transport.weight} kg` : "—"}
-                                     </span>
                                     </div>
 
                                     <div>
+                                        <span className="detail-label">Peso:</span>{" "}
+                                        {transport.weight ? `${transport.weight} kg` : "—"}
+                                    </div>
+                                    <div>
                                         <span className="detail-label">Dimensões:</span>{" "}
                                         {transport.length && transport.width && transport.height
-                                            ? `${transport.length} x ${transport.width} x ${transport.height} cm`
+                                            ? `${transport.length} × ${transport.width} × ${transport.height} cm`
                                             : "—"}
                                         {"  "}
                                         {transport.volume
                                             ? `(${transport.volume.toLocaleString("pt-PT")} cm³)`
                                             : ""}
                                     </div>
+
                                     <div>
                                         <span className="detail-label">Prazo de entrega:</span>{" "}
                                         {transport.deliveryDate
@@ -258,8 +260,9 @@ function RequestDetailsPage() {
                                             ? new Date(transport.pickupDate).toLocaleDateString()
                                             : "—"}
                                     </div>
+
                                     <div>
-                                        <span className="detail-label">Data do início do leilão:</span>{" "}
+                                        <span className="detail-label">Início do leilão:</span>{" "}
                                         {transport.biddingStartDate
                                             ? new Date(transport.biddingStartDate).toLocaleDateString()
                                             : "—"}
@@ -267,9 +270,7 @@ function RequestDetailsPage() {
                                     <div>
                                         <span className="detail-label">Fim do leilão:</span>{" "}
                                         <Countdown endDate={transport.biddingEndDate} />
-
                                     </div>
-
                                 </div>
                             </div>
                         </div>

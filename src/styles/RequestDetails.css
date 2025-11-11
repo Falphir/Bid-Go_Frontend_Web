@@ -104,9 +104,13 @@
 .details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px 24px;
-  margin-bottom: 16px;
+  gap: 14px 24px;
+  margin-bottom: 4px;
 }
+
+  .details-grid .span-2 {
+    grid-column: 1 / -1;
+  }
 
 /* Bold label within the details grid */
 .detail-label {
@@ -271,10 +275,10 @@
 }
 
 .bid-actions {
-    display: flex;
-    flexDirection: "column";
-    alignItems: "center";
-    gap: 12px
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 .bid-buttons {
