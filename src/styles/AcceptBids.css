@@ -17,6 +17,49 @@
   margin-bottom: 32px;
 }
 
+/* Title row when actions (buttons) appear beside the title */
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.title-row .page-title {
+  text-align: left;
+  margin: 0;
+  font-size: 24px;
+}
+
+.title-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cancel-request-btn {
+  background: #f97316; /* orange accent */
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.cancel-request-btn:hover:not(:disabled) {
+  background: #ea580c;
+  transform: translateY(-1px);
+}
+
+.cancel-request-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Transport card layout: image on the left and details on the right */
 .transport-card {
   display: flex;

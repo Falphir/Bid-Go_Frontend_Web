@@ -93,7 +93,7 @@ function BidGoPage() {
                 <button
                   className="bid-btn"
                   onClick={() => {
-                    navigate(`/accept-bids/${req.id}`);
+                    navigate(`/accept-bids/${req.transportRequestId}`);
                   }}
                 >
                   Licitações Abertas
