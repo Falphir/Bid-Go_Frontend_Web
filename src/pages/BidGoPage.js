@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import '../styles/BidGoPage.css';
 import api from "../api/axiosConfig";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 
 function BidGoPage() {
