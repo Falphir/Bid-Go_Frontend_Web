@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/BidGoPage.css";
 import axios from "axios";
 
+
 function BidGoPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);

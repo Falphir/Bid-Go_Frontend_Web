@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "../styles/LoginPage.css";
-import axios from "axios";
 import { useNavigate } from "react-router";
+import api from "../api/axiosConfig";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -36,17 +36,16 @@ function LoginPage() {
 
     setLoading(true);
   try {
-      const res = await axios.post(
-        "https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api/auth/login",
+      const res = await api.post(
+        "/auth/login",
         { email, password },
         {
-          signal: controller.signal, 
-          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
         }
       );
 
       const { token, user } = res.data || {};
-      if (remember && token) localStorage.setItem("access_token", token);
+      if (remember && token) localStorage.setItem("token", token);
       navigate("/", { replace: true, state: { user } });
     } catch (err) {
       if (err.name === "CanceledError") return;
