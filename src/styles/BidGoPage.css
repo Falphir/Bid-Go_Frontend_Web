@@ -1,11 +1,5 @@
 /*
  * Styling for the BidGoPage component.
- *
- * The layout mimics the design shown in the reference image: a clean header
- * with a logo and user/company details, a central button to create a new
- * transport request, a section title, and three cards with images and
- * information about active requests.  The colour palette uses blues and
- * light greys reminiscent of the original mock‑up.
  */
 
 /* Global container styles */
@@ -17,127 +11,15 @@
   box-sizing: border-box;
 }
 
-/* Header styling */
-.header {
-  background-color: #eef4fb;
-  border-radius: 12px;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  margin-bottom: 0px;
-}
-
-.login-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;       
-  justify-content: center;   
-  background-color: #f7fbff;
-  min-height: 100vh;
-  padding: 40px 20px;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.page-logo {
-  width: 180px;
-  margin-bottom: 10px;    
-}
-
-.login-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.login-form {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  width: 350px;
-}
-
-
-/* Logo section */
-.logo {
-  display: flex;
-  align-items: center;
-}
-
-.truck-icon {
-  font-size: 28px;
-  margin-right: 8px;
-  color: #0066cc;
-}
-
-.site-title {
-  font-size: 28px;
-  font-weight: bold;
-  color: #062e5c;
-}
-
-/* User/company area */
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.notifications {
-  font-size: 20px;
-  position: relative;
-  color: #0066cc;
-  cursor: pointer;
-}
-
-.notifications::after {
-  /* Red dot indicator for new notifications */
-  content: "";
-  position: absolute;
-  top: 0;
-  right: -3px;
-  width: 8px;
-  height: 8px;
-  background: #ff4d4f;
-  border-radius: 50%;
-}
-
-.company {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.company-logo {
-  font-size: 26px;
-  color: #ff4d4f;
-}
-
-.company-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-
-.company-name {
-  font-weight: 600;
-  color: #062e5c;
-  font-size: 16px;
-}
-
-.company-type {
-  font-size: 12px;
-  color: #7a8fa6;
-}
-
-/* Main content styling */
+/* Main content styling — sempre centrado */
 .main-content {
   text-align: center;
+  max-width: 1200px;
+  margin: 0 auto; /* mantém o título e os cards centrados */
+  position: relative; /* para ancorar o toggle/painel sem empurrar o título */
 }
 
+/* Botão criar pedido */
 .new-request-btn {
   background-color: #0066cc;
   color: #ffffff;
@@ -150,22 +32,98 @@
   margin-bottom: 32px;
   transition: background-color 0.2s ease;
 }
-
-.new-request-btn:hover {
-  background-color: #004fa1;
-}
+.new-request-btn:hover { background-color: #004fa1; }
 
 .section-title {
   color: #0a43a5;
   font-size: 28px;
   font-weight: 700;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-/* Cards layout */
+/* ===== Filtros no topo (embutidos) ===== */
+.filters-top-wrapper {
+  position: absolute; /* não ocupa altura, não afasta o título da navbar */
+  top: 0;
+  right: 0;
+  margin: 0; /* sem impacto no fluxo */
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filters-toggle-top {
+  background: #eef4fb;
+  color: #0a43a5;
+  border: 1px solid #dbe5f3;
+  border-radius: 8px;
+  padding: 6px 10px; /* mais compacto */
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+.filters-toggle-top.active { background: #dfe9f8; }
+
+.filters-top {
+  position: absolute;
+  right: -12px; /* ligeiro ajuste mais à direita */
+  top: calc(100% + 8px);
+  display: inline-block;            /* adapta ao tamanho dos campos */
+  width: auto;
+  max-width: 90vw;                  /* proteção para ecrãs pequenos */
+  background: #ffffff;
+  border: 1px solid #e6eef8;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.07);
+  padding: 10px; /* menos padding */
+  text-align: left;
+  z-index: 10;
+}
+
+/* === Mantém um por linha, mas com largura curta === */
+.filters-top .filters-row {
+  display: grid;
+  grid-template-columns: 1fr;   /* um campo por linha */
+  gap: 8px;
+  justify-items: start;         /* alinha inputs à esquerda */
+}
+
+.filters-top input,
+.filters-top select {
+  width: 180px;                 /* <<< largura pequena */
+  max-width: 100%;
+  padding: 6px 8px;             /* inputs menores */
+  border: 1px solid #dbe5f3;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.filters-top input::placeholder { font-size: 11.5px; color: #9aa9c1; }
+
+.filters-top .filters-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px; /* menos espaço acima dos botões */
+}
+
+.filters-top .bid-btn {
+  background-color: #eef4fb;
+  color: #0066cc;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px; /* botões mais pequenos */
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.filters-top .bid-btn:hover { background-color: #d8e4f7; }
+
+/* ====== Layout de cartões ====== */
 .cards-container {
   display: flex;
-  justify-content: center;
+  justify-content: center; /* mantém os cards centrados */
   gap: 24px;
   flex-wrap: wrap;
 }
@@ -180,7 +138,6 @@
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -207,17 +164,13 @@
   width: 100%;
   margin-bottom: 0px;
 }
-
 .title-with-badge .card-title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
   color: #062e5c;
 }
-
-.title-with-badge .status-badge {
-  margin: 0;
-}
+.title-with-badge .status-badge { margin: 0; }
 
 .card-title {
   font-size: 18px;
@@ -226,7 +179,7 @@
   color: #062e5c;
 }
 
-/* Status badge shown under the package title */
+/* Status badge */
 .status-badge {
   display: inline-block;
   padding: 6px 10px;
@@ -236,13 +189,13 @@
   color: #fff;
   margin-bottom: 8px;
 }
-.status-active { background: #10b981; } /* green */
-.status-canceled { background: #ef4444; } /* red */
-.status-completed { background: #0ea5e9; } /* blue */
-.status-pending { background: #f59e0b; } /* amber */
-.status-intransit { background: #6366f1; } /* indigo */
-.status-draft { background: #94a3b8; } /* gray */
-.status-waitingpickup { background: #f97316; } /* orange */
+.status-active { background: #10b981; }
+.status-canceled { background: #ef4444; }
+.status-completed { background: #0ea5e9; } 
+.status-pending { background: #f59e0b; }
+.status-intransit { background: #6366f1; } 
+.status-draft { background: #94a3b8; } 
+.status-waitingpickup { background: #f97316; }
 
 .card-route {
   font-size: 4px;
@@ -269,13 +222,11 @@
   transition: background-color 0.2s ease;
   align-self: stretch;
 }
-
-.bid-btn:hover {
-  background-color: #d8e4f7;
-}
+.bid-btn:hover { background-color: #d8e4f7; }
 
 .label-small {
-  font-size: 13px;
-  color: #555;     
-  font-weight: 700;
+  font-size: 12px; 
+  color: #555;
+  font-weight: 600;
+  letter-spacing: 0.1px;
 }

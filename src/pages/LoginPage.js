@@ -20,6 +20,15 @@ function LoginPage() {
     return () => abortRef.current?.abort();
   }, []);
 
+  // Impede scroll no body enquanto a página de login estiver visível
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
