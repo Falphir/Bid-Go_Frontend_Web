@@ -25,8 +25,36 @@ function CreateTransportPage() {
     const [error, setError] = useState(null);
     const abortRef = useRef(null);
 
+
+        const handleCreateDraft = async () => {
+            // reuse the existing form submit flow but target the DRAFT endpoint
+            // do not modify the JWT parsing logic inside handleSubmit
+            try {
+                // pass null as event and the draft URL as second arg
+                await handleSubmit?.(null, API_URL_DRAFT);
+                // success feedback
+                window.alert("Rascunho criado com sucesso.");
+            } catch (err) {
+                // handle errors similarly to the form submit
+                if (axios.isCancel?.(err) || err?.name === "CanceledError") return;
+                if (err?.response) {
+                    const body = err.response.data ? ` - ${JSON.stringify(err.response.data)}` : "";
+                    setError(`Server error: ${err.response.status} ${err.response.statusText}${body}`);
+                } else if (err?.request) {
+                    setError("Network error: no response from server");
+                } else {
+                    setError(`Request error: ${err?.message}`);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
     const API_URL =
         "/transports/createTransport";
+
+ const API_URL_DRAFT = "/transports/createDRAFTTransport";
+
 
     // Handles image selection through the hidden file input
     const handleImageChange = (e) => {
@@ -63,8 +91,8 @@ function CreateTransportPage() {
     }, []);
 
     // Submission handler: sends FormData if there's an image, otherwise JSON
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (e, targetUrl = API_URL) => {
+        if (e?.preventDefault) e.preventDefault();
         setError(null);
         setLoading(true);
         const controller = new AbortController();
@@ -72,8 +100,8 @@ function CreateTransportPage() {
 
         try {
             const token =
-                localStorage.getItem("access_token") ||
-                sessionStorage.getItem("access_token");
+                localStorage.getItem("token") ||
+                sessionStorage.getItem("token");
             if (!token) {
                 setError(
                     "Autenticação: token não encontrado. Faz login e tenta de novo."
@@ -162,10 +190,10 @@ function CreateTransportPage() {
                 );
 
                 // debug log entries being sent
-                console.debug("Sending FormData to", API_URL);
+                console.debug("Sending FormData to", targetUrl);
                 for (const pair of formData.entries()) console.debug(pair[0], pair[1]);
 
-                await api.post(API_URL, formData, {
+                await api.post(targetUrl, formData, {
                     signal: controller.signal
 
                 });
@@ -189,9 +217,9 @@ function CreateTransportPage() {
                     isAutomaticSelectionEnabled,
                 };
 
-                console.debug("Sending JSON payload to", API_URL, payload);
+                console.debug("Sending JSON payload to", targetUrl, payload);
 
-                await api.post(API_URL, payload, {
+                await api.post(targetUrl, payload, {
                     signal: controller.signal,
 
                 });
@@ -429,9 +457,19 @@ function CreateTransportPage() {
 
                 {error && <div className="error-message">{error}</div>}
 
-                <button type="submit" className="submit-button" disabled={loading}>
-                    {loading ? "Enviando..." : "Criar Pedido"}
-                </button>
+                 <div className="form-actions">
+                    <button
+                        type="button"
+                        className="draft-button"
+                        onClick={handleCreateDraft}
+                        disabled={loading}
+                    >
+                        {loading ? "A processar..." : "Criar DRAFT"}
+                    </button>
+                    <button type="submit" className="submit-button" disabled={loading}>
+                        {loading ? "Enviando..." : "Criar Pedido"}
+                    </button>
+                </div>
             </form>
         </div>
     );

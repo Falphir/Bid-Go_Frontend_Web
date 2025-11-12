@@ -320,3 +320,35 @@
 .submit-button:hover {
   background-color: #004fa1;
 }
+
+/* Actions area with draft + submit buttons */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.draft-button {
+margin-top: 24px;
+  align-self: flex-end;
+  padding: 12px 24px;
+  background-color: #94a3b8;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.draft-button:hover:not(:disabled) {
+  background: #748199;
+}
+
+.draft-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
