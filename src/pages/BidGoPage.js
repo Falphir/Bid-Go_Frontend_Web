@@ -161,11 +161,17 @@ function BidGoPage() {
                                         </div>
 
                                         <p className="card-time">
-                                            Tempo Restante:{" "}
-                                            {endDate ? (
-                                                <Countdown endDate={endDate} />
+                                            {statusText?.toLowerCase() === "active" ? (
+                                                <>
+                                                    Tempo Restante:{" "}
+                                                    {endDate ? (
+                                                        <Countdown endDate={endDate} />
+                                                    ) : (
+                                                        "—"
+                                                    )}
+                                                </>
                                             ) : (
-                                                "—"
+                                                "\u00A0" /* preserva o espaço/altura sem mostrar o campo */
                                             )}
                                         </p>
 
@@ -173,7 +179,7 @@ function BidGoPage() {
                                             className="bid-btn"
                                             onClick={() => navigate(`/accept-bids/${req.id}`)}
                                         >
-                                            Licitações Abertas
+                                            Ver Pedido
                                         </button>
                                     </div>
                                 </div>
