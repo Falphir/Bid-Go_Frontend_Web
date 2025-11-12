@@ -70,6 +70,24 @@
     box-shadow: none;
 }
 
+.ebm-help {
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.ebm-error {
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.ebm-input.invalid {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, .15);
+}
+
+
 .ebm-cancel { background: #e2e8f0; color: #0f172a; }
 .ebm-save   { background: #16a34a; color: #fff; }
 
