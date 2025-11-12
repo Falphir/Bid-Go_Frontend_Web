@@ -8,10 +8,7 @@ class Navbar extends Component {
         return (
             <header className="header">
                 <div className="logo">
-                    <a
-                        href="/">
-                        <img src={Logo} height={36}/>
-                    </a>
+                    <img src={Logo} height={36}/>
                 </div>
                 <div className="user-info">
                     {/* Placeholder for notifications.  Could show a number of alerts as a badge. */}

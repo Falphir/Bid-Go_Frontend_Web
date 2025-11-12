@@ -1,92 +1,126 @@
 /*
  * Styling for the LoginPage component.
  *
- * This file defines a centered login form with a subtle drop shadow.  The
- * colours harmonize with the existing BidGo design – blues for actions and
- * dark navy for labels.  Inputs highlight on focus to improve usability and
- * accessibility.  A small "forgot password" link sits below the submit
- * button.
+ * Este ficheiro define um formulário de login centrado com um leve drop shadow.
+ * As cores seguem o design BidGo – azuis para ações e azul-escuro para rótulos.
+ * Inputs ganham destaque ao focar, e há um link discreto de “esqueceu-se da palavra-passe?”.
  */
 
 .login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f7fbff;
-  padding: 20px;
-  box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7fbff;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .login-form {
-  background-color: #ffffff;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  width: 360px;
-  display: flex;
-  flex-direction: column;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    width: 360px;
+    display: flex;
+    flex-direction: column;
 }
 
 .login-title {
-  margin-bottom: 24px;
-  text-align: center;
-  color: #062e5c;
-  font-size: 24px;
-  font-weight: 700;
+    margin-bottom: 24px;
+    text-align: center;
+    color: #062e5c;
+    font-size: 24px;
+    font-weight: 700;
 }
 
 .login-label {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
-  font-weight: 600;
-  color: #062e5c;
-  font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    font-weight: 600;
+    color: #062e5c;
+    font-size: 14px;
 }
 
 .login-label input {
-  margin-top: 6px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #cdd7e1;
-  font-size: 14px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 6px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #cdd7e1;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .login-label input:focus {
-  outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25);
+    outline: none;
+    border-color: #0066cc;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25);
+}
+
+/* bloco da checkbox: mais compacto e alinhado */
+.login-remember {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0 8px;
+    user-select: none;
+}
+
+/* texto da opção "manter sessão iniciada" */
+.remember-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #294766;
+}
+
+/* checkbox nativa reduzida e com cor da marca */
+.login-remember input[type="checkbox"] {
+    accent-color: #0066cc;
+    transform: scale(0.9);
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+/* foco visível no checkbox */
+.login-remember input[type="checkbox"]:focus-visible {
+    outline: 2px solid rgba(0, 102, 204, 0.35);
+    outline-offset: 2px;
 }
 
 .error-message {
-  color: #dc3545;
-  font-size: 14px;
-  margin: -8px 0 8px;
+    color: #dc3545;
+    font-size: 14px;
+    margin: -8px 0 8px;
 }
 
 .login-button {
-  background-color: #0066cc;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+    background-color: #0066cc;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .login-button:hover {
-  background-color: #004fa1;
+    background-color: #004fa1;
 }
 
+/* link “esqueceu-se da palavra-passe” mais discreto e harmonioso */
 .forgot-password {
-  margin-top: 12px;
-  font-size: 13px;
-  color: #0066cc;
-  text-decoration: underline;
-  cursor: pointer;
-  align-self: flex-start;
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: #3a78c8;
+    text-decoration: none;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
 }
