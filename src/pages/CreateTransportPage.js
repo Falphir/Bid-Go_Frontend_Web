@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import "../styles/CreateTransportPage.css";
 import axios from "axios";
 import api from "../api/axiosConfig";
+import { getApiErrorMessage } from "../utils/httpError";
 
 function CreateTransportPage() {
     const [imageFile, setImageFile] = useState(null);
@@ -24,27 +25,51 @@ function CreateTransportPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const abortRef = useRef(null);
+    const [toast, setToast] = useState(null);
+
+    const showToast = (msg, type = "success") => {
+        setToast({ msg, type });
+        setTimeout(() => setToast(null), 4000);
+    };
 
 
         const handleCreateDraft = async () => {
-            // reuse the existing form submit flow but target the DRAFT endpoint
-            // do not modify the JWT parsing logic inside handleSubmit
+            // Before sending a DRAFT, require all fields to be filled per backend rule.
+            const missing = [];
+
+            // simple emptiness checks
+            if (!origin || String(origin).trim() === "") missing.push("Origem");
+            if (!destination || String(destination).trim() === "") missing.push("Destino");
+            if (!pckg || String(pckg).trim() === "") missing.push("Tipo de Mercadoria");
+            if (!weight || String(weight).trim() === "") missing.push("Peso");
+            if (!length || String(length).trim() === "") missing.push("Comprimento");
+            if (!width || String(width).trim() === "") missing.push("Largura");
+            if (!height || String(height).trim() === "") missing.push("Altura");
+            if (!pickupDate || String(pickupDate).trim() === "") missing.push("Data de recolha");
+            if (!deliveryDate || String(deliveryDate).trim() === "") missing.push("Data de entrega");
+            if (!biddingStartDate || String(biddingStartDate).trim() === "") missing.push("Início do Leilão");
+            if (!biddingEndDate || String(biddingEndDate).trim() === "") missing.push("Fim do Leilão");
+            if (!maxPrice || String(maxPrice).trim() === "") missing.push("Preço Máximo");
+            // volume is computed from dimensions; ensure it exists
+            if (!volume || String(volume).trim() === "") missing.push("Volume (calculado)");
+            // image required for draft as well (if backend requires it)
+            if (!imageFile) missing.push("Imagem");
+
+            if (missing.length > 0) {
+                const list = missing.join(", ");
+                const msg = `Campos em falta para criar DRAFT: ${list}`;
+                showToast(msg, "error");
+                return;
+            }
+
+            // If validation passes, call the shared submit logic targeting the DRAFT endpoint
             try {
-                // pass null as event and the draft URL as second arg
                 await handleSubmit?.(null, API_URL_DRAFT);
-                // success feedback
-                window.alert("Rascunho criado com sucesso.");
+                showToast("Rascunho criado com sucesso.", "success");
             } catch (err) {
-                // handle errors similarly to the form submit
                 if (axios.isCancel?.(err) || err?.name === "CanceledError") return;
-                if (err?.response) {
-                    const body = err.response.data ? ` - ${JSON.stringify(err.response.data)}` : "";
-                    setError(`Server error: ${err.response.status} ${err.response.statusText}${body}`);
-                } else if (err?.request) {
-                    setError("Network error: no response from server");
-                } else {
-                    setError(`Request error: ${err?.message}`);
-                }
+                const apiMsg = getApiErrorMessage(err);
+                showToast(apiMsg, "error");
             } finally {
                 setLoading(false);
             }
@@ -99,12 +124,19 @@ function CreateTransportPage() {
         abortRef.current = controller;
 
         try {
+            // Try multiple common storage keys for the auth token (backwards compat)
             const token =
                 localStorage.getItem("token") ||
+                localStorage.getItem("access_token") ||
+                sessionStorage.getItem("accessToken") ||
+                localStorage.getItem("auth_token") ||
                 sessionStorage.getItem("token");
+
             if (!token) {
-                setError(
-                    "Autenticação: token não encontrado. Faz login e tenta de novo."
+                console.warn("No auth token found in known storage keys");
+                showToast(
+                    "Autenticação: token não encontrado. Faz login e tenta de novo.",
+                    "error"
                 );
                 setLoading(false);
                 return;
@@ -228,20 +260,12 @@ function CreateTransportPage() {
             // Success: you can clear the form or show a message here
             // For now, reset loading and keep the data for user feedback
             setLoading(false);
+            // show success toast
+            showToast("Pedido criado com sucesso.", "success");
         } catch (err) {
             if (axios.isCancel?.(err) || err.name === "CanceledError") return;
-            if (err.response) {
-                const body = err.response.data
-                    ? ` - ${JSON.stringify(err.response.data)}`
-                    : "";
-                setError(
-                    `Server error: ${err.response.status} ${err.response.statusText}${body}`
-                );
-            } else if (err.request) {
-                setError("Network error: no response from server");
-            } else {
-                setError(`Request error: ${err.message}`);
-            }
+            const apiMsg = getApiErrorMessage(err);
+            showToast(apiMsg, "error");
             setLoading(false);
         }
     };
@@ -455,7 +479,7 @@ function CreateTransportPage() {
                     </div>
                 </div>
 
-                {error && <div className="error-message">{error}</div>}
+                {/* errors are shown via toast only to avoid duplication */}
 
                  <div className="form-actions">
                     <button
@@ -470,6 +494,9 @@ function CreateTransportPage() {
                         {loading ? "Enviando..." : "Criar Pedido"}
                     </button>
                 </div>
+                {toast && (
+                    <div className={`toast ${toast.type}`}>{toast.msg}</div>
+                )}
             </form>
         </div>
     );
