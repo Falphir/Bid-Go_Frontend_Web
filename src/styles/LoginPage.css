@@ -1,0 +1,92 @@
+/*
+ * Styling for the LoginPage component.
+ *
+ * This file defines a centered login form with a subtle drop shadow.  The
+ * colours harmonize with the existing BidGo design – blues for actions and
+ * dark navy for labels.  Inputs highlight on focus to improve usability and
+ * accessibility.  A small "forgot password" link sits below the submit
+ * button.
+ */
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f7fbff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.login-form {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-title {
+  margin-bottom: 24px;
+  text-align: center;
+  color: #062e5c;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.login-label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #062e5c;
+  font-size: 14px;
+}
+
+.login-label input {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cdd7e1;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-label input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25);
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin: -8px 0 8px;
+}
+
+.login-button {
+  background-color: #0066cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.login-button:hover {
+  background-color: #004fa1;
+}
+
+.forgot-password {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #0066cc;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+}

@@ -1,0 +1,330 @@
+.acceptbids-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #f7fbff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Page title: bold and centred above the transport card */
+.page-title {
+  text-align: center;
+  font-size: 28px;
+  color: #062e5c;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+/* Transport card layout: image on the left and details on the right */
+.transport-card {
+  display: flex;
+  gap: 40px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  margin-bottom: 40px;
+  /* Center contents vertically so the right text aligns with the image height */
+  align-items: center;
+}
+
+.transport-image {
+  width: 190px;
+  height: auto;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.transport-details {
+  flex: 1;
+  /* Vertically center the details relative to the image */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Grid for origin/destination/etc. Uses two columns on wider screens. */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
+  margin-bottom: 16px;
+}
+
+/* Bold label within the details grid */
+.detail-label {
+  font-weight: 600;
+  color: #062e5c;
+  margin-right: 4px;
+}
+
+/* Observations box in the transport section */
+.notes-box {
+  border: 1px solid #ccd6e2;
+  background-color: #f7fbff;
+  color: #294766;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+/* Bids section container */
+.bids-section {
+  background-color: #ffffff;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.bids-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.bids-header h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #062e5c;
+  margin: 0;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-select {
+  border-radius: 8px;
+  border: 1px solid #ccd6e2;
+  padding: 6px 10px;
+  font-size: 14px;
+  background-color: #f8fafc;
+  color: #062e5c;
+}
+
+.order-btn {
+  border: none;
+  background: #e2e8f0;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 6px 10px;
+  transition: background 0.2s ease;
+  font-size: 16px;
+}
+
+.order-btn:hover {
+  background: #d1d8e0;
+}
+
+.add-bid-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    background: #16a34a;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color .2s ease, transform .15s ease, box-shadow .2s ease;
+    margin-left: 8px; /* um respiro depois dos filtros */
+}
+.add-bid-btn:hover { background: #169447; transform: translateY(-1px); box-shadow: 0 6px 12px rgba(0,0,0,.08); }
+.add-bid-btn:active { transform: translateY(0); box-shadow: none; }
+.add-bid-btn span { font-size: 14px; }
+.add-bid-btn svg { font-size: 14px; }
+
+
+/* List of bid cards */
+.bids-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Individual bid card styled as a flex row */
+.bid-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 24px;
+  border: 1px solid #e5eaf2;
+  border-radius: 14px;
+  padding: 24px;
+  background-color: #fdfdfd;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.bid-card:hover {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Left column of bid info */
+.bid-info {
+  flex: 2;
+  min-width: 0;
+}
+
+.bid-title {
+  color: #1d4ed8;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.bid-driver {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.bid-rating {
+  color: #fbbf24;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.bid-value {
+  font-size: 16px;
+  color: #294766;
+  margin: 0 0 6px;
+}
+
+.bid-value span {
+  font-weight: 700;
+}
+
+.bid-deadline {
+  font-size: 14px;
+  color: #294766;
+  margin: 0;
+}
+
+/* Right column: notes box and buttons aligned at the bottom */
+.bid-right {
+    display: flex;
+    align-items: center;    /* centraliza verticalmente */
+    justify-content: center; /* centraliza horizontalmente */
+    padding: 0 1rem;
+}
+
+.bid-actions {
+    display: flex;
+    flexDirection: "column";
+    alignItems: "center";
+    gap: 12px
+}
+
+.bid-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.edit-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: #eef2ff;
+    cursor: pointer;
+    transition: background .2s ease, transform .15s ease;
+}
+
+.edit-icon-btn:hover {
+    background: #e0e7ff;
+    transform: translateY(-1px);
+}
+
+.edit-icon-btn:active {
+    transform: translateY(0);
+}
+
+.edit-icon-btn:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.edit-icon {
+    color: #64748b;
+    font-size: 16px;
+    transition: color .2s ease;
+}
+
+.edit-icon-btn:hover .edit-icon {
+    color: #294766;
+}
+
+
+.cancel-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: #eef2ff;
+    cursor: pointer;
+    transition: background .2s ease, transform .15s ease;
+}
+
+.cancel-icon-btn:hover {
+    background: #e0e7ff;
+    transform: translateY(-1px);
+}
+
+.cancel-icon-btn:active {
+    transform: translateY(0);
+}
+
+.cancel-icon-btn:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.cancel-icon {
+    color: rgba(181, 0, 0, 0.5);
+    font-size: 16px;
+    transition: color .2s ease;
+}
+
+.cancel-icon-btn:hover .cancel-icon {
+    color: #B50000;
+}
+
+
+
+/* No bids found */
+.no-bids {
+  text-align: center;
+  color: #667a91;
+  font-size: 14px;
+}
+
+/* === Toast === */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    animation: fadeIn 0.3s ease;
+    z-index: 1000;
+}
+.toast.success { background: #4caf50; }
+.toast.error { background: #f44336; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
