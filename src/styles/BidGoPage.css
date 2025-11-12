@@ -1,11 +1,5 @@
 /*
  * Styling for the BidGoPage component.
- *
- * The layout mimics the design shown in the reference image: a clean header
- * with a logo and user/company details, a central button to create a new
- * transport request, a section title, and three cards with images and
- * information about active requests.  The colour palette uses blues and
- * light greys reminiscent of the original mock‑up.
  */
 
 /* Global container styles */
@@ -17,127 +11,14 @@
   box-sizing: border-box;
 }
 
-/* Header styling */
-.header {
-  background-color: #eef4fb;
-  border-radius: 12px;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  margin-bottom: 0px;
-}
-
-.login-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;       
-  justify-content: center;   
-  background-color: #f7fbff;
-  min-height: 100vh;
-  padding: 40px 20px;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.page-logo {
-  width: 180px;
-  margin-bottom: 10px;    
-}
-
-.login-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.login-form {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  width: 350px;
-}
-
-
-/* Logo section */
-.logo {
-  display: flex;
-  align-items: center;
-}
-
-.truck-icon {
-  font-size: 28px;
-  margin-right: 8px;
-  color: #0066cc;
-}
-
-.site-title {
-  font-size: 28px;
-  font-weight: bold;
-  color: #062e5c;
-}
-
-/* User/company area */
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.notifications {
-  font-size: 20px;
-  position: relative;
-  color: #0066cc;
-  cursor: pointer;
-}
-
-.notifications::after {
-  /* Red dot indicator for new notifications */
-  content: "";
-  position: absolute;
-  top: 0;
-  right: -3px;
-  width: 8px;
-  height: 8px;
-  background: #ff4d4f;
-  border-radius: 50%;
-}
-
-.company {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.company-logo {
-  font-size: 26px;
-  color: #ff4d4f;
-}
-
-.company-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-
-.company-name {
-  font-weight: 600;
-  color: #062e5c;
-  font-size: 16px;
-}
-
-.company-type {
-  font-size: 12px;
-  color: #7a8fa6;
-}
-
-/* Main content styling */
+/* Main content styling — sempre centrado */
 .main-content {
   text-align: center;
+  max-width: 1200px;
+  margin: 0 auto; /* mantém o título e os cards centrados */
 }
 
+/* Botão criar pedido */
 .new-request-btn {
   background-color: #0066cc;
   color: #ffffff;
@@ -150,10 +31,7 @@
   margin-bottom: 32px;
   transition: background-color 0.2s ease;
 }
-
-.new-request-btn:hover {
-  background-color: #004fa1;
-}
+.new-request-btn:hover { background-color: #004fa1; }
 
 .section-title {
   color: #0a43a5;
@@ -162,10 +40,132 @@
   margin-bottom: 24px;
 }
 
-/* Cards layout */
+/* ============= Sidebar de Filtros (fixa à direita) =============
+   Não empurra o layout: aparece por cima do conteúdo (overlay leve) */
+.filters-sidebar {
+  position: fixed;
+  top: 100px;
+  right: 40px;
+  width: 260px; /* mais pequena */
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  padding: 14px 14px; /* mais compacto */
+  z-index: 1000;
+  text-align: left;
+
+  /* animação de slide-in/out */
+  transform: translateX(120%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.28s ease, opacity 0.28s ease, box-shadow 0.2s ease;
+}
+.filters-sidebar.open {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.filters-sidebar:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+}
+
+/* Título do painel */
+.filters-title {
+  font-size: 16px; /* mais compacto */
+  font-weight: 700;
+  color: #0a43a5;
+  margin: 0;
+}
+
+/* Form base dentro do painel (sem fundo extra) */
+.filters-bar {
+  background: transparent;
+  box-shadow: none;
+  padding: 6px 0 0 0;
+  margin: 0;
+  max-width: none;
+}
+
+.filters-row {
+  display: grid; /* alinhamento compacto em grelha */
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.filters-sidebar input,
+.filters-sidebar select {
+  width: 100%;
+  padding: 8px 10px; /* inputs mais pequenos */
+  border: 1px solid #dbe5f3;
+  border-radius: 8px;
+  font-size: 13px;
+  box-sizing: border-box; /* evita overflow por causa de padding/border */
+  max-width: 100%;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Placeholder mais pequeno e com cor suave */
+.filters-sidebar input::placeholder {
+  font-size: 12px;
+  color: #9aa9c1;
+}
+.filters-sidebar input::-webkit-input-placeholder { font-size: 12px; color: #9aa9c1; }
+.filters-sidebar input::-moz-placeholder { font-size: 12px; color: #9aa9c1; }
+.filters-sidebar input:-ms-input-placeholder { font-size: 12px; color: #9aa9c1; }
+.filters-sidebar input:-moz-placeholder { font-size: 12px; color: #9aa9c1; }
+
+.filters-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 8px;
+}
+
+.filters-sidebar .bid-btn {
+  flex: 1;
+  margin: 0;
+  background-color: #eef4fb;
+  color: #0066cc;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.filters-sidebar .bid-btn:hover { background-color: #d8e4f7; }
+
+/* ===== Botão flutuante para abrir/fechar filtros ===== */
+.filters-toggle {
+  position: fixed;
+  right: 40px;
+  bottom: 40px;
+  z-index: 1100;
+  background: #0a43a5;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px; /* botão mais pequeno */
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(10, 67, 165, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.filters-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(10, 67, 165, 0.3);
+}
+.filters-toggle.active {
+  background: #004fa1;
+}
+
+/* ====== Layout de cartões ====== */
 .cards-container {
   display: flex;
-  justify-content: center;
+  justify-content: center; /* mantém os cards centrados */
   gap: 24px;
   flex-wrap: wrap;
 }
@@ -180,7 +180,6 @@
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -207,17 +206,13 @@
   width: 100%;
   margin-bottom: 0px;
 }
-
 .title-with-badge .card-title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
   color: #062e5c;
 }
-
-.title-with-badge .status-badge {
-  margin: 0;
-}
+.title-with-badge .status-badge { margin: 0; }
 
 .card-title {
   font-size: 18px;
@@ -226,7 +221,7 @@
   color: #062e5c;
 }
 
-/* Status badge shown under the package title */
+/* Status badge */
 .status-badge {
   display: inline-block;
   padding: 6px 10px;
@@ -269,13 +264,56 @@
   transition: background-color 0.2s ease;
   align-self: stretch;
 }
-
-.bid-btn:hover {
-  background-color: #d8e4f7;
-}
+.bid-btn:hover { background-color: #d8e4f7; }
 
 .label-small {
   font-size: 13px;
-  color: #555;     
+  color: #555;
   font-weight: 700;
 }
+
+/* ================= Responsividade ================= */
+@media (max-width: 1100px) {
+  /* Sidebar mais compacta no mobile */
+  .filters-sidebar {
+    top: 80px;
+    right: 20px;
+    width: min(340px, 92vw);
+  }
+  .filters-toggle {
+    right: 20px;
+    bottom: 20px;
+  }
+
+  /* Inputs lado a lado quando há espaço */
+  .filters-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  .filters-sidebar input,
+  .filters-sidebar select {
+    min-width: 160px;
+    flex: 1 1 160px;
+  }
+}
+
+/* Header compacto dentro do painel */
+.filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.filters-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: #7a8fa6;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.filters-close:hover { background: #f3f6fb; color: #0a43a5; }
