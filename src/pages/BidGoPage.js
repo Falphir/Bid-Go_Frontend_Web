@@ -131,255 +131,186 @@ function BidGoPage() {
     return (
         <div className="page-container">
             <main className="main-content">
-                <h2 className="section-title">Pedidos de Transporte</h2>
-                <button
-                    className="new-request-btn"
-                    onClick={() => navigate("/createRequest")}
-                >
-                    Novo Pedido de Transporte
-                </button>
 
-                <div className="cards-container">
-                    {isEmpty ? (
-                        <p className="no-bids">Nenhum pedido encontrado.</p>
-                    ) : (
-                        list.map((req) => {
-                            const transport = req;
-
-                            // Resolver o status
-                            const statusRaw = req?.status ?? null;
-                            const statusText = (() => {
-                                if (statusRaw == null) return null;
-                                if (typeof statusRaw === "number") {
-                                    switch (statusRaw) {
-                                        case 0: return "Active";
-                                        case 1: return "Canceled";
-                                        case 2: return "Completed";
-                                        case 3: return "Pending";
-                                        case 4: return "InTransit";
-                                        case 5: return "Draft";
-                                        case 6: return "WaitingPickup";
-                                        default: return String(statusRaw);
-                                    }
-                                }
-                                if (typeof statusRaw === "boolean")
-                                    return statusRaw ? "Canceled" : "Active";
-                                return String(statusRaw);
-                            })();
-
-                            const statusClass = statusText
-                                ? `status-${statusText.toLowerCase()}`
-                                : "";
-
-                            // Corrigir data de fim de leilão
-                            const endDate = transport?.biddingEndDate
-                                ? new Date(transport.biddingEndDate)
-                                : null;
-
-                            return (
-                                <div className="card" key={req.id}>
-                                    <div className="card-image">
-                                        <img src={req.image} alt={req.package} />
-                                    </div>
-
-                                    <div className="card-body">
-                                        <div className="title-with-badge">
-                                            <h3 className="card-title">{req.package}</h3>
-                                            {statusText && (
-                                                <span className={`status-badge ${statusClass}`}>
-                                                    {statusText}
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        <p className="card-route">{req.route}</p>
-                                        <div>
-                                            {req.origin} → {req.destination}
-                                        </div>
-                                        <div>
-                                            <span className="label-small">Max Price:</span>{" "}
-                                            {req.maxPrice}€
-                                        </div>
-
-                                        <p className="card-time">
-                                            {statusText?.toLowerCase() === "active" ? (
-                                                <>
-                                                    Tempo Restante:{" "}
-                                                    {endDate ? (
-                                                        <Countdown endDate={endDate} />
-                                                    ) : (
-                                                        "—"
-                                                    )}
-                                                </>
-                                            ) : (
-                                                "\u00A0" /* preserva o espaço/altura sem mostrar o campo */
-                                            )}
-                                        </p>
-
-                                        <button
-                                            className="bid-btn"
-                                            onClick={() => navigate(`/accept-bids/${req.id}`)}
-                                        >
-                                            Ver Pedido
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    )}
-            {showFilters && (
-              <form
-                id="filtersTopPanel"
-                className="filters-top"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const controller = new AbortController();
-                  fetchDriverTransports(controller.signal, filters);
-                  setTimeout(() => controller.abort(), 30000);
-                }}
-              >
-                <div className="filters-row">
-                  <input
-                    type="text"
-                    placeholder="Origem"
-                    value={filters.origin}
-                    onChange={(e) => setFilters((f) => ({ ...f, origin: e.target.value }))}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Destino"
-                    value={filters.destination}
-                    onChange={(e) => setFilters((f) => ({ ...f, destination: e.target.value }))}
-                  />
-                  <select
-                    value={filters.priceOrder}
-                    onChange={(e) => setFilters((f) => ({ ...f, priceOrder: e.target.value }))}
-                  >
-                    <option value="">Preço</option>
-                    <option value="asc">Mais barato</option>
-                    <option value="desc">Mais caro</option>
-                  </select>
-                </div>
-                <div className="filters-actions">
-                  <button type="submit" className="bid-btn">Aplicar</button>
-                  <button
-                    type="button"
-                    className="bid-btn"
-                    onClick={() => {
-                      const cleared = { origin: "", destination: "", deliveryDate: "", priceOrder: "" };
-                      setFilters(cleared);
-                      const controller = new AbortController();
-                      fetchDriverTransports(controller.signal, cleared);
-                      setTimeout(() => controller.abort(), 30000);
-                    }}
-                  >
-                    Limpar
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-
-        <h2 className="section-title">
-          {isDriver ? "Transportes Disponíveis para Licitar" : "Pedidos de Transporte"}
-        </h2>
-
-        {!isDriver && (
-          <button className="new-request-btn" onClick={() => navigate("/createRequest")}>
-            Novo Pedido de Transporte
-          </button>
-        )}
-
-        <div className="cards-container">
-          {isEmpty ? (
-            <p className="no-bids">Nenhum pedido encontrado.</p>
-          ) : (
-            list.map((req) => {
-              const transport = req;
-
-              // Resolver o status
-              const statusRaw = req?.status ?? null;
-              const statusText = (() => {
-                if (statusRaw == null) return null;
-                if (typeof statusRaw === "number") {
-                  switch (statusRaw) {
-                    case 0: return "Active";
-                    case 1: return "Canceled";
-                    case 2: return "Completed";
-                    case 3: return "Pending";
-                    case 4: return "InTransit";
-                    case 5: return "Draft";
-                    case 6: return "WaitingPickup";
-                    default: return String(statusRaw);
-                  }
-                }
-                if (typeof statusRaw === "boolean") return statusRaw ? "Canceled" : "Active";
-                return String(statusRaw);
-              })();
-
-              const statusClass = statusText ? `status-${statusText.toLowerCase()}` : "";
-
-              // Corrigir data de fim de leilão
-              let endDate = transport?.biddingEndDate
-                ? new Date(transport.biddingEndDate)
-                : null;
-              // Alguns endpoints (ex.: driver) devolvem apenas "timeRemaining" (segundos restantes)
-              if (!endDate && transport?.timeRemaining != null) {
-                const tr = transport.timeRemaining;
-                if (typeof tr === "number" && isFinite(tr)) {
-                  endDate = new Date(Date.now() + tr * 1000);
-                } else if (typeof tr === "string") {
-                  const n = Number(tr);
-                  if (!Number.isNaN(n) && isFinite(n)) {
-                    endDate = new Date(Date.now() + n * 1000);
-                  }
-                }
-              }
-
-              return (
-                <div className="card" key={req.id}>
-                  <div className="card-image">
-                    <img src={req.image} alt={req.package} />
-                  </div>
-
-                  <div className="card-body">
-                    <div className="title-with-badge">
-                      <h3 className="card-title">{req.package}</h3>
-                      {statusText && <span className={`status-badge ${statusClass}`}>{statusText}</span>}
-                    </div>
-
-                    <p className="card-route">{req.route}</p>
-                    <div>
-                      {req.origin} → {req.destination}
-                    </div>
-                    <div>
-                      <span className="label-small">Preço Máx:</span>{" "}
-                      {req.maxPrice}€
-                    </div>
-
-                    <p className="card-time">
-                      Tempo Restante:{" "}
-                      {endDate ? (
-                        <Countdown endDate={endDate} />
-                      ) : transport?.timeRemaining ? (
-                        String(transport.timeRemaining)
-                      ) : (
-                        "—"
-                      )}
-                    </p>
-
+              {isDriver && (
+                  <div className="filters-top-wrapper">
                     <button
-                      className="bid-btn"
-                      onClick={() => navigate(`/accept-bids/${req.id}`)}
+                        type="button"
+                        className={`filters-toggle-top ${showFilters ? "active" : ""}`}
+                        onClick={() => setShowFilters((s) => !s)}
+                        aria-expanded={showFilters}
+                        aria-controls="filtersTopPanel"
                     >
-                      Licitações Abertas
+                      {showFilters ? "Esconder filtros" : "Mostrar filtros"}
                     </button>
+
+                    {showFilters && (
+                        <form
+                            id="filtersTopPanel"
+                            className="filters-top"
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              const controller = new AbortController();
+                              fetchDriverTransports(controller.signal, filters);
+                              setTimeout(() => controller.abort(), 30000);
+                            }}
+                        >
+                          <div className="filters-row">
+                            <input
+                                type="text"
+                                placeholder="Origem"
+                                value={filters.origin}
+                                onChange={(e) => setFilters((f) => ({...f, origin: e.target.value}))}
+                            />
+                            <input
+                                type="text"
+                                placeholder="Destino"
+                                value={filters.destination}
+                                onChange={(e) => setFilters((f) => ({...f, destination: e.target.value}))}
+                            />
+                            <select
+                                value={filters.priceOrder}
+                                onChange={(e) => setFilters((f) => ({...f, priceOrder: e.target.value}))}
+                            >
+                              <option value="">Preço</option>
+                              <option value="asc">Mais barato</option>
+                              <option value="desc">Mais caro</option>
+                            </select>
+                          </div>
+                          <div className="filters-actions">
+                            <button type="submit" className="bid-btn">Aplicar</button>
+                            <button
+                                type="button"
+                                className="bid-btn"
+                                onClick={() => {
+                                  const cleared = {origin: "", destination: "", deliveryDate: "", priceOrder: ""};
+                                  setFilters(cleared);
+                                  const controller = new AbortController();
+                                  fetchDriverTransports(controller.signal, cleared);
+                                  setTimeout(() => controller.abort(), 30000);
+                                }}
+                            >
+                              Limpar
+                            </button>
+                          </div>
+                        </form>
+                    )}
                   </div>
-                </div>
-              );
-            })
-          )}
-        </div>
+              )}
+
+              <h2 className="section-title">
+                {isDriver ? "Transportes Disponíveis para Licitar" : "Pedidos de Transporte"}
+              </h2>
+
+              {!isDriver && (
+                  <button className="new-request-btn" onClick={() => navigate("/createRequest")}>
+                    Novo Pedido de Transporte
+                  </button>
+              )}
+              <div className="cards-container">
+                {isEmpty ? (
+                    <p className="no-bids">Nenhum pedido encontrado.</p>
+                ) : (
+                    list.map((req) => {
+                      const transport = req;
+
+                      // Resolver o status
+                      const statusRaw = req?.status ?? null;
+                      const statusText = (() => {
+                        if (statusRaw == null) return null;
+                        if (typeof statusRaw === "number") {
+                          switch (statusRaw) {
+                            case 0:
+                              return "Active";
+                            case 1:
+                              return "Canceled";
+                            case 2:
+                              return "Completed";
+                            case 3:
+                              return "Pending";
+                            case 4:
+                              return "InTransit";
+                            case 5:
+                              return "Draft";
+                            case 6:
+                              return "WaitingPickup";
+                            default:
+                              return String(statusRaw);
+                          }
+                        }
+                        if (typeof statusRaw === "boolean")
+                          return statusRaw ? "Canceled" : "Active";
+                        return String(statusRaw);
+                      })();
+
+                      const statusClass = statusText
+                          ? `status-${statusText.toLowerCase()}`
+                          : "";
+
+                      // Corrigir data de fim de leilão
+                      const endDate = transport?.biddingEndDate
+                          ? new Date(transport.biddingEndDate)
+                          : null;
+
+                      return (
+                          <div className="card" key={req.id}>
+                            <div className="card-image">
+                              <img src={req.image} alt={req.package}/>
+                            </div>
+
+                            <div className="card-body">
+                              <div className="title-with-badge">
+                                <h3 className="card-title">{req.package}</h3>
+                                {statusText &&
+                                    <span className={`status-badge ${statusClass}`}>{statusText}Teste</span>}
+                              </div>
+
+                              <p className="card-route">{req.route}</p>
+                              <div>
+                                {req.origin} → {req.destination}
+                              </div>
+                              <div>
+                                <span className="label-small">Preço Máx:</span>{" "}
+                                {req.maxPrice}€
+                              </div>
+
+                              <p className="card-time">
+                                {isCompany && statusText?.toLowerCase() === "active" ? (
+                                    <>
+                                      Tempo Restante:{" "}
+                                      {endDate ? (
+                                          <Countdown endDate={endDate}/>
+                                      ) : (
+                                          "—"
+                                      )}
+                                    </>
+                                ) : (
+                                    "\u00A0"
+                                )}
+                                {isDriver && (
+                                    <>
+                                      Fim das Licitações:{" "}
+                                      {endDate ? (
+                                          <Countdown endDate={endDate}/>
+                                      ) : (
+                                          "—"
+                                      )}
+                                    </>
+                                )}
+                              </p>
+
+                              <button
+                                  className="bid-btn"
+                                  onClick={() => navigate(`/accept-bids/${req.id}`)}
+                              >
+                                Licitações Abertas
+                              </button>
+                            </div>
+                          </div>
+                      );
+                    })
+                )}
+              </div>
       </main>
     </div>
   );
