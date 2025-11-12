@@ -1,0 +1,42 @@
+// components/PasswordInput.jsx
+import React, { useState } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import "./PasswordInput.css";
+
+export default function PasswordInput({
+                                          value,
+                                          onChange,
+                                          placeholder = "Palavra-passe",
+                                          name,
+                                          required = false,
+                                          autoComplete = "off",
+                                          label,
+                                      }) {
+    const [show, setShow] = useState(false);
+
+    return (
+        <div className="password-input-wrapper">
+            {label && <label className="password-label">{label}</label>}
+            <div className="password-input-container">
+                <input
+                    type={show ? "text" : "password"}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    name={name}
+                    required={required}
+                    autoComplete={autoComplete}
+                />
+                <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShow(!show)}
+                    aria-label={show ? "Ocultar palavra-passe" : "Mostrar palavra-passe"}
+                    title={show ? "Ocultar palavra-passe" : "Mostrar palavra-passe"}
+                >
+                    {show ? <FiEyeOff /> : <FiEye />}
+                </button>
+            </div>
+        </div>
+    );
+}

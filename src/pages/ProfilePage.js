@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axiosConfig";
 import "../styles/ProfilePage.css";
 import { useMe } from "../hooks/useMe";
-import { FiEdit2, FiLock, FiUserX, FiCamera } from "react-icons/fi";
+import { FiEdit2, FiLock, FiUserX, FiCamera, FiEye, FiEyeOff } from "react-icons/fi";
+import PasswordInput from "../components/PasswordInput";
+
 import ReactDOM from "react-dom";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { getApiErrorMessage } from "../utils/httpError";
 
 function ProfilePage() {
     const { userId, isDriver, isCompany, loading: meLoading } = useMe();
@@ -16,11 +20,15 @@ function ProfilePage() {
     const [previewInsurance, setPreviewInsurance] = useState(null);
     const [previewAvatar, setPreviewAvatar] = useState(null);
 
+    // modais e loading
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+    const [deactivateLoading, setDeactivateLoading] = useState(false);
 
     const [passwords, setPasswords] = useState({ old: "", new: "", confirm: "" });
+
     const [message, setMessage] = useState(null);
+    const [toast, setToast] = useState(null); // usado no confirmDeactivate
 
     // carregar perfil
     useEffect(() => {
@@ -32,10 +40,12 @@ function ProfilePage() {
                 setPreviewLicense(res.data.driverLicense || res.data.driverLicenseUrl || null);
                 setPreviewInsurance(res.data.insurance || res.data.insuranceUrl || null);
                 setPreviewAvatar(res.data.profilePicture || null);
-            } catch {
-                setMessage({ type: "error", text: "Erro ao carregar perfil." });
+            } catch(err){
+                const msg = getApiErrorMessage(err);
+                setToast({ type: "error", msg });
             } finally {
                 setLoading(false);
+                setTimeout(() => setToast(null), 2500);
             }
         };
         fetchProfile();
@@ -52,30 +62,46 @@ function ProfilePage() {
         setProfile({ ...profile, [field]: file });
     };
 
-    // guardar
+    // guardar perfil
     const handleSave = async () => {
         const formData = new FormData();
         Object.entries(profile).forEach(([k, v]) => formData.append(k, v));
         try {
-            const endpoint = isDriver ? `profile/updateDriver/${userId}` : "profile/updateCompany";
+            const endpoint = isDriver ? `profile/updateDriver/${userId}` : `profile/updateCompany/${userId}`;
             await api.put(endpoint, formData, { headers: { "Content-Type": "multipart/form-data" } });
             setMessage({ type: "success", text: "Perfil atualizado com sucesso!" });
             setEditing(false);
-        } catch {
-            setMessage({ type: "error", text: "Erro ao atualizar perfil." });
+        } catch(err){
+            const msg = getApiErrorMessage(err);
+            setToast({ type: "error", msg });
+        }finally {
+            setTimeout(() => setToast(null), 2500);
+        }
+    };
+//Desativar a conta
+
+    const confirmDeactivate = async () => {
+        try {
+            setDeactivateLoading(true);
+            await api.put(`/profile/${userId}/deactivateAccount`);
+            setToast({ type: "success", msg: "Conta desativada com sucesso" });
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 1500);
+        } catch (err) {
+            const msg = getApiErrorMessage(err); // 👈 aqui é a magia
+            setToast({ type: "error", msg });
+        } finally {
+            setDeactivateLoading(false);
+            setShowDeactivateModal(false);
+            setTimeout(() => setToast(null), 2500);
         }
     };
 
-    // desativar
-    const confirmDeactivate = async () => {
-        try {
-            await api.patch(`/deactivateAccountById/${userId}`);
-            alert("Conta desativada com sucesso!");
-        } catch {
-            alert("Erro ao desativar conta.");
-        }
-        setShowDeactivateModal(false);
-    };
 
     // alterar password
     const handlePasswordChange = async () => {
@@ -84,16 +110,22 @@ function ProfilePage() {
             return;
         }
         try {
-            await api.post("/changePassword", {
+            await api.put(`/profile/${userId}/changePassword`, {
                 userId,
-                oldPassword: passwords.old,
-                newPassword: passwords.new,
+                CurrentPassword: passwords.old,
+                NewPassword: passwords.new,
+                confirmPassword: passwords.confirmPassword,
             });
             setShowPasswordModal(false);
-            setMessage({ type: "success", text: "Senha alterada com sucesso!" });
+            setToast({ type: "success", msg: "Senha alterada com sucesso!" });
+
             setPasswords({ old: "", new: "", confirm: "" });
-        } catch {
-            setMessage({ type: "error", text: "Erro ao alterar senha." });
+        } catch(err){
+            const msg = getApiErrorMessage(err);
+            setToast({ type: "error", msg });
+
+        }finally {
+            setTimeout(() => setToast(null), 2500);
         }
     };
 
@@ -113,8 +145,8 @@ function ProfilePage() {
                 <div className="avatar-section">
                     <div className="avatar-wrapper">
                         <img
-                            src={previewAvatar || "/default-avatar.png"}
-                            alt="Avatar"
+                            src={previewAvatar || "https://i.pravatar.cc/150?img=3"}
+                            alt="Avatar de teste"
                             className="avatar-img"
                         />
                         {editing && (
@@ -134,7 +166,7 @@ function ProfilePage() {
                     </div>
 
                     <div className="header-text">
-                        <h2 className="card-title-name">{profile?.name}</h2>
+                        <h2 className="card-title">{profile?.name}</h2>
                         <p className="email-sub">{profile?.email}</p>
                     </div>
                     {!editing && (
@@ -144,12 +176,9 @@ function ProfilePage() {
                     )}
                 </div>
 
+                {/* Mensagem */}
                 {message && (
-                    <div
-                        className={`banner ${message.type === "success" ? "success" : ""} ${
-                            message.type === "error" ? "error" : ""
-                        } ${message.type === "info" ? "info" : ""}`}
-                    >
+                    <div className={`banner ${message.type}`}>
                         {message.text}
                     </div>
                 )}
@@ -291,10 +320,7 @@ function ProfilePage() {
                             <button onClick={handleSave} className="btn primary">Guardar alterações</button>
                             <button
                                 className="btn ghost"
-                                onClick={() => {
-                                    setEditing(false);
-                                    setMessage({ type: "info", text: "Edição cancelada." });
-                                }}
+                                onClick={() => setEditing(false)}
                             >
                                 Cancelar
                             </button>
@@ -318,35 +344,30 @@ function ProfilePage() {
                     <div className="modal-overlay">
                         <div className="modal">
                             <h3>Alterar Palavra-passe</h3>
-                            <input
-                                type="password"
+
+                            <PasswordInput
                                 placeholder="Senha atual"
                                 value={passwords.old}
-                                onChange={(e) =>
-                                    setPasswords({ ...passwords, old: e.target.value })
-                                }
+                                onChange={(e) => setPasswords({ ...passwords, old: e.target.value })}
                             />
-                            <input
-                                type="password"
+
+                            <PasswordInput
                                 placeholder="Nova senha"
                                 value={passwords.new}
-                                onChange={(e) =>
-                                    setPasswords({ ...passwords, new: e.target.value })
-                                }
+                                onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
                             />
-                            <input
-                                type="password"
+
+                            <PasswordInput
                                 placeholder="Confirmar nova senha"
                                 value={passwords.confirm}
-                                onChange={(e) =>
-                                    setPasswords({ ...passwords, confirm: e.target.value })
-                                }
+                                onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
                             />
+
+
+
+
                             <div className="modal-actions">
-                                <button
-                                    onClick={handlePasswordChange}
-                                    className="btn primary"
-                                >
+                                <button onClick={handlePasswordChange} className="btn primary">
                                     Guardar
                                 </button>
                                 <button
@@ -363,16 +384,19 @@ function ProfilePage() {
 
 
             {/* MODAL DESATIVAR CONTA */}
-            {showDeactivateModal && (
-                <div className="modal-overlay">
-                    <div className="modal">
-                        <h3>Desativar Conta</h3>
-                        <p>Tem a certeza que deseja desativar a sua conta? Esta ação é reversível apenas por suporte.</p>
-                        <div className="modal-actions">
-                            <button className="btn danger" onClick={confirmDeactivate}>Confirmar</button>
-                            <button className="btn ghost" onClick={() => setShowDeactivateModal(false)}>Cancelar</button>
-                        </div>
-                    </div>
+            <ConfirmDialog
+                open={showDeactivateModal}
+                title="Desativar Conta"
+                message="Tem a certeza que deseja desativar a sua conta? Esta ação é reversível apenas por suporte."
+                confirmText="Confirmar"
+                cancelText="Cancelar"
+                loading={deactivateLoading}
+                onConfirm={confirmDeactivate}
+                onCancel={() => setShowDeactivateModal(false)}
+            />
+            {toast && (
+                <div className={`toast ${toast.type}`}>
+                    {toast.msg}
                 </div>
             )}
         </div>
