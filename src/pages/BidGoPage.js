@@ -21,15 +21,8 @@ function BidGoPage() {
     priceOrder: "", // asc | desc
   });
 
-  // 👁️ Toggle para a sidebar de filtros
-  const [showFilters, setShowFilters] = useState(true);
-
-  // Abre/fecha automaticamente consoante o ecrã na 1ª renderização
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (window.innerWidth < 1100) setShowFilters(false);
-    }
-  }, []);
+  // 👁️ Toggle para filtros (fechado por omissão)
+  const [showFilters, setShowFilters] = useState(false);
 
   // 🧩 Normalizar resposta da API
   const normalizeList = (data) => {
@@ -138,6 +131,73 @@ function BidGoPage() {
   return (
     <div className="page-container">
       <main className="main-content">
+        {/* Filtros no topo (Driver) */}
+        {isDriver && (
+          <div className="filters-top-wrapper">
+            <button
+              type="button"
+              className={`filters-toggle-top ${showFilters ? "active" : ""}`}
+              onClick={() => setShowFilters((s) => !s)}
+              aria-expanded={showFilters}
+              aria-controls="filtersTopPanel"
+            >
+              {showFilters ? "Esconder filtros" : "Mostrar filtros"}
+            </button>
+
+            {showFilters && (
+              <form
+                id="filtersTopPanel"
+                className="filters-top"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const controller = new AbortController();
+                  fetchDriverTransports(controller.signal, filters);
+                  setTimeout(() => controller.abort(), 30000);
+                }}
+              >
+                <div className="filters-row">
+                  <input
+                    type="text"
+                    placeholder="Origem"
+                    value={filters.origin}
+                    onChange={(e) => setFilters((f) => ({ ...f, origin: e.target.value }))}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Destino"
+                    value={filters.destination}
+                    onChange={(e) => setFilters((f) => ({ ...f, destination: e.target.value }))}
+                  />
+                  <select
+                    value={filters.priceOrder}
+                    onChange={(e) => setFilters((f) => ({ ...f, priceOrder: e.target.value }))}
+                  >
+                    <option value="">Preço</option>
+                    <option value="asc">Mais barato</option>
+                    <option value="desc">Mais caro</option>
+                  </select>
+                </div>
+                <div className="filters-actions">
+                  <button type="submit" className="bid-btn">Aplicar</button>
+                  <button
+                    type="button"
+                    className="bid-btn"
+                    onClick={() => {
+                      const cleared = { origin: "", destination: "", deliveryDate: "", priceOrder: "" };
+                      setFilters(cleared);
+                      const controller = new AbortController();
+                      fetchDriverTransports(controller.signal, cleared);
+                      setTimeout(() => controller.abort(), 30000);
+                    }}
+                  >
+                    Limpar
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
+
         <h2 className="section-title">
           {isDriver ? "Transportes Disponíveis para Licitar" : "Pedidos de Transporte"}
         </h2>
@@ -146,91 +206,6 @@ function BidGoPage() {
           <button className="new-request-btn" onClick={() => navigate("/createRequest")}>
             Novo Pedido de Transporte
           </button>
-        )}
-
-        {/* Botão flutuante para abrir/fechar filtros */}
-        {isDriver && (
-          <button
-            className={`filters-toggle ${showFilters ? "active" : ""}`}
-            onClick={() => setShowFilters((s) => !s)}
-            aria-expanded={showFilters}
-            aria-controls="filtersPanel"
-          >
-            {showFilters ? "Esconder filtros" : "Mostrar filtros"}
-          </button>
-        )}
-
-  {/* Painel lateral de filtros (Driver) */}
-        {isDriver && (
-          <div
-            id="filtersPanel"
-            className={`filters-sidebar ${showFilters ? "open" : ""}`}
-            role="complementary"
-            aria-label="Filtros de pesquisa"
-          >
-            <div className="filters-header">
-              <h4 className="filters-title">Filtros</h4>
-              <button
-                type="button"
-                className="filters-close"
-                aria-label="Fechar filtros"
-                onClick={() => setShowFilters(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            <form
-              className="filters-bar"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const controller = new AbortController();
-                fetchDriverTransports(controller.signal, filters);
-                setTimeout(() => controller.abort(), 30000);
-              }}
-            >
-
-              <div className="filters-row">
-                <input
-                  type="text"
-                  placeholder="Origem"
-                  value={filters.origin}
-                  onChange={(e) => setFilters((f) => ({ ...f, origin: e.target.value }))}
-                />
-                <input
-                  type="text"
-                  placeholder="Destino"
-                  value={filters.destination}
-                  onChange={(e) => setFilters((f) => ({ ...f, destination: e.target.value }))}
-                />
-                <select
-                  value={filters.priceOrder}
-                  onChange={(e) => setFilters((f) => ({ ...f, priceOrder: e.target.value }))}
-                >
-                  <option value="">Preço</option>
-                  <option value="asc">Mais barato</option>
-                  <option value="desc">Mais caro</option>
-                </select>
-              </div>
-
-              <div className="filters-actions">
-                <button type="submit" className="bid-btn">Aplicar</button>
-                <button
-                  type="button"
-                  className="bid-btn"
-                  onClick={() => {
-                    const cleared = { origin: "", destination: "", deliveryDate: "", priceOrder: "" };
-                    setFilters(cleared);
-                    const controller = new AbortController();
-                    fetchDriverTransports(controller.signal, cleared);
-                    setTimeout(() => controller.abort(), 30000);
-                  }}
-                >
-                  Limpar
-                </button>
-              </div>
-            </form>
-          </div>
         )}
 
         <div className="cards-container">
@@ -296,7 +271,7 @@ function BidGoPage() {
                       {req.origin} → {req.destination}
                     </div>
                     <div>
-                      <span className="label-small">Max Price:</span>{" "}
+                      <span className="label-small">Preço Máx:</span>{" "}
                       {req.maxPrice}€
                     </div>
 

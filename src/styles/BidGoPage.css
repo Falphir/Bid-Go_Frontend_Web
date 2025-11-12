@@ -16,6 +16,7 @@
   text-align: center;
   max-width: 1200px;
   margin: 0 auto; /* mantém o título e os cards centrados */
+  position: relative; /* para ancorar o toggle/painel sem empurrar o título */
 }
 
 /* Botão criar pedido */
@@ -37,130 +38,87 @@
   color: #0a43a5;
   font-size: 28px;
   font-weight: 700;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-/* ============= Sidebar de Filtros (fixa à direita) =============
-   Não empurra o layout: aparece por cima do conteúdo (overlay leve) */
-.filters-sidebar {
-  position: fixed;
-  top: 100px;
-  right: 40px;
-  width: 260px; /* mais pequena */
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
-  padding: 14px 14px; /* mais compacto */
-  z-index: 1000;
-  text-align: left;
-
-  /* animação de slide-in/out */
-  transform: translateX(120%);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.28s ease, opacity 0.28s ease, box-shadow 0.2s ease;
-}
-.filters-sidebar.open {
-  transform: translateX(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-.filters-sidebar:hover {
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+/* ===== Filtros no topo (embutidos) ===== */
+.filters-top-wrapper {
+  position: absolute; /* não ocupa altura, não afasta o título da navbar */
+  top: 0;
+  right: 0;
+  margin: 0; /* sem impacto no fluxo */
+  display: flex;
+  justify-content: flex-end;
 }
 
-/* Título do painel */
-.filters-title {
-  font-size: 16px; /* mais compacto */
-  font-weight: 700;
+.filters-toggle-top {
+  background: #eef4fb;
   color: #0a43a5;
-  margin: 0;
-}
-
-/* Form base dentro do painel (sem fundo extra) */
-.filters-bar {
-  background: transparent;
-  box-shadow: none;
-  padding: 6px 0 0 0;
-  margin: 0;
-  max-width: none;
-}
-
-.filters-row {
-  display: grid; /* alinhamento compacto em grelha */
-  grid-template-columns: 1fr;
-  gap: 8px;
-}
-
-.filters-sidebar input,
-.filters-sidebar select {
-  width: 100%;
-  padding: 8px 10px; /* inputs mais pequenos */
   border: 1px solid #dbe5f3;
   border-radius: 8px;
+  padding: 6px 10px; /* mais compacto */
+  font-weight: 600;
   font-size: 13px;
-  box-sizing: border-box; /* evita overflow por causa de padding/border */
-  max-width: 100%;
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.filters-toggle-top.active { background: #dfe9f8; }
+
+.filters-top {
+  position: absolute;
+  right: -12px; /* ligeiro ajuste mais à direita */
+  top: calc(100% + 8px);
+  display: inline-block;            /* adapta ao tamanho dos campos */
+  width: auto;
+  max-width: 90vw;                  /* proteção para ecrãs pequenos */
+  background: #ffffff;
+  border: 1px solid #e6eef8;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.07);
+  padding: 10px; /* menos padding */
+  text-align: left;
+  z-index: 10;
 }
 
-/* Placeholder mais pequeno e com cor suave */
-.filters-sidebar input::placeholder {
-  font-size: 12px;
-  color: #9aa9c1;
-}
-.filters-sidebar input::-webkit-input-placeholder { font-size: 12px; color: #9aa9c1; }
-.filters-sidebar input::-moz-placeholder { font-size: 12px; color: #9aa9c1; }
-.filters-sidebar input:-ms-input-placeholder { font-size: 12px; color: #9aa9c1; }
-.filters-sidebar input:-moz-placeholder { font-size: 12px; color: #9aa9c1; }
-
-.filters-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+/* === Mantém um por linha, mas com largura curta === */
+.filters-top .filters-row {
+  display: grid;
+  grid-template-columns: 1fr;   /* um campo por linha */
   gap: 8px;
+  justify-items: start;         /* alinha inputs à esquerda */
 }
 
-.filters-sidebar .bid-btn {
-  flex: 1;
-  margin: 0;
+.filters-top input,
+.filters-top select {
+  width: 180px;                 /* <<< largura pequena */
+  max-width: 100%;
+  padding: 6px 8px;             /* inputs menores */
+  border: 1px solid #dbe5f3;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.filters-top input::placeholder { font-size: 11.5px; color: #9aa9c1; }
+
+.filters-top .filters-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px; /* menos espaço acima dos botões */
+}
+
+.filters-top .bid-btn {
   background-color: #eef4fb;
   color: #0066cc;
   border: none;
   border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 13px;
+  padding: 6px 10px; /* botões mais pequenos */
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
-.filters-sidebar .bid-btn:hover { background-color: #d8e4f7; }
-
-/* ===== Botão flutuante para abrir/fechar filtros ===== */
-.filters-toggle {
-  position: fixed;
-  right: 40px;
-  bottom: 40px;
-  z-index: 1100;
-  background: #0a43a5;
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 10px 14px; /* botão mais pequeno */
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(10, 67, 165, 0.25);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-.filters-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(10, 67, 165, 0.3);
-}
-.filters-toggle.active {
-  background: #004fa1;
-}
+.filters-top .bid-btn:hover { background-color: #d8e4f7; }
 
 /* ====== Layout de cartões ====== */
 .cards-container {
@@ -231,13 +189,13 @@
   color: #fff;
   margin-bottom: 8px;
 }
-.status-active { background: #10b981; } /* green */
-.status-canceled { background: #ef4444; } /* red */
-.status-completed { background: #0ea5e9; } /* blue */
-.status-pending { background: #f59e0b; } /* amber */
-.status-intransit { background: #6366f1; } /* indigo */
-.status-draft { background: #94a3b8; } /* gray */
-.status-waitingpickup { background: #f97316; } /* orange */
+.status-active { background: #10b981; }
+.status-canceled { background: #ef4444; }
+.status-completed { background: #0ea5e9; } 
+.status-pending { background: #f59e0b; }
+.status-intransit { background: #6366f1; } 
+.status-draft { background: #94a3b8; } 
+.status-waitingpickup { background: #f97316; }
 
 .card-route {
   font-size: 4px;
@@ -267,53 +225,8 @@
 .bid-btn:hover { background-color: #d8e4f7; }
 
 .label-small {
-  font-size: 13px;
+  font-size: 12px; 
   color: #555;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: 0.1px;
 }
-
-/* ================= Responsividade ================= */
-@media (max-width: 1100px) {
-  /* Sidebar mais compacta no mobile */
-  .filters-sidebar {
-    top: 80px;
-    right: 20px;
-    width: min(340px, 92vw);
-  }
-  .filters-toggle {
-    right: 20px;
-    bottom: 20px;
-  }
-
-  /* Inputs lado a lado quando há espaço */
-  .filters-row {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-  }
-  .filters-sidebar input,
-  .filters-sidebar select {
-    min-width: 160px;
-    flex: 1 1 160px;
-  }
-}
-
-/* Header compacto dentro do painel */
-.filters-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-.filters-close {
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  line-height: 1;
-  color: #7a8fa6;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 6px;
-}
-.filters-close:hover { background: #f3f6fb; color: #0a43a5; }
