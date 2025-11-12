@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/BidGoPage.css";
 import api from "../api/axiosConfig";
 import { useNavigate } from "react-router";
-// Countdown removido para exibir diretamente a data de fim do leilão
+import Countdown from "../components/Countdown";
 import { useMe } from "../hooks/useMe";
 
 function BidGoPage() {
@@ -51,26 +51,10 @@ function BidGoPage() {
       maxPrice: t.maxPrice ?? t.maxBudget ?? "—",
       timeRemaining: t.timeRemaining ?? "",
       biddingEndDate:
-        t.biddingEndDate ?? t.biddingEnd ?? t.bidding_end_date ?? t.endDate ?? t.endTime ?? null,
+        t.biddingEndDate ?? t.biddingEnd ?? t.bidding_end_date ?? null,
       status: t.status ?? null,
     }));
   };
-
-    // 📅 Formatar data/hora de forma consistente (PT)
-    const formatDateTime = (date) => {
-      try {
-        const d = date instanceof Date ? date : new Date(date);
-        return d.toLocaleString("pt-PT", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      } catch (e) {
-        return String(date ?? "");
-      }
-    };
 
   // Helpers
   const buildQuery = (f) => {
@@ -278,7 +262,22 @@ function BidGoPage() {
 
               const statusClass = statusText ? `status-${statusText.toLowerCase()}` : "";
 
-              // Fim do leilão (mostrar valor bruto como pedido)
+              // Corrigir data de fim de leilão
+              let endDate = transport?.biddingEndDate
+                ? new Date(transport.biddingEndDate)
+                : null;
+              // Alguns endpoints (ex.: driver) devolvem apenas "timeRemaining" (segundos restantes)
+              if (!endDate && transport?.timeRemaining != null) {
+                const tr = transport.timeRemaining;
+                if (typeof tr === "number" && isFinite(tr)) {
+                  endDate = new Date(Date.now() + tr * 1000);
+                } else if (typeof tr === "string") {
+                  const n = Number(tr);
+                  if (!Number.isNaN(n) && isFinite(n)) {
+                    endDate = new Date(Date.now() + n * 1000);
+                  }
+                }
+              }
 
               return (
                 <div className="card" key={req.id}>
@@ -302,7 +301,14 @@ function BidGoPage() {
                     </div>
 
                     <p className="card-time">
-                      Tempo Restante: {transport?.biddingEndDate ? String(transport.biddingEndDate) : "—"}
+                      Tempo Restante:{" "}
+                      {endDate ? (
+                        <Countdown endDate={endDate} />
+                      ) : transport?.timeRemaining ? (
+                        String(transport.timeRemaining)
+                      ) : (
+                        "—"
+                      )}
                     </p>
 
                     <button
