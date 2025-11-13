@@ -7,6 +7,8 @@ import {useMe} from "../hooks/useMe";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPencil, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import EditBidModal from "../components/EditBidModal";
+import EditTransportModal from "../components/EditTransportModal";
+import { getApiErrorMessage } from "../utils/httpError";
 import ConfirmDialog from "../components/ConfirmDialog";
 import AddBidModal from "../components/AddBidModal";
 import Countdown from "../components/Countdown";
@@ -32,6 +34,8 @@ function RequestDetailsPage() {
     const [confirmAction, setConfirmAction] = useState(null); // {type, bidId}
     const [processing, setProcessing] = useState(null); // bidId que está em ação
     const [toast, setToast] = useState(null);
+    const [isEditTransportOpen, setIsEditTransportOpen] = useState(false);
+    const [savingEditTransport, setSavingEditTransport] = useState(false);
 
     useEffect(() => {
         if (!transportId) {
@@ -51,6 +55,7 @@ function RequestDetailsPage() {
                     signal: controller.signal,
                 });
                 setTransport(transportRes.data);
+                console.debug('Fetched transport', transportRes.data, { isCompany, userId });
 
                 const bidsRes = await api.get(
                     `/bids/bidsActive?transportRequestId=${transportId}`,
@@ -201,6 +206,103 @@ function RequestDetailsPage() {
     };
 
 
+    const refreshTransport = async () => {
+        if (!transportId) return;
+        try {
+            const res = await api.get(`/transports/${transportId}`);
+            setTransport(res.data);
+            console.debug('Refreshed transport', res.data, { isCompany, userId });
+        } catch (err) {
+            console.error('Failed to refresh transport', err);
+        }
+    };
+
+    const openEditTransport = () => {
+        if (!transport) return;
+        setIsEditTransportOpen(true);
+    };
+
+    const closeEditTransport = () => {
+        if (savingEditTransport) return;
+        setIsEditTransportOpen(false);
+    };
+
+    const handleSaveTransport = async (payload) => {
+        if (!transportId) return;
+        setSavingEditTransport(true);
+        try {
+            // Try JSON first (POST/PUT fallback)
+            try {
+                try {
+                    await api.post(`/transports/updateTransport/${transportId}`, payload);
+                } catch (err) {
+                    if (err?.response?.status === 405) {
+                        await api.put(`/transports/updateTransport/${transportId}`, payload);
+                    } else throw err;
+                }
+            } catch (err) {
+                if (err?.response?.status === 415) {
+                    // Retry as multipart/form-data
+                    const formData = new FormData();
+                    Object.keys(payload).forEach((k) => {
+                        const v = payload[k];
+                        if (v !== undefined && v !== null) formData.append(k, v);
+                    });
+                    try {
+                        try {
+                            await api.post(`/transports/updateTransport/${transportId}`, formData);
+                        } catch (err2) {
+                            if (err2?.response?.status === 405) {
+                                await api.put(`/transports/updateTransport/${transportId}`, formData);
+                            } else throw err2;
+                        }
+                    } catch (finalErr) {
+                        throw finalErr;
+                    }
+                } else {
+                    throw err;
+                }
+            }
+
+            showToast('✅ Pedido atualizado com sucesso!', 'success');
+            setIsEditTransportOpen(false);
+            await refreshTransport();
+        } catch (err) {
+            console.error('Erro ao salvar edição do pedido:', err);
+            const apiMsg = getApiErrorMessage(err);
+            showToast(apiMsg || 'Erro ao atualizar o pedido.', 'error');
+        } finally {
+            setSavingEditTransport(false);
+        }
+    };
+
+    const publishTransport = async () => {
+        if (!transportId) return;
+        setProcessing('publish');
+        try {
+            try {
+                try {
+                    await api.post(`/pageTransports/${transportId}`);
+                } catch (err) {
+                    if (err?.response?.status === 405) {
+                        await api.put(`/pageTransports/${transportId}`);
+                    } else throw err;
+                }
+            } catch (err) {
+                throw err;
+            }
+
+            showToast('✅ Pedido publicado com sucesso!', 'success');
+            await refreshTransport();
+        } catch (err) {
+            console.error('Erro ao ativar pedido:', err);
+            const apiMsg = getApiErrorMessage(err);
+            showToast(apiMsg || 'Erro ao publicar o pedido.', 'error');
+        } finally {
+            setProcessing(null);
+        }
+    };
+
     return (
         <>
             <div className="acceptbids-container">
@@ -274,6 +376,20 @@ function RequestDetailsPage() {
                                 </div>
                             </div>
                         </div>
+              
+
+                        {isCompany && (
+                            (transport?.status && String(transport.status).toUpperCase() === 'DRAFT') || transport?.draft === true || transport?.isDraft === true
+                        ) && (
+                            <div className="transport-actions" style={{ display: 'flex', gap: '8px', marginTop: 12 }}>
+                                <button type="button" onClick={openEditTransport} style={{ background: '#0ea5a4', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
+                                    <FontAwesomeIcon icon={faPencil} /> <span style={{ marginLeft: 6 }}>Editar</span>
+                                </button>
+                                <button type="button" onClick={publishTransport} disabled={processing === 'publish'} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
+                                    <span>{processing === 'publish' ? 'Publicando…' : 'Publicar'}</span>
+                                </button>
+                            </div>
+                        )}
                     </>
                 )}
                
@@ -374,6 +490,7 @@ function RequestDetailsPage() {
                         )}
                     </div>
                     )}
+                    <EditTransportModal open={isEditTransportOpen} transport={transport} onClose={closeEditTransport} onSave={handleSaveTransport} saving={savingEditTransport} />
                     {isCompany && (
                         <div className="bids-list">
                             {sortedBids.length === 0 ? (
