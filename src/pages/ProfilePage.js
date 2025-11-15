@@ -39,7 +39,7 @@ function ProfilePage() {
                 setProfile(res.data);
                 setPreviewLicense(res.data.driverLicense || res.data.driverLicenseUrl || null);
                 setPreviewInsurance(res.data.insurance || res.data.insuranceUrl || null);
-                setPreviewAvatar(res.data.profilePicture || null);
+                setPreviewAvatar(res.data.profileImage  || null);
             } catch(err){
                 const msg = getApiErrorMessage(err);
                 setToast({ type: "error", msg });
@@ -58,7 +58,7 @@ function ProfilePage() {
         const previewUrl = URL.createObjectURL(file);
         if (field === "driverLicense") setPreviewLicense(previewUrl);
         if (field === "insurance") setPreviewInsurance(previewUrl);
-        if (field === "profilePicture") setPreviewAvatar(previewUrl);
+        if (field === "ProfileImage") setPreviewAvatar(previewUrl);
         setProfile({ ...profile, [field]: file });
     };
 
@@ -69,7 +69,8 @@ function ProfilePage() {
         try {
             const endpoint = isDriver ? `profile/updateDriver/${userId}` : `profile/updateCompany/${userId}`;
             await api.put(endpoint, formData, { headers: { "Content-Type": "multipart/form-data" } });
-            setMessage({ type: "success", text: "Perfil atualizado com sucesso!" });
+            setToast({ type: "success", msg: "Perfil atualizado com sucesso!" });
+            setTimeout(() => setToast(null), 2500);
             setEditing(false);
         } catch(err){
             const msg = getApiErrorMessage(err);
@@ -105,29 +106,37 @@ function ProfilePage() {
 
     // alterar password
     const handlePasswordChange = async () => {
-        if (passwords.new !== passwords.confirm) {
-            setMessage({ type: "error", text: "As senhas não coincidem!" });
-            return;
-        }
         try {
+
+            // 1. Validar confirmação da nova password
+            if (passwords.new !== passwords.confirm) {
+                setToast({ type: "error", msg: "As palavras-passe não coincidem." });
+                setTimeout(() => setToast(null), 2500);
+                return;
+            }
+
+            // 2. Chamada correta ao backend
             await api.put(`/profile/${userId}/changePassword`, {
-                userId,
-                CurrentPassword: passwords.old,
-                NewPassword: passwords.new,
-                confirmPassword: passwords.confirmPassword,
+                currentPassword: passwords.old,
+                newPassword: passwords.new,
             });
+
+            // 3. Sucesso
+            setToast({ type: "success", msg: "Palavra-passe alterada com sucesso!" });
+            setTimeout(() => setToast(null), 2500);
+
+            // 4. Fechar modal + limpar inputs
             setShowPasswordModal(false);
-            setToast({ type: "success", msg: "Senha alterada com sucesso!" });
-
             setPasswords({ old: "", new: "", confirm: "" });
-        } catch(err){
-            const msg = getApiErrorMessage(err);
-            setToast({ type: "error", msg });
 
-        }finally {
+        } catch (err) {
+            const msg = err.response?.data || "Erro ao alterar palavra-passe.";
+
+            setToast({ type: "error", msg });
             setTimeout(() => setToast(null), 2500);
         }
     };
+
 
     if (meLoading || loading) {
         return (
@@ -145,21 +154,27 @@ function ProfilePage() {
                 <div className="avatar-section">
                     <div className="avatar-wrapper">
                         <img
-                            src={previewAvatar || "https://i.pravatar.cc/150?img=3"}
-                            alt="Avatar de teste"
+                            src={
+                                previewAvatar ||
+                                (profile?.profileImage?.trim() ? profile.profileImage : "/Images/default-avatar.png")
+                            }
+                            alt="Foto de perfil"
                             className="avatar-img"
                         />
+
+
                         {editing && (
                             <>
                                 <label htmlFor="avatarUpload" className="avatar-overlay">
-                                    <FiCamera />
+                                    <FiCamera/>
                                 </label>
                                 <input
                                     id="avatarUpload"
                                     type="file"
                                     accept="image/*"
-                                    style={{ display: "none" }}
-                                    onChange={(e) => handleFileChange(e, "profilePicture")}
+                                    style={{display: "none"}}
+                                    onChange={(e) => handleFileChange(e, "ProfileImage")}
+
                                 />
                             </>
                         )}
@@ -175,13 +190,6 @@ function ProfilePage() {
                         </button>
                     )}
                 </div>
-
-                {/* Mensagem */}
-                {message && (
-                    <div className={`banner ${message.type}`}>
-                        {message.text}
-                    </div>
-                )}
 
                 {/* DRIVER */}
                 {isDriver && (
@@ -328,8 +336,12 @@ function ProfilePage() {
                     </div>
                 ) : (
                     <div className="footer-row spaced">
-                        <button className="link-icon" onClick={() => setShowPasswordModal(true)}>
-                            <FiLock /> Alterar Palavra-passe
+                        <button className="link-icon" onClick={() => {
+                            setPasswords({old: "", new: "", confirm: ""});
+                            setShowPasswordModal(true);
+                        }}>
+
+                            <FiLock/> Alterar Palavra-passe
                         </button>
                         <button className="link-icon danger" onClick={() => setShowDeactivateModal(true)}>
                             <FiUserX /> Desativar Conta
@@ -372,7 +384,11 @@ function ProfilePage() {
                                 </button>
                                 <button
                                     className="btn danger"
-                                    onClick={() => setShowPasswordModal(false)}
+                                    onClick={() => {
+                                        setShowPasswordModal(false);
+                                        setPasswords({ old: "", new: "", confirm: "" });
+                                    }}
+
                                 >
                                     Cancelar
                                 </button>
