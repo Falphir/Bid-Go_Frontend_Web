@@ -339,3 +339,31 @@
 }
 .toast.success { background: #4caf50; }
 .toast.error { background: #f44336; }
+.cropper-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.cropper-modal {
+    width: 90%;
+    max-width: 400px;
+    height: 400px;
+    background: #fff;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cropper-actions {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+}

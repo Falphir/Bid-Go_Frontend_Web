@@ -4,7 +4,7 @@ import "../styles/ProfilePage.css";
 import { useMe } from "../hooks/useMe";
 import { FiEdit2, FiLock, FiUserX, FiCamera, FiEye, FiEyeOff } from "react-icons/fi";
 import PasswordInput from "../components/PasswordInput";
-
+import AvatarCropper from "../components/AvatarCropper";
 import ReactDOM from "react-dom";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { getApiErrorMessage } from "../utils/httpError";
@@ -15,6 +15,7 @@ function ProfilePage() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
+    const [cropImage, setCropImage] = useState(null);
 
     const [previewLicense, setPreviewLicense] = useState(null);
     const [previewInsurance, setPreviewInsurance] = useState(null);
@@ -173,7 +174,15 @@ function ProfilePage() {
                                     type="file"
                                     accept="image/*"
                                     style={{display: "none"}}
-                                    onChange={(e) => handleFileChange(e, "ProfileImage")}
+                                    onChange={async (e) => {
+                                        const file = e.target.files[0];
+                                        if (!file) return;
+
+                                        const preview = URL.createObjectURL(file);
+
+                                        setCropImage(preview); // Abre o cropper
+                                    }}
+
 
                                 />
                             </>
@@ -415,8 +424,23 @@ function ProfilePage() {
                     {toast.msg}
                 </div>
             )}
+
+            {cropImage && (
+                <AvatarCropper
+                    image={cropImage}
+                    onCancel={() => setCropImage(null)}
+                    onSave={(croppedFile) => {
+                        setPreviewAvatar(URL.createObjectURL(croppedFile));
+                        setProfile({ ...profile, profileImage: croppedFile });
+                        setCropImage(null);
+                    }}
+                />
+            )}
+
         </div>
     );
+
+
 }
 
 export default ProfilePage;
