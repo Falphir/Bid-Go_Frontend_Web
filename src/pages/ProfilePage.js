@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axiosConfig";
 import "../styles/ProfilePage.css";
 import { useMe } from "../hooks/useMe";
-import { FiEdit2, FiLock, FiUserX, FiCamera } from "react-icons/fi";
+import { FiEdit2, FiLock, FiUserX, FiCamera, FiEye, FiEyeOff } from "react-icons/fi";
+import PasswordInput from "../components/PasswordInput";
+import AvatarCropper from "../components/AvatarCropper";
 import ReactDOM from "react-dom";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { getApiErrorMessage } from "../utils/httpError";
 
 function ProfilePage() {
     const { userId, isDriver, isCompany, loading: meLoading } = useMe();
@@ -11,16 +15,21 @@ function ProfilePage() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
+    const [cropImage, setCropImage] = useState(null);
 
     const [previewLicense, setPreviewLicense] = useState(null);
     const [previewInsurance, setPreviewInsurance] = useState(null);
     const [previewAvatar, setPreviewAvatar] = useState(null);
 
+    // modais e loading
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+    const [deactivateLoading, setDeactivateLoading] = useState(false);
 
     const [passwords, setPasswords] = useState({ old: "", new: "", confirm: "" });
+
     const [message, setMessage] = useState(null);
+    const [toast, setToast] = useState(null); // usado no confirmDeactivate
 
     // carregar perfil
     useEffect(() => {
@@ -31,11 +40,13 @@ function ProfilePage() {
                 setProfile(res.data);
                 setPreviewLicense(res.data.driverLicense || res.data.driverLicenseUrl || null);
                 setPreviewInsurance(res.data.insurance || res.data.insuranceUrl || null);
-                setPreviewAvatar(res.data.profilePicture || null);
-            } catch {
-                setMessage({ type: "error", text: "Erro ao carregar perfil." });
+                setPreviewAvatar(res.data.profileImage  || null);
+            } catch(err){
+                const msg = getApiErrorMessage(err);
+                setToast({ type: "error", msg });
             } finally {
                 setLoading(false);
+                setTimeout(() => setToast(null), 2500);
             }
         };
         fetchProfile();
@@ -48,54 +59,85 @@ function ProfilePage() {
         const previewUrl = URL.createObjectURL(file);
         if (field === "driverLicense") setPreviewLicense(previewUrl);
         if (field === "insurance") setPreviewInsurance(previewUrl);
-        if (field === "profilePicture") setPreviewAvatar(previewUrl);
+        if (field === "ProfileImage") setPreviewAvatar(previewUrl);
         setProfile({ ...profile, [field]: file });
     };
 
-    // guardar
+    // guardar perfil
     const handleSave = async () => {
         const formData = new FormData();
         Object.entries(profile).forEach(([k, v]) => formData.append(k, v));
         try {
-            const endpoint = isDriver ? `profile/updateDriver/${userId}` : "profile/updateCompany";
+            const endpoint = isDriver ? `profile/updateDriver/${userId}` : `profile/updateCompany/${userId}`;
             await api.put(endpoint, formData, { headers: { "Content-Type": "multipart/form-data" } });
-            setMessage({ type: "success", text: "Perfil atualizado com sucesso!" });
+            setToast({ type: "success", msg: "Perfil atualizado com sucesso!" });
+            setTimeout(() => setToast(null), 2500);
             setEditing(false);
-        } catch {
-            setMessage({ type: "error", text: "Erro ao atualizar perfil." });
+        } catch(err){
+            const msg = getApiErrorMessage(err);
+            setToast({ type: "error", msg });
+        }finally {
+            setTimeout(() => setToast(null), 2500);
+        }
+    };
+//Desativar a conta
+
+    const confirmDeactivate = async () => {
+        try {
+            setDeactivateLoading(true);
+            await api.put(`/profile/${userId}/deactivateAccount`);
+            setToast({ type: "success", msg: "Conta desativada com sucesso" });
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 1500);
+        } catch (err) {
+            const msg = getApiErrorMessage(err); // 👈 aqui é a magia
+            setToast({ type: "error", msg });
+        } finally {
+            setDeactivateLoading(false);
+            setShowDeactivateModal(false);
+            setTimeout(() => setToast(null), 2500);
         }
     };
 
-    // desativar
-    const confirmDeactivate = async () => {
-        try {
-            await api.patch(`/deactivateAccountById/${userId}`);
-            alert("Conta desativada com sucesso!");
-        } catch {
-            alert("Erro ao desativar conta.");
-        }
-        setShowDeactivateModal(false);
-    };
 
     // alterar password
     const handlePasswordChange = async () => {
-        if (passwords.new !== passwords.confirm) {
-            setMessage({ type: "error", text: "As senhas não coincidem!" });
-            return;
-        }
         try {
-            await api.post("/changePassword", {
-                userId,
-                oldPassword: passwords.old,
+
+            // 1. Validar confirmação da nova password
+            if (passwords.new !== passwords.confirm) {
+                setToast({ type: "error", msg: "As palavras-passe não coincidem." });
+                setTimeout(() => setToast(null), 2500);
+                return;
+            }
+
+            // 2. Chamada correta ao backend
+            await api.put(`/profile/${userId}/changePassword`, {
+                currentPassword: passwords.old,
                 newPassword: passwords.new,
             });
+
+            // 3. Sucesso
+            setToast({ type: "success", msg: "Palavra-passe alterada com sucesso!" });
+            setTimeout(() => setToast(null), 2500);
+
+            // 4. Fechar modal + limpar inputs
             setShowPasswordModal(false);
-            setMessage({ type: "success", text: "Senha alterada com sucesso!" });
             setPasswords({ old: "", new: "", confirm: "" });
-        } catch {
-            setMessage({ type: "error", text: "Erro ao alterar senha." });
+
+        } catch (err) {
+            const msg = err.response?.data || "Erro ao alterar palavra-passe.";
+
+            setToast({ type: "error", msg });
+            setTimeout(() => setToast(null), 2500);
         }
     };
+
 
     if (meLoading || loading) {
         return (
@@ -113,28 +155,42 @@ function ProfilePage() {
                 <div className="avatar-section">
                     <div className="avatar-wrapper">
                         <img
-                            src={previewAvatar || "/default-avatar.png"}
-                            alt="Avatar"
+                            src={
+                                previewAvatar ||
+                                (profile?.profileImage?.trim() ? profile.profileImage : "/Images/default-avatar.png")
+                            }
+                            alt="Foto de perfil"
                             className="avatar-img"
                         />
+
+
                         {editing && (
                             <>
                                 <label htmlFor="avatarUpload" className="avatar-overlay">
-                                    <FiCamera />
+                                    <FiCamera/>
                                 </label>
                                 <input
                                     id="avatarUpload"
                                     type="file"
                                     accept="image/*"
-                                    style={{ display: "none" }}
-                                    onChange={(e) => handleFileChange(e, "profilePicture")}
+                                    style={{display: "none"}}
+                                    onChange={async (e) => {
+                                        const file = e.target.files[0];
+                                        if (!file) return;
+
+                                        const preview = URL.createObjectURL(file);
+
+                                        setCropImage(preview); // Abre o cropper
+                                    }}
+
+
                                 />
                             </>
                         )}
                     </div>
 
                     <div className="header-text">
-                        <h2 className="card-title-name">{profile?.name}</h2>
+                        <h2 className="card-title">{profile?.name}</h2>
                         <p className="email-sub">{profile?.email}</p>
                     </div>
                     {!editing && (
@@ -143,16 +199,6 @@ function ProfilePage() {
                         </button>
                     )}
                 </div>
-
-                {message && (
-                    <div
-                        className={`banner ${message.type === "success" ? "success" : ""} ${
-                            message.type === "error" ? "error" : ""
-                        } ${message.type === "info" ? "info" : ""}`}
-                    >
-                        {message.text}
-                    </div>
-                )}
 
                 {/* DRIVER */}
                 {isDriver && (
@@ -291,10 +337,7 @@ function ProfilePage() {
                             <button onClick={handleSave} className="btn primary">Guardar alterações</button>
                             <button
                                 className="btn ghost"
-                                onClick={() => {
-                                    setEditing(false);
-                                    setMessage({ type: "info", text: "Edição cancelada." });
-                                }}
+                                onClick={() => setEditing(false)}
                             >
                                 Cancelar
                             </button>
@@ -302,8 +345,12 @@ function ProfilePage() {
                     </div>
                 ) : (
                     <div className="footer-row spaced">
-                        <button className="link-icon" onClick={() => setShowPasswordModal(true)}>
-                            <FiLock /> Alterar Palavra-passe
+                        <button className="link-icon" onClick={() => {
+                            setPasswords({old: "", new: "", confirm: ""});
+                            setShowPasswordModal(true);
+                        }}>
+
+                            <FiLock/> Alterar Palavra-passe
                         </button>
                         <button className="link-icon danger" onClick={() => setShowDeactivateModal(true)}>
                             <FiUserX /> Desativar Conta
@@ -318,40 +365,39 @@ function ProfilePage() {
                     <div className="modal-overlay">
                         <div className="modal">
                             <h3>Alterar Palavra-passe</h3>
-                            <input
-                                type="password"
+
+                            <PasswordInput
                                 placeholder="Senha atual"
                                 value={passwords.old}
-                                onChange={(e) =>
-                                    setPasswords({ ...passwords, old: e.target.value })
-                                }
+                                onChange={(e) => setPasswords({ ...passwords, old: e.target.value })}
                             />
-                            <input
-                                type="password"
+
+                            <PasswordInput
                                 placeholder="Nova senha"
                                 value={passwords.new}
-                                onChange={(e) =>
-                                    setPasswords({ ...passwords, new: e.target.value })
-                                }
+                                onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
                             />
-                            <input
-                                type="password"
+
+                            <PasswordInput
                                 placeholder="Confirmar nova senha"
                                 value={passwords.confirm}
-                                onChange={(e) =>
-                                    setPasswords({ ...passwords, confirm: e.target.value })
-                                }
+                                onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
                             />
+
+
+
+
                             <div className="modal-actions">
-                                <button
-                                    onClick={handlePasswordChange}
-                                    className="btn primary"
-                                >
+                                <button onClick={handlePasswordChange} className="btn primary">
                                     Guardar
                                 </button>
                                 <button
                                     className="btn danger"
-                                    onClick={() => setShowPasswordModal(false)}
+                                    onClick={() => {
+                                        setShowPasswordModal(false);
+                                        setPasswords({ old: "", new: "", confirm: "" });
+                                    }}
+
                                 >
                                     Cancelar
                                 </button>
@@ -363,20 +409,38 @@ function ProfilePage() {
 
 
             {/* MODAL DESATIVAR CONTA */}
-            {showDeactivateModal && (
-                <div className="modal-overlay">
-                    <div className="modal">
-                        <h3>Desativar Conta</h3>
-                        <p>Tem a certeza que deseja desativar a sua conta? Esta ação é reversível apenas por suporte.</p>
-                        <div className="modal-actions">
-                            <button className="btn danger" onClick={confirmDeactivate}>Confirmar</button>
-                            <button className="btn ghost" onClick={() => setShowDeactivateModal(false)}>Cancelar</button>
-                        </div>
-                    </div>
+            <ConfirmDialog
+                open={showDeactivateModal}
+                title="Desativar Conta"
+                message="Tem a certeza que deseja desativar a sua conta? Esta ação é reversível apenas por suporte."
+                confirmText="Confirmar"
+                cancelText="Cancelar"
+                loading={deactivateLoading}
+                onConfirm={confirmDeactivate}
+                onCancel={() => setShowDeactivateModal(false)}
+            />
+            {toast && (
+                <div className={`toast ${toast.type}`}>
+                    {toast.msg}
                 </div>
             )}
+
+            {cropImage && (
+                <AvatarCropper
+                    image={cropImage}
+                    onCancel={() => setCropImage(null)}
+                    onSave={(croppedFile) => {
+                        setPreviewAvatar(URL.createObjectURL(croppedFile));
+                        setProfile({ ...profile, profileImage: croppedFile });
+                        setCropImage(null);
+                    }}
+                />
+            )}
+
         </div>
     );
+
+
 }
 
 export default ProfilePage;
