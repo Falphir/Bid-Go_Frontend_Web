@@ -282,10 +282,10 @@ function RequestDetailsPage() {
         try {
             try {
                 try {
-                    await api.post(`/pageTransports/${transportId}`);
+                    await api.put(`/transports/updateTransport/${transportId}`);
                 } catch (err) {
                     if (err?.response?.status === 405) {
-                        await api.put(`/pageTransports/${transportId}`);
+                        await api.put(`/transports/updateTransport/${transportId}`);
                     } else throw err;
                 }
             } catch (err) {
