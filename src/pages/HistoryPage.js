@@ -80,7 +80,7 @@ function HistoryPage() {
     return arr.map((t) => {
       const requestId = t.id ?? t.requestId ?? t.transportRequestId ?? t.transportId ?? null;
       const pkg = t.package ?? t.cargo ?? t.goods ?? t.title ?? "—";
-      const driverName = t.driverName ?? t.driver?.name ?? t.driver ?? "—";
+      const driverName = t.driverName ?? t.name ?? t.driver?.name ?? t.driver ?? "—";
       const destination = t.destination ?? t.to ?? t.route?.to ?? "—";
       const price = t.price ?? t.value ?? t.amount ?? t.maxPrice ?? "—";
       const status = t.status ?? t.state ?? "—";
@@ -109,7 +109,6 @@ function HistoryPage() {
           res = await api.get(`/history/driver/${userId}`, { signal: controller.signal });
           setItems(normalizeDriver(res.data));
         } else if (isCompany) {
-          // Nota: assumimos endpoint company; ajuste se o backend diferir
           res = await api.get(`/history/company/${userId}`, { signal: controller.signal });
           setItems(normalizeCompany(res.data));
         } else {
