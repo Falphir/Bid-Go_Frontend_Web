@@ -4,8 +4,10 @@
 .etm-form{display:flex;flex-direction:column;gap:10px}
 .etm-label{display:flex;flex-direction:column;gap:6px;color:#0f172a;font-weight:600}
 .etm-input{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;background:#f8fafc}
-.etm-row{display:flex;gap:12px}
+.etm-row{display:flex;gap:12px;flex-wrap:wrap}
 .etm-dim-row{display:flex;gap:8px}
+.etm-input{width:100%;box-sizing:border-box}
+.etm-dim-row .etm-input{flex:1;min-width:0}
 .etm-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
 .etm-btn{border:none;border-radius:8px;padding:8px 12px;font-weight:600;cursor:pointer}
 .etm-cancel{background:#e2e8f0;color:#0f172a}
