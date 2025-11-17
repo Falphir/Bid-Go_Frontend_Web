@@ -36,6 +36,8 @@ function RequestDetailsPage() {
     const [toast, setToast] = useState(null);
     const [isEditTransportOpen, setIsEditTransportOpen] = useState(false);
     const [savingEditTransport, setSavingEditTransport] = useState(false);
+    const [confirmCancelTransport, setConfirmCancelTransport] = useState(false);
+    const [cancelingTransport, setCancelingTransport] = useState(false);
 
     useEffect(() => {
         if (!transportId) {
@@ -101,6 +103,17 @@ function RequestDetailsPage() {
         }
         return 0;
     });
+
+    const isTransportDraft = !!transport && (
+        (transport?.status && String(transport.status).toUpperCase() === 'DRAFT') ||
+        transport?.draft === true ||
+        transport?.isDraft === true
+    );
+
+    const isTransportCanceled = !!transport && (
+        (transport?.status && (String(transport.status).toUpperCase() === 'CANCELED' || String(transport.status).toUpperCase() === 'CANCELLED')) ||
+        transport?.canceled === true || transport?.isCanceled === true
+    );
 
     const isOwnerDriver = (bid) =>
         isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
@@ -231,7 +244,6 @@ function RequestDetailsPage() {
         if (!transportId) return;
         setSavingEditTransport(true);
         try {
-            // Try JSON first (POST/PUT fallback)
             try {
                 try {
                     await api.post(`/transports/updateTransport/${transportId}`, payload);
@@ -320,6 +332,26 @@ function RequestDetailsPage() {
                                 className="transport-image"
                             />
                             <div className="transport-details">
+                                {isCompany && (
+                                    <div className="transport-actions">
+                                        {isTransportDraft && (
+                                            <>
+                                                <button type="button" className="btn-edit" onClick={openEditTransport}>
+                                                    <FontAwesomeIcon icon={faPencil} /> <span style={{ marginLeft: 6 }}>Editar</span>
+                                                </button>
+                                                <button type="button" className="btn-publish" onClick={publishTransport} disabled={processing === 'publish'}>
+                                                    <span>{processing === 'publish' ? 'Publicando…' : 'Publicar'}</span>
+                                                </button>
+                                            </>
+                                        )}
+
+                                        {!isTransportCanceled && (
+                                            <button type="button" className="btn-cancel" onClick={() => setConfirmCancelTransport(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
+                                                Cancelar
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                                 <div className="details-grid">
                                     <div>
                                         <span className="detail-label">Origem:</span>{" "}
@@ -378,18 +410,7 @@ function RequestDetailsPage() {
                         </div>
               
 
-                        {isCompany && (
-                            (transport?.status && String(transport.status).toUpperCase() === 'DRAFT') || transport?.draft === true || transport?.isDraft === true
-                        ) && (
-                            <div className="transport-actions" style={{ display: 'flex', gap: '8px', marginTop: 12 }}>
-                                <button type="button" onClick={openEditTransport} style={{ background: '#0ea5a4', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
-                                    <FontAwesomeIcon icon={faPencil} /> <span style={{ marginLeft: 6 }}>Editar</span>
-                                </button>
-                                <button type="button" onClick={publishTransport} disabled={processing === 'publish'} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
-                                    <span>{processing === 'publish' ? 'Publicando…' : 'Publicar'}</span>
-                                </button>
-                            </div>
-                        )}
+                        {/* The transport-actions block was moved into .transport-details so it appears above the details grid. */}
                     </>
                 )}
                
@@ -570,6 +591,31 @@ function RequestDetailsPage() {
                 loading={cancelLoading}
                 onConfirm={handleConfirmCancel}
                 onCancel={() => setConfirmBidId(null)}
+            />
+
+            <ConfirmDialog
+                open={confirmCancelTransport}
+                title="Cancelar Pedido"
+                message="Tem a certeza que pretende cancelar este pedido de transporte?"
+                confirmText="Sim, cancelar"
+                cancelText="Não"
+                loading={cancelingTransport}
+                onConfirm={async () => {
+                    setCancelingTransport(true);
+                    try {
+                        await api.put(`/transports/canceled/${transportId}`);
+                        showToast('✅ Pedido cancelado com sucesso!', 'success');
+                        await refreshTransport();
+                    } catch (err) {
+                        console.error('Erro ao cancelar pedido:', err);
+                        const apiMsg = getApiErrorMessage(err);
+                        showToast(apiMsg || 'Erro ao cancelar o pedido.', 'error');
+                    } finally {
+                        setCancelingTransport(false);
+                        setConfirmCancelTransport(false);
+                    }
+                }}
+                onCancel={() => setConfirmCancelTransport(false)}
             />
 
             {confirmAction && (
