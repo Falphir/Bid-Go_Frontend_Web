@@ -7,6 +7,7 @@ import CreateTransportPage from "./pages/CreateTransportPage";
 import AcceptBids from "./pages/AcceptBids";
 import RequestDetailsPage from "./pages/RequestDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
+import HistoryPage from "./pages/HistoryPage";
 
 export default function AppRouter() {
     return (
@@ -19,6 +20,7 @@ export default function AppRouter() {
                         <Route path="/createRequest" element={<CreateTransportPage />} />
                         <Route path="/accept-bids/:id" element={<RequestDetailsPage />} />
                         <Route path="/profilePage" element={<ProfilePage />} />
+                        <Route path="/history" element={<HistoryPage />} />
                     </Route>
 
                     <Route path="/Login" element={<LoginPage />} />

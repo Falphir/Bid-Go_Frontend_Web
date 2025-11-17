@@ -1,0 +1,60 @@
+/* Page container */
+.history-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow: auto;
+  border-radius: 10px;
+  border: 1px solid #e6eef8;
+  background: #fff;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.history-table thead th {
+  text-align: left;
+  padding: 12px;
+  background: #f6f9fe;
+  color: #062e5c;
+  border-bottom: 1px solid #e6eef8;
+}
+
+.history-table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #eef3fa;
+  color: #2d3a4b;
+}
+
+.history-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+.table-link {
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.table-link:hover {
+  text-decoration: underline;
+}
+
+.status-message {
+  color: #2d3a4b;
+}
+
+.status-message.error {
+  color: #c0392b;
+}
+
+.no-bids {
+  color: #7a8fa6;
+}

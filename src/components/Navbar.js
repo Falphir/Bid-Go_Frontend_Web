@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Link } from 'react-router';
 import './Navbar.css'
 import Logo from '../assets/logo.png'
 import UserImage from '../assets/person.png'
@@ -11,6 +12,9 @@ class Navbar extends Component {
                     <img src={Logo} height={36}/>
                 </div>
                 <div className="user-info">
+                    <nav className="nav-links">
+                        <Link to="/history" className="nav-link">Histórico</Link>
+                    </nav>
                     {/* Placeholder for notifications.  Could show a number of alerts as a badge. */}
                     <span className="notifications" role="img" aria-label="notificações">🔔</span>
                     <div className="company">
