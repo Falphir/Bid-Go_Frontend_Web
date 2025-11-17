@@ -37,23 +37,6 @@
   align-items: center;
   gap: 8px;
 }
-
-.cancel-request-btn {
-  background: #f97316; /* orange accent */
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.12s ease;
-}
-
-.cancel-request-btn:hover:not(:disabled) {
-  background: #ea580c;
-  transform: translateY(-1px);
-}
-
 .cancel-request-btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
@@ -110,22 +93,20 @@
 }
 
 /* Action buttons positioned at top-right of the transport card */
-.transport-details { position: relative; }
-
-/* Action buttons positioned at top-right of the transport details area */
-.transport-details .transport-actions {
+.transport-card .transport-actions {
   position: absolute;
-  /* move higher so the actions overlap the top edge of the details box */
-  top: -28px;
-  right: 12px;
+  /* overlap the top edge of the card, at the right side; moved further up so buttons are detached from the card */
+  top: -40px;
+  right: 20px;
   display: flex;
   gap: 8px;
-  z-index: 60;
+  z-index: 120;
   pointer-events: auto;
 }
 
-.transport-details .transport-actions .btn-edit,
-.transport-details .transport-actions .btn-publish {
+.transport-card .transport-actions .btn-edit,
+.transport-card .transport-actions .btn-publish,
+.transport-card .transport-actions .btn-cancel {
   border: none;
   padding: 8px 12px;
   border-radius: 8px;
