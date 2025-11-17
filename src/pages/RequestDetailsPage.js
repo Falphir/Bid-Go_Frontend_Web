@@ -10,6 +10,7 @@ import EditBidModal from "../components/EditBidModal";
 import ConfirmDialog from "../components/ConfirmDialog";
 import AddBidModal from "../components/AddBidModal";
 import Countdown from "../components/Countdown";
+import { getApiErrorMessage } from "../utils/httpError";
 
 function RequestDetailsPage() {
     const navigate = useNavigate();
@@ -116,8 +117,8 @@ function RequestDetailsPage() {
             setBids((prev) => [created, ...prev]);
             setToast({ type: "success", msg: "Bid created." });
             setAddOpen(false);
-        } catch {
-            setToast({ type: "error", msg: "Failed to create Bid." });
+        } catch(err) {
+            setToast({ type: "error", msg: getApiErrorMessage(err) });
         } finally {
             setSavingAdd(false);
             setTimeout(() => setToast(null), 2500);
@@ -138,8 +139,8 @@ function RequestDetailsPage() {
 
             setToast({ type: "success", msg: "Bid Updated." });
             setEditingBid(null);
-        } catch {
-            setToast({ type: "error", msg: "Failed to Update Bid." });
+        } catch(err) {
+            setToast({ type: "error", msg: getApiErrorMessage(err) });
         } finally {
             setSavingEdit(false);
             setTimeout(() => setToast(null), 2500);
@@ -157,8 +158,8 @@ function RequestDetailsPage() {
             // update otimista
             setBids((prev) => prev.filter((b) => b.bidId !== confirmBidId));
             setToast({ type: "success", msg: "Bid was canceled Successfully" });
-        } catch (e) {
-            setToast({ type: "error", msg: "Failed to cancel Bid" });
+        } catch (err) {
+            setToast({ type: "error", msg: getApiErrorMessage(err) });
         } finally {
             setCancelLoading(false);
             setConfirmBidId(null);
@@ -436,6 +437,9 @@ function RequestDetailsPage() {
                 onSave={handleSaveAdd}
                 saving={savingAdd}
                 transport={transport}
+                maxPrice={transport?.maxPrice}
+                pickupDate={transport?.pickupDate}
+                deliveryDate={transport?.deliveryDate}
             />
             <EditBidModal
                 open={!!editingBid}
@@ -443,6 +447,9 @@ function RequestDetailsPage() {
                 onClose={handleCloseEdit}
                 onSave={handleSaveEdit}
                 saving={savingEdit}
+                maxPrice={transport?.maxPrice}
+                pickupDate={transport?.pickupDate}
+                deliveryDate={transport?.deliveryDate}
             />
             <ConfirmDialog
                 open={!!confirmBidId}
