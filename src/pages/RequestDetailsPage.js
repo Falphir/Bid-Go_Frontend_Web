@@ -7,6 +7,8 @@ import {useMe} from "../hooks/useMe";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPencil, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import EditBidModal from "../components/EditBidModal";
+import EditTransportModal from "../components/EditTransportModal";
+import { getApiErrorMessage } from "../utils/httpError";
 import ConfirmDialog from "../components/ConfirmDialog";
 import AddBidModal from "../components/AddBidModal";
 import Countdown from "../components/Countdown";
@@ -33,6 +35,10 @@ function RequestDetailsPage() {
     const [confirmAction, setConfirmAction] = useState(null); // {type, bidId}
     const [processing, setProcessing] = useState(null); // bidId que está em ação
     const [toast, setToast] = useState(null);
+    const [isEditTransportOpen, setIsEditTransportOpen] = useState(false);
+    const [savingEditTransport, setSavingEditTransport] = useState(false);
+    const [confirmCancelTransport, setConfirmCancelTransport] = useState(false);
+    const [cancelingTransport, setCancelingTransport] = useState(false);
 
     useEffect(() => {
         if (!transportId) {
@@ -52,6 +58,7 @@ function RequestDetailsPage() {
                     signal: controller.signal,
                 });
                 setTransport(transportRes.data);
+                console.debug('Fetched transport', transportRes.data, { isCompany, userId });
 
                 const bidsRes = await api.get(
                     `/bids/bidsActive?transportRequestId=${transportId}`,
@@ -97,6 +104,17 @@ function RequestDetailsPage() {
         }
         return 0;
     });
+
+    const isTransportDraft = !!transport && (
+        (transport?.status && String(transport.status).toUpperCase() === 'DRAFT') ||
+        transport?.draft === true ||
+        transport?.isDraft === true
+    );
+
+    const isTransportCanceled = !!transport && (
+        (transport?.status && (String(transport.status).toUpperCase() === 'CANCELED' || String(transport.status).toUpperCase() === 'CANCELLED')) ||
+        transport?.canceled === true || transport?.isCanceled === true
+    );
 
     const isOwnerDriver = (bid) =>
         isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
@@ -202,6 +220,102 @@ function RequestDetailsPage() {
     };
 
 
+    const refreshTransport = async () => {
+        if (!transportId) return;
+        try {
+            const res = await api.get(`/transports/${transportId}`);
+            setTransport(res.data);
+            console.debug('Refreshed transport', res.data, { isCompany, userId });
+        } catch (err) {
+            console.error('Failed to refresh transport', err);
+        }
+    };
+
+    const openEditTransport = () => {
+        if (!transport) return;
+        setIsEditTransportOpen(true);
+    };
+
+    const closeEditTransport = () => {
+        if (savingEditTransport) return;
+        setIsEditTransportOpen(false);
+    };
+
+    const handleSaveTransport = async (payload) => {
+        if (!transportId) return;
+        setSavingEditTransport(true);
+        try {
+            try {
+                try {
+                    await api.post(`/transports/updateTransport/${transportId}`, payload);
+                } catch (err) {
+                    if (err?.response?.status === 405) {
+                        await api.put(`/transports/updateTransport/${transportId}`, payload);
+                    } else throw err;
+                }
+            } catch (err) {
+                if (err?.response?.status === 415) {
+                    // Retry as multipart/form-data
+                    const formData = new FormData();
+                    Object.keys(payload).forEach((k) => {
+                        const v = payload[k];
+                        if (v !== undefined && v !== null) formData.append(k, v);
+                    });
+                    try {
+                        try {
+                            await api.post(`/transports/updateTransport/${transportId}`, formData);
+                        } catch (err2) {
+                            if (err2?.response?.status === 405) {
+                                await api.put(`/transports/updateTransport/${transportId}`, formData);
+                            } else throw err2;
+                        }
+                    } catch (finalErr) {
+                        throw finalErr;
+                    }
+                } else {
+                    throw err;
+                }
+            }
+
+            showToast('✅ Pedido atualizado com sucesso!', 'success');
+            setIsEditTransportOpen(false);
+            await refreshTransport();
+        } catch (err) {
+            console.error('Erro ao salvar edição do pedido:', err);
+            const apiMsg = getApiErrorMessage(err);
+            showToast(apiMsg || 'Erro ao atualizar o pedido.', 'error');
+        } finally {
+            setSavingEditTransport(false);
+        }
+    };
+
+    const publishTransport = async () => {
+        if (!transportId) return;
+        setProcessing('publish');
+        try {
+            try {
+                try {
+                    await api.put(`/transports/company/publish/${transportId}`);
+                } catch (err) {
+                    if (err?.response?.status === 405) {
+                        await api.put(`/transports/company/publish/${transportId}`);
+                    } else throw err;
+                }
+            } catch (err) {
+                throw err;
+            }
+
+            showToast('✅ Pedido publicado com sucesso!', 'success');
+            await refreshTransport();
+        } catch (err) {
+            console.error('Erro ao ativar pedido:', err);
+            const apiMsg = getApiErrorMessage(err);
+            showToast(apiMsg || 'Erro ao publicar o pedido.', 'error');
+        } finally {
+            setProcessing(null);
+        }
+    };
+
     return (
         <>
             <div className="acceptbids-container">
@@ -219,6 +333,26 @@ function RequestDetailsPage() {
                                 className="transport-image"
                             />
                             <div className="transport-details">
+                                {isCompany && (
+                                    <div className="transport-actions">
+                                        {isTransportDraft && (
+                                            <>
+                                                <button type="button" className="btn-edit" onClick={openEditTransport}>
+                                                    <FontAwesomeIcon icon={faPencil} /> <span style={{ marginLeft: 6 }}>Editar</span>
+                                                </button>
+                                                <button type="button" className="btn-publish" onClick={publishTransport} disabled={processing === 'publish'}>
+                                                    <span>{processing === 'publish' ? 'Publicando…' : 'Publicar'}</span>
+                                                </button>
+                                            </>
+                                        )}
+
+                                        {!isTransportCanceled && (
+                                            <button type="button" className="btn-cancel" onClick={() => setConfirmCancelTransport(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
+                                                Cancelar
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                                 <div className="details-grid">
                                     <div>
                                         <span className="detail-label">Origem:</span>{" "}
@@ -275,6 +409,9 @@ function RequestDetailsPage() {
                                 </div>
                             </div>
                         </div>
+              
+
+                        {/* The transport-actions block was moved into .transport-details so it appears above the details grid. */}
                     </>
                 )}
                
@@ -375,6 +512,7 @@ function RequestDetailsPage() {
                         )}
                     </div>
                     )}
+                    <EditTransportModal open={isEditTransportOpen} transport={transport} onClose={closeEditTransport} onSave={handleSaveTransport} saving={savingEditTransport} />
                     {isCompany && (
                         <div className="bids-list">
                             {sortedBids.length === 0 ? (
@@ -460,6 +598,31 @@ function RequestDetailsPage() {
                 loading={cancelLoading}
                 onConfirm={handleConfirmCancel}
                 onCancel={() => setConfirmBidId(null)}
+            />
+
+            <ConfirmDialog
+                open={confirmCancelTransport}
+                title="Cancelar Pedido"
+                message="Tem a certeza que pretende cancelar este pedido de transporte?"
+                confirmText="Sim, cancelar"
+                cancelText="Não"
+                loading={cancelingTransport}
+                onConfirm={async () => {
+                    setCancelingTransport(true);
+                    try {
+                        await api.put(`/transports/canceled/${transportId}`);
+                        showToast('✅ Pedido cancelado com sucesso!', 'success');
+                        await refreshTransport();
+                    } catch (err) {
+                        console.error('Erro ao cancelar pedido:', err);
+                        const apiMsg = getApiErrorMessage(err);
+                        showToast(apiMsg || 'Erro ao cancelar o pedido.', 'error');
+                    } finally {
+                        setCancelingTransport(false);
+                        setConfirmCancelTransport(false);
+                    }
+                }}
+                onCancel={() => setConfirmCancelTransport(false)}
             />
 
             {confirmAction && (

@@ -320,3 +320,55 @@
 .submit-button:hover {
   background-color: #004fa1;
 }
+
+/* Actions area with draft + submit buttons */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.draft-button {
+margin-top: 24px;
+  align-self: flex-end;
+  padding: 12px 24px;
+  background-color: #94a3b8;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.draft-button:hover:not(:disabled) {
+  background: #748199;
+}
+
+.draft-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Toast (same visual style used elsewhere) */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    animation: fadeIn 0.3s ease;
+    z-index: 1000;
+}
+.toast.success { background: #4caf50; }
+.toast.error { background: #f44336; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
