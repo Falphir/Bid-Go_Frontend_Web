@@ -525,14 +525,17 @@ function RequestDetailsPage() {
                 )}
 
                 {/* ACCEPTED: WaitingPickup / Pendent / InTransit / Completed */}
-                {(status === "WAITINGPICKUP" || status === "PENDENT" || status === "PENDING" || status === "INTRANSIT" || status === "COMPLETED") && (
+                {(status !== "ACTIVE" &&
+                    status !== "CANCELED" &&
+                    status !== "DRAFT" &&
+                    acceptedBid) && (
+
                     <div className="bid-card">
                         <div className="bid-info">
                             <h4 className="bid-title">Bid nº{acceptedBid.bidId}</h4>
 
                             <p className="bid-driver">
                                 <span className="detail-label">Driver:</span>{" "}
-                                Isto nao está a dar porque o GET nao está a retornar o nome do motorista
                                 {acceptedBid.driver?.name ?? "—"}
                             </p>
 
@@ -548,6 +551,7 @@ function RequestDetailsPage() {
                     </div>
 
                 )}
+
             </div>
 
             {/* MODALS */}
