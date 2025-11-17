@@ -6,7 +6,7 @@
  * Inputs ganham destaque ao focar, e há um link discreto de “esqueceu-se da palavra-passe?”.
  */
 
-/* Ocupa a altura do viewport e remove scroll nesta página */
+
 .login-page {
   min-height: 100dvh;
   overflow: hidden;
@@ -78,7 +78,7 @@
   box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25);
 }
 
-/* bloco da checkbox: mais compacto e alinhado */
+
 .login-remember {
   display: inline-flex;
   align-items: center;
@@ -87,14 +87,14 @@
   user-select: none;
 }
 
-/* texto da opção "manter sessão iniciada" */
+
 .remember-text {
   font-size: 13px;
   font-weight: 500;
   color: #294766;
 }
 
-/* checkbox nativa reduzida e com cor da marca */
+
 .login-remember input[type="checkbox"] {
   accent-color: #0066cc;
   transform: scale(0.9);
@@ -103,13 +103,13 @@
   border-radius: 4px;
 }
 
-/* foco visível no checkbox */
+
 .login-remember input[type="checkbox"]:focus-visible {
   outline: 2px solid rgba(0, 102, 204, 0.35);
   outline-offset: 2px;
 }
 
-/* bloco da checkbox: mais compacto e alinhado */
+
 .login-remember {
   display: inline-flex;
   align-items: center;
@@ -118,14 +118,14 @@
   user-select: none;
 }
 
-/* texto da opção "manter sessão iniciada" */
+
 .remember-text {
   font-size: 13px;
   font-weight: 500;
   color: #294766;
 }
 
-/* checkbox nativa reduzida e com cor da marca */
+
 .login-remember input[type="checkbox"] {
   accent-color: #0066cc;
   transform: scale(0.9);
@@ -162,7 +162,6 @@
   background-color: #004fa1;
 }
 
-/* link “esqueceu-se da palavra-passe” mais discreto e harmonioso */
 .forgot-password {
   margin-top: 10px;
   font-size: 12.5px;
@@ -174,16 +173,5 @@
 
 .forgot-password:hover {
   text-decoration: underline;
-}
-
-.password-input-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.password-input-container input {
-  width: 100%;
-  padding-right: 40px; /* espaço para o ícone */
 }
 

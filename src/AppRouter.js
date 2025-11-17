@@ -18,7 +18,7 @@ export default function AppRouter() {
                         <Route path="/teste" element={<BidGoPage />} />
                         <Route path="/createRequest" element={<CreateTransportPage />} />
                         <Route path="/accept-bids/:id" element={<RequestDetailsPage />} />
-                        <Route path="/profilePage" element={<ProfilePage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
                     </Route>
 
                     <Route path="/Login" element={<LoginPage />} />
