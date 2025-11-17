@@ -469,10 +469,10 @@ function RequestDetailsPage() {
                                     <div className="bid-card" key={bid.bidId}>
                                         {/* left column */}
                                         <div className="bid-info">
-                                            <h4 className="bid-title">Bid nº{bid.bidId}</h4>
+                                            <h4 className="bid-title">Licitação de {bid.driver.name}</h4>
 
                                             <p className="bid-driver">
-                                                Driver: {bid.driver?.name || "—"}{" "}
+                                                Email do Motorista: {bid.driver?.email || "—"}{" "}
                                                 {bid.driver?.averageRating > 0 && (
                                                     <span className="driver-rating">⭐ {bid.driver.averageRating.toFixed(1)}</span>
                                                 )}
