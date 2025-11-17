@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import '../styles/BidGoPage.css';
+import React, { useEffect, useState } from "react";
+import "../styles/BidGoPage.css";
 import api from "../api/axiosConfig";
 import { useNavigate } from "react-router";
-
+import Countdown from "../components/Countdown";
+import { useMe } from "../hooks/useMe";
 
 function BidGoPage() {
   const [requests, setRequests] = useState([]);
@@ -10,113 +11,292 @@ function BidGoPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { role, userId, isDriver, isCompany, loading: meLoading } = useMe();
 
-    const normalizeList = (data) => {
-        const arr = Array.isArray(data)
-            ? data
-            : Array.isArray(data?.items)
-                ? data.items
-                : Array.isArray(data?.results)
-                    ? data.results
-                    : [];
+  // 🔎 Filtros (apenas usados para Driver)
+  const [filters, setFilters] = useState({
+    origin: "",
+    destination: "",
+    deliveryDate: "", // asc | desc
+    priceOrder: "", // asc | desc
+  });
 
-        return arr.map((t) => ({
-            id: t.id ?? t.transportRequestId ?? t.transportId,
-            image: t.image ?? "https://via.placeholder.com/400x250",
-            package: t.package ?? t.title ?? "Pedido",
-            route: t.route ?? "",
-            origin: t.origin ?? t.from ?? "—",
-            destination: t.destination ?? t.to ?? "—",
-            maxPrice: t.maxPrice ?? t.maxBudget ?? "—",
-            timeRemaining: t.timeRemaining ?? "",
-        }));
-    };
+  // 👁️ Toggle para filtros (fechado por omissão)
+  const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+  // 🧩 Normalizar resposta da API
+  const normalizeList = (data) => {
+    const arr = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.items)
+      ? data.items
+      : Array.isArray(data?.results)
+      ? data.results
+      : [];
 
-      try {
-          const res = await api.get("/pageTransports/filters", {
-              signal: controller.signal,
-          });
+    return arr.map((t) => ({
+      id: t.id ?? t.transportRequestId ?? t.transportId,
+      image: t.image ?? "https://via.placeholder.com/400x250",
+      package: t.package ?? t.title ?? "Pedido",
+      route: t.route ?? "",
+      origin: t.origin ?? t.from ?? "—",
+      destination: t.destination ?? t.to ?? "—",
+      maxPrice: t.maxPrice ?? t.maxBudget ?? "—",
+      timeRemaining: t.timeRemaining ?? "",
+      biddingEndDate:
+        t.biddingEndDate ?? t.biddingEnd ?? t.bidding_end_date ?? null,
+      status: t.status ?? null,
+    }));
+  };
 
-          setRequests(normalizeList(res?.data));
+  // Helpers
+  const buildQuery = (f) => {
+    const params = new URLSearchParams();
+    if (f.origin) params.append("origin", f.origin);
+    if (f.destination) params.append("destination", f.destination);
+    if (f.deliveryDate) params.append("deliveryDate", f.deliveryDate); // asc | desc
+    if (f.priceOrder) params.append("priceOrder", f.priceOrder); // asc | desc
+    return params.toString();
+  };
 
-          console.log(res.data);
-          console.log(requests);
-
-          if (res.data.length === 0) {
-              console.log('No active requests found.');
-              setIsRequestsEmpty(true);
-          }
-      } catch (err) {
-
-              if (api.isCancel?.(err) || err.name === 'CanceledError') return;
+  const fetchCompanyTransports = async (signal) => {
+    if (!userId) return;
+    setLoading(true);
+    setError(null);
+    setIsRequestsEmpty(false);
+    try {
+      const res = await api.get(`/transports/company/${userId}`, { signal });
+      const normalized = normalizeList(res?.data);
+      setRequests(normalized);
+      if (normalized.length === 0) setIsRequestsEmpty(true);
+    } catch (err) {
+      if (api.isCancel?.(err) || err.name === "CanceledError") return;
       if (err.response) {
-        // Server responded with a non-2xx status
         setError(`Server error: ${err.response.status} ${err.response.statusText}`);
       } else if (err.request) {
-        // No response received
-        setError('Network error: no response from server' + err.request);
+        setError("Network error: no response from server");
       } else {
-        // Something else happened while setting up the request
         setError(`Request error: ${err.message}`);
       }
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchDriverTransports = async (signal, currentFilters) => {
+    setLoading(true);
+    setError(null);
+    setIsRequestsEmpty(false);
+    try {
+      const qs = buildQuery(currentFilters || filters);
+      const url = qs ? `/pageTransports/filters?${qs}` : `/pageTransports/filters`;
+      const res = await api.get(url, { signal });
+      const normalized = normalizeList(res?.data);
+      setRequests(normalized);
+      if (normalized.length === 0) setIsRequestsEmpty(true);
+    } catch (err) {
+      if (api.isCancel?.(err) || err.name === "CanceledError") return;
+      if (err.response) {
+        setError(`Server error: ${err.response.status} ${err.response.statusText}`);
+      } else if (err.request) {
+        setError("Network error: no response from server");
+      } else {
+        setError(`Request error: ${err.message}`);
+      }
+    } finally {
+      setLoading(false);
     }
+  };
 
-    fetchData();
+  // 🧠 Buscar dados consoante o tipo de utilizador
+  useEffect(() => {
+    const controller = new AbortController();
+    if (isCompany && userId) {
+      fetchCompanyTransports(controller.signal);
+    } else if (isDriver) {
+      fetchDriverTransports(controller.signal);
+    }
     return () => controller.abort();
-  }, []);
-  // Data for each of the active requests.  In a real application this might
-  // come from an API, but here it's hard‑coded for clarity and simplicity
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDriver, isCompany, userId]);
 
-  if (loading) return <p>Loading users…</p>;
-  if (error) return <p role="alert">{error}</p>;
+  // 🕐 Estados de carregamento
+  if (meLoading) return <p className="status-message">A validar sessão…</p>;
+  if (loading) return <p className="status-message">A carregar transportes…</p>;
+  if (error) return <p className="status-message error">{error}</p>;
 
-    const list = Array.isArray(requests) ? requests : [];
-    const isEmpty = list.length === 0;
+  const list = Array.isArray(requests) ? requests : [];
+  const isEmpty = list.length === 0 || isRequestsEmpty;
 
   return (
     <div className="page-container">
-      {/* Header */}
-
-      {/* Main content */}
       <main className="main-content">
-        <button className="new-request-btn">+ Novo Pedido de Transporte</button>
-        <h2 className="section-title">Pedidos Ativos:</h2>
-        <div className="cards-container">
-            {isRequestsEmpty ? (
-                <p className="no-bids">Nenhum pedido ativo encontrado.</p>
-            ) : (
-                list.map((req) => (
-                    <div className="card" key={req.id}>
-                        <div className="card-image">
-                            <img src={req.image} alt={req.package} />
-                        </div>
-                        <div className="card-body">
-                            <h3 className="card-title">{req.package}</h3>
-                            <p className="card-route">{req.route}</p>
-                            <div>
-                                {req.origin} → {req.destination}
-                            </div>
-                            <div>{req.maxPrice}</div>
-                            <p className="card-time">Tempo Restante: {req.timeRemaining}</p>
-                            <button
-                                className="bid-btn"
-                                onClick={() => navigate(`/accept-bids/${req.id}`)}
-                            >
-                                Licitações Abertas
-                            </button>
-                        </div>
-                    </div>
-                ))
+        {/* Filtros no topo (Driver) */}
+        {isDriver && (
+          <div className="filters-top-wrapper">
+            <button
+              type="button"
+              className={`filters-toggle-top ${showFilters ? "active" : ""}`}
+              onClick={() => setShowFilters((s) => !s)}
+              aria-expanded={showFilters}
+              aria-controls="filtersTopPanel"
+            >
+              {showFilters ? "Esconder filtros" : "Mostrar filtros"}
+            </button>
+
+            {showFilters && (
+              <form
+                id="filtersTopPanel"
+                className="filters-top"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const controller = new AbortController();
+                  fetchDriverTransports(controller.signal, filters);
+                  setTimeout(() => controller.abort(), 30000);
+                }}
+              >
+                <div className="filters-row">
+                  <input
+                    type="text"
+                    placeholder="Origem"
+                    value={filters.origin}
+                    onChange={(e) => setFilters((f) => ({ ...f, origin: e.target.value }))}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Destino"
+                    value={filters.destination}
+                    onChange={(e) => setFilters((f) => ({ ...f, destination: e.target.value }))}
+                  />
+                  <select
+                    value={filters.priceOrder}
+                    onChange={(e) => setFilters((f) => ({ ...f, priceOrder: e.target.value }))}
+                  >
+                    <option value="">Preço</option>
+                    <option value="asc">Mais barato</option>
+                    <option value="desc">Mais caro</option>
+                  </select>
+                </div>
+                <div className="filters-actions">
+                  <button type="submit" className="bid-btn">Aplicar</button>
+                  <button
+                    type="button"
+                    className="bid-btn"
+                    onClick={() => {
+                      const cleared = { origin: "", destination: "", deliveryDate: "", priceOrder: "" };
+                      setFilters(cleared);
+                      const controller = new AbortController();
+                      fetchDriverTransports(controller.signal, cleared);
+                      setTimeout(() => controller.abort(), 30000);
+                    }}
+                  >
+                    Limpar
+                  </button>
+                </div>
+              </form>
             )}
+          </div>
+        )}
+
+        <h2 className="section-title">
+          {isDriver ? "Transportes Disponíveis para Licitar" : "Pedidos de Transporte"}
+        </h2>
+
+        {!isDriver && (
+          <button className="new-request-btn" onClick={() => navigate("/createRequest")}>
+            Novo Pedido de Transporte
+          </button>
+        )}
+
+        <div className="cards-container">
+          {isEmpty ? (
+            <p className="no-bids">Nenhum pedido encontrado.</p>
+          ) : (
+            list.map((req) => {
+              const transport = req;
+
+              // Resolver o status
+              const statusRaw = req?.status ?? null;
+              const statusText = (() => {
+                if (statusRaw == null) return null;
+                if (typeof statusRaw === "number") {
+                  switch (statusRaw) {
+                    case 0: return "Active";
+                    case 1: return "Canceled";
+                    case 2: return "Completed";
+                    case 3: return "Pending";
+                    case 4: return "InTransit";
+                    case 5: return "Draft";
+                    case 6: return "WaitingPickup";
+                    default: return String(statusRaw);
+                  }
+                }
+                if (typeof statusRaw === "boolean") return statusRaw ? "Canceled" : "Active";
+                return String(statusRaw);
+              })();
+
+              const statusClass = statusText ? `status-${statusText.toLowerCase()}` : "";
+
+              // Corrigir data de fim de leilão
+              let endDate = transport?.biddingEndDate
+                ? new Date(transport.biddingEndDate)
+                : null;
+              // Alguns endpoints (ex.: driver) devolvem apenas "timeRemaining" (segundos restantes)
+              if (!endDate && transport?.timeRemaining != null) {
+                const tr = transport.timeRemaining;
+                if (typeof tr === "number" && isFinite(tr)) {
+                  endDate = new Date(Date.now() + tr * 1000);
+                } else if (typeof tr === "string") {
+                  const n = Number(tr);
+                  if (!Number.isNaN(n) && isFinite(n)) {
+                    endDate = new Date(Date.now() + n * 1000);
+                  }
+                }
+              }
+
+              return (
+                <div className="card" key={req.id}>
+                  <div className="card-image">
+                    <img src={req.image} alt={req.package} />
+                  </div>
+
+                  <div className="card-body">
+                    <div className="title-with-badge">
+                      <h3 className="card-title">{req.package}</h3>
+                      {statusText && <span className={`status-badge ${statusClass}`}>{statusText}</span>}
+                    </div>
+
+                    <p className="card-route">{req.route}</p>
+                    <div>
+                      {req.origin} → {req.destination}
+                    </div>
+                    <div>
+                      <span className="label-small">Preço Máx:</span>{" "}
+                      {req.maxPrice}€
+                    </div>
+
+                    <p className="card-time">
+                      Tempo Restante:{" "}
+                      {endDate ? (
+                        <Countdown endDate={endDate} />
+                      ) : transport?.timeRemaining ? (
+                        String(transport.timeRemaining)
+                      ) : (
+                        "—"
+                      )}
+                    </p>
+
+                    <button
+                      className="bid-btn"
+                      onClick={() => navigate(`/accept-bids/${req.id}`)}
+                    >
+                      Licitações Abertas
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </main>
     </div>

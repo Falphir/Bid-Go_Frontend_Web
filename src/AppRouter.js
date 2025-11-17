@@ -3,7 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import App from "./App";
 import BidGoPage from "./pages/BidGoPage";
 import LoginPage from "./pages/LoginPage";
+import CreateTransportPage from "./pages/CreateTransportPage";
+import AcceptBids from "./pages/AcceptBids";
 import RequestDetailsPage from "./pages/RequestDetailsPage";
+import ProfilePage from "./pages/ProfilePage";
 
 export default function AppRouter() {
     return (
@@ -13,7 +16,9 @@ export default function AppRouter() {
                     <Route path="/" element={<App />} >
                         <Route index element={<BidGoPage />} />
                         <Route path="/teste" element={<BidGoPage />} />
+                        <Route path="/createRequest" element={<CreateTransportPage />} />
                         <Route path="/accept-bids/:id" element={<RequestDetailsPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
                     </Route>
 
                     <Route path="/Login" element={<LoginPage />} />

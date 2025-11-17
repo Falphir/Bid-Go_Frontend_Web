@@ -1,115 +1,101 @@
 .header {
-    background-color: #f1f6fc;
+    background-color: #eef4fb;
+    border-radius: 12px;
+    padding: 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 40px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    margin-bottom: 30px;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.logo img {
-    height: 36px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 40px;
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    gap: 20px;
-    position: relative;
+    gap: 16px;
 }
 
-/* 🔔 Ícone e bolinha de notificação */
-.notifications-wrapper {
+.notifications {
+    font-size: 20px;
     position: relative;
     cursor: pointer;
-    font-size: 22px;
 }
 
-.notif-dot {
+.notifications::after {
+    content: '';
     position: absolute;
     top: 0;
-    right: 0;
-    width: 9px;
-    height: 9px;
-    background: #ef4444;
+    right: -3px;
+    width: 8px;
+    height: 8px;
+    background: #ff4d4f;
     border-radius: 50%;
 }
 
-/* 🔽 Dropdown de notificações */
-.notif-dropdown {
-    position: absolute;
-    top: 45px;
-    right: 100px;
-    width: 300px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    padding: 12px;
-    z-index: 100;
-}
-
-.notif-dropdown h4 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 10px;
-}
-
-.notif-item {
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 6px;
-    transition: background 0.2s ease;
-}
-
-.notif-item.unread {
-    background: #e0ecff;
-}
-
-.notif-item:hover {
-    background: #edf2f7;
-}
-
-.notif-item p {
-    margin: 0;
-    font-size: 14px;
-    color: #1e293b;
-}
-
-.notif-item small {
-    color: #64748b;
-    font-size: 12px;
-}
-
-.notif-empty {
-    text-align: center;
-    color: #7a8fa6;
-    font-size: 14px;
-}
-
-/* Perfil da empresa */
-.company {
+.user-box {
     display: flex;
     align-items: center;
     gap: 10px;
+    cursor: pointer;
+    position: relative;
 }
 
-.company-text {
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-text {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
 }
 
-.company-name {
+.user-name {
     font-weight: 600;
     color: #062e5c;
 }
 
-.company-type {
+.user-role {
     font-size: 12px;
-    color: #6b7280;
+    color: #7a8fa6;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 130px;
+    z-index: 10;
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    font-size: 14px;
+    color: #062e5c;
+}
+
+.dropdown-menu button:hover {
+    background-color: #eef4fb;
+}
+.skeleton {
+    opacity: 0.5;
+    pointer-events: none;
+}
+/* Mantém o tamanho, mas oculta o conteúdo */
+.placeholder {
+    visibility: hidden;
 }

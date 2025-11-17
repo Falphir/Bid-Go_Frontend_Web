@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../styles/AcceptBids.css";
-import { useParams } from "react-router-dom";
+import "../styles/RequestDetails.css";
+import { useParams, useNavigate } from "react-router";
 import api from "../api/axiosConfig";
 import Countdown from "../components/Countdown";
 
@@ -20,6 +20,8 @@ function AcceptBids() {
     const [confirmAction, setConfirmAction] = useState(null); // {type, bidId}
     const [toast, setToast] = useState(null);
     const [processing, setProcessing] = useState(null); // bidId que está em ação
+    const navigate = useNavigate();
+    const [confirmCancel, setConfirmCancel] = useState(false);
 
     useEffect(() => {
         if (!transportId) {
@@ -100,6 +102,24 @@ function AcceptBids() {
             setConfirmAction(null);
         }
     };
+
+    const cancelTransport = async () => {
+        if (!transportId) return;
+        setProcessing('cancel');
+        try {
+            await api.put(`/transports/canceled/${transportId}`);
+            showToast('✅ Pedido cancelado com sucesso!'); 
+            navigate(-1);
+        } catch (err) {
+            console.error('Erro ao cancelar pedido:', err);
+            showToast('Erro ao cancelar o pedido.', 'error');
+        } finally {
+            setProcessing(null);
+            setConfirmCancel(false);
+        }
+    };
+
+
     const fetchBids = async (signal) => {
         try {
             const bidsRes = await api.get(
@@ -112,6 +132,17 @@ function AcceptBids() {
                 console.error("Erro ao buscar licitações:", err);
             }
         }
+    };
+
+    const isTransportCanceled = () => {
+        if (!transport) return false;
+        const s =
+            transport.status ??
+            "";
+        if (typeof s === "string") return s.toLowerCase().includes("cancel");
+        if (typeof s === "boolean") return !!s;
+        if (typeof s === "number") return s === 1; 
+        return false;
     };
 
 
@@ -133,10 +164,25 @@ function AcceptBids() {
         <div className="acceptbids-container">
             {transport && (
                 <>
-                    <h2 className="page-title">
-                        {transport.package}
-                        {transport.description ? ` (${transport.description})` : ""}
-                    </h2>
+                    <div className="title-row">
+                        <h2 className="page-title">
+                            {transport.package}
+                            {transport.description ? ` (${transport.description})` : ""}
+                        </h2>
+                        <div className="title-actions">
+                            {isTransportCanceled() ? (
+                                <span className="canceled-badge">Pedido Cancelado</span>
+                            ) : (
+                                <button
+                                    className="cancel-request-btn"
+                                    onClick={() => setConfirmCancel(true)}
+                                    disabled={processing === 'cancel'}
+                                >
+                                    {processing === 'cancel' ? 'Cancelando...' : 'Cancelar Pedido'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
 
                     <div className="transport-card">
                         <img
@@ -191,6 +237,7 @@ function AcceptBids() {
                                     <Countdown endDate={transport.biddingEndDate} />
 
                                 </div>
+
 
                             </div>
                         </div>
@@ -297,6 +344,32 @@ function AcceptBids() {
                             <button
                                 className="confirm-no"
                                 onClick={() => setConfirmAction(null)}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de confirmação para cancelar o pedido */}
+            {confirmCancel && (
+                <div className="confirm-overlay">
+                    <div className="confirm-modal">
+                        <p>
+                            Tens a certeza que queres <strong>CANCELAR</strong> este pedido de transporte?
+                        </p>
+                        <div className="confirm-buttons">
+                            <button
+                                className="confirm-yes"
+                                onClick={() => cancelTransport()}
+                                disabled={processing === 'cancel'}
+                            >
+                                Sim
+                            </button>
+                            <button
+                                className="confirm-no"
+                                onClick={() => setConfirmCancel(false)}
                             >
                                 Cancelar
                             </button>

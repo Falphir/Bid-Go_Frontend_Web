@@ -222,26 +222,33 @@ function RequestDetailsPage() {
                                 <div className="details-grid">
                                     <div>
                                         <span className="detail-label">Origem:</span>{" "}
-                                        {transport.origin}
+                                        {transport.origin || "—"}
                                     </div>
                                     <div>
                                         <span className="detail-label">Destino:</span>{" "}
-                                        {transport.destination}
+                                        {transport.destination || "—"}
                                     </div>
+
+                                    <div className="span-2">
+                                        <span className="detail-label">Preço máximo:</span>{" "}
+                                        {transport.maxPrice ? `${transport.maxPrice}€` : "—"}
+                                    </div>
+
                                     <div>
-                                        <span className="detail-label">Peso (kg):</span>{" "}
-                                        {transport.weight}
+                                        <span className="detail-label">Peso:</span>{" "}
+                                        {transport.weight ? `${transport.weight} kg` : "—"}
                                     </div>
                                     <div>
                                         <span className="detail-label">Dimensões:</span>{" "}
                                         {transport.length && transport.width && transport.height
-                                            ? `${transport.length} x ${transport.width} x ${transport.height} cm`
+                                            ? `${transport.length} × ${transport.width} × ${transport.height} cm`
                                             : "—"}
                                         {"  "}
                                         {transport.volume
                                             ? `(${transport.volume.toLocaleString("pt-PT")} cm³)`
                                             : ""}
                                     </div>
+
                                     <div>
                                         <span className="detail-label">Prazo de entrega:</span>{" "}
                                         {transport.deliveryDate
@@ -254,8 +261,9 @@ function RequestDetailsPage() {
                                             ? new Date(transport.pickupDate).toLocaleDateString()
                                             : "—"}
                                     </div>
+
                                     <div>
-                                        <span className="detail-label">Data do início do leilão:</span>{" "}
+                                        <span className="detail-label">Início do leilão:</span>{" "}
                                         {transport.biddingStartDate
                                             ? new Date(transport.biddingStartDate).toLocaleDateString()
                                             : "—"}
@@ -263,9 +271,7 @@ function RequestDetailsPage() {
                                     <div>
                                         <span className="detail-label">Fim do leilão:</span>{" "}
                                         <Countdown endDate={transport.biddingEndDate} />
-
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -377,9 +383,9 @@ function RequestDetailsPage() {
                                 sortedBids.map((bid) => (
                                     <div className="bid-card" key={bid.bidId}>
                                         <div className="bid-info">
-                                            <h4 className="bid-title">Licitação nº{bid.bidId}</h4>
+                                            <h4 className="bid-title">Licitação de {bid.driver.name}</h4>
                                             <p className="bid-driver">
-                                                Motorista: {bid.driver?.name || "—"}{" "}
+                                                Email do Motorista: {bid.driver?.email || "—"}{" "}
                                                 {bid.driver?.averageRating > 0 && (
                                                     <span
                                                         className="driver-rating">⭐ {bid.driver.averageRating.toFixed(1)}</span>

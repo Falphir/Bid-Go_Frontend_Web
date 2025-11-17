@@ -41,7 +41,6 @@ export default function Countdown({ endDate }) {
     if (diffMs <= 0) color = "red"; // terminou
     else if (diffMs < 60 * 60 * 1000) color = "orange"; // < 1h
     else if (diffMs < 6 * 60 * 60 * 1000) color = "#e6b800"; // < 6h
-    else if (diffMs < 24 * 60 * 60 * 1000) color = "yellowgreen"; // < 24h
     // caso contrário, mantém verde
 
     return <span style={{ color, fontWeight: 600 }}>{timeLeft}</span>;
