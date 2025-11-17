@@ -526,21 +526,27 @@ function RequestDetailsPage() {
 
                 {/* ACCEPTED: WaitingPickup / Pendent / InTransit / Completed */}
                 {(status === "WAITINGPICKUP" || status === "PENDENT" || status === "PENDING" || status === "INTRANSIT" || status === "COMPLETED") && (
-                    <div className="bids-section">
-                        <h3>Accepted Bid</h3>
-                        {!acceptedBid ? (
-                            <p className="no-bids">No accepted bid found.</p>
-                        ) : (
-                            <div className="bid-card">
-                                <div className="bid-info">
-                                    <h4>Bid nº{acceptedBid.bidId}</h4>
-                                    <p className="bid-driver">Driver: {acceptedBid.driver?.name}</p>
-                                    <p>Accepted Price: {acceptedBid.value}€</p>
-                                    <p>Delivery Deadline: {new Date(acceptedBid.deliveryDeadline).toLocaleDateString()}</p>
-                                </div>
-                            </div>
-                        )}
+                    <div className="bid-card">
+                        <div className="bid-info">
+                            <h4 className="bid-title">Bid nº{acceptedBid.bidId}</h4>
+
+                            <p className="bid-driver">
+                                <span className="detail-label">Driver:</span>{" "}
+                                Isto nao está a dar porque o GET nao está a retornar o nome do motorista
+                                {acceptedBid.driver?.name ?? "—"}
+                            </p>
+
+                            <p className="bid-value">
+                                <span>Accepted Price:</span> <strong>{acceptedBid.value}€</strong>
+                            </p>
+
+                            <p className="bid-deadline">
+                                <span className="detail-label">Deadline:</span>{" "}
+                                {new Date(acceptedBid.deliveryDeadline).toLocaleDateString()}
+                            </p>
+                        </div>
                     </div>
+
                 )}
             </div>
 
