@@ -147,7 +147,7 @@ function RegisterPage() {
 			<img src={logo} alt="Bid&Go logo" className="page-logo" />
 			<div className="login-container">
 				<div className="login-form">
-					<h2 className="login-title">Criar Conta</h2>
+					<h2 className="login-title">Registar</h2>
 
 					{!mode && (
 						<div style={{ display: "flex", gap: 12, flexDirection: "column" }}>
@@ -205,12 +205,12 @@ function RegisterPage() {
 
 							{error && <p className="error-message">{error}</p>}
 
-							<div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
+							<div className="form-actions">
 								<button type="button" className="login-button" onClick={submitDriver} disabled={loading}>
-									{loading ? 'A processar…' : 'Enviar registo Driver'}
+									{loading ? 'A processar…' : 'Registar'}
 								</button>
-								<button type="button" className="login-button" onClick={() => setMode(null)} disabled={loading}>
-									Voltar
+								<button type="button" className="login-button cancel" onClick={() => setMode(null)} disabled={loading}>
+									Cancelar
 								</button>
 							</div>
 						</form>
@@ -252,12 +252,12 @@ function RegisterPage() {
 
 							{error && <p className="error-message">{error}</p>}
 
-							<div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
+							<div className="form-actions">
 								<button type="button" className="login-button" onClick={submitCompany} disabled={loading}>
-									{loading ? 'A processar…' : 'Enviar registo Company'}
+									{loading ? 'A processar…' : 'Registar'}
 								</button>
-								<button type="button" className="login-button" onClick={() => setMode(null)} disabled={loading}>
-									Voltar
+								<button type="button" className="login-button cancel" onClick={() => setMode(null)} disabled={loading}>
+									Cancelar
 								</button>
 							</div>
 						</form>

@@ -30,6 +30,7 @@
 .page-logo {
   width: 180px;
   margin-bottom: 10px;
+  margin-top: -115px;
   height: auto;
   display: block;
 }
@@ -39,13 +40,29 @@
   padding: 40px;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  width: 360px;
+  width: 500px;
   display: flex;
   flex-direction: column;
 }
 
+/* Form actions alinhadas em baixo à direita */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.login-button.cancel {
+  background-color: #dc3545;
+}
+
+.login-button.cancel:hover {
+  background-color: #b52a37;
+}
+
 .login-title {
-  margin-bottom: 24px;
+  margin-bottom: 10px; 
   text-align: center;
   color: #062e5c;
   font-size: 24px;
