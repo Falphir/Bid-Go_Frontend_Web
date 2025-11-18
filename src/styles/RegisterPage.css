@@ -163,3 +163,75 @@
 body.no-header .header {
   display: none !important;
 }
+
+/* --------------------------------------------- */
+/* Cartões de seleção do tipo de conta           */
+/* --------------------------------------------- */
+.account-mode-selector {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.account-option {
+  flex: 1 1 220px;
+  background: linear-gradient(135deg,#ffffff 0%,#f0f7ff 100%);
+  border: 1px solid #d3e2f0;
+  border-radius: 14px;
+  padding: 18px 20px 22px 20px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+  transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
+}
+
+.account-option:hover {
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  transform: translateY(-4px);
+  border-color: #a9cbe6;
+}
+
+.account-option:active {
+  transform: translateY(-1px) scale(.98);
+}
+
+.account-option h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #062e5c;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.account-option p {
+  margin: 0;
+  font-size: 13px;
+  color: #294766;
+  line-height: 1.35;
+}
+
+.account-option .badge {
+  background: #0066cc;
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: .5px;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+@media (max-width: 560px) {
+  .account-mode-selector {
+    flex-direction: column;
+  }
+  .account-option {
+    flex: 1 1 auto;
+  }
+}

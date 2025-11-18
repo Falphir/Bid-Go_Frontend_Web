@@ -147,25 +147,21 @@ function RegisterPage() {
 			<img src={logo} alt="Bid&Go logo" className="page-logo" />
 			<div className="login-container">
 				<div className="login-form">
-					<h2 className="login-title">Registar</h2>
+					<h2 className="login-title">Registo</h2>
 
 					{!mode && (
-						<div style={{ display: "flex", gap: 12, flexDirection: "column" }}>
-							<button
-								type="button"
-								className="login-button"
-								onClick={() => setMode("driver")}
-							>
-								Criar conta Driver
-							</button>
-
-							<button
-								type="button"
-								className="login-button"
-								onClick={() => setMode("company")}
-							>
-								Criar conta Company
-							</button>
+						<div>
+							<p style={{margin: 0, marginBottom: 12, color: '#294766', fontSize: 14, fontWeight: 600}}>Escolhe o tipo de conta:</p>
+							<div className="account-mode-selector">
+								<button type="button" className="account-option" onClick={() => setMode("driver")}>
+									<h3>Driver</h3>
+									<p>Regista-te como Motorista Independente para fazer as tuas Licitações a Transportes.</p>
+								</button>
+								<button type="button" className="account-option" onClick={() => setMode("company")}>
+									<h3>Company</h3>
+									<p>Cria uma Conta Empresarial para publicar Pedidos de Transporte e Gerir Históricos.</p>
+								</button>
+							</div>
 						</div>
 					)}
 
@@ -173,7 +169,7 @@ function RegisterPage() {
 						<form onSubmit={(e) => e.preventDefault()}>
 							<label className="login-label">
 								Nome
-								<input value={dName} onChange={(e) => setDName(e.target.value)} />
+								<input placeholder="Nome" value={dName} onChange={(e) => setDName(e.target.value)} />
 							</label>
 
 							<label className="login-label">
@@ -188,19 +184,19 @@ function RegisterPage() {
 
 							<label className="login-label">
 								Email
-								<input type="email" value={dEmail} onChange={(e) => setDEmail(e.target.value)} />
+								<input type="email" placeholder="Email" value={dEmail} onChange={(e) => setDEmail(e.target.value)} />
 							</label>
 
 							<PasswordInput label="Palavra-passe" value={dPassword} onChange={(e) => setDPassword(e.target.value)} />
 
 							<label className="login-label">
 								Telefone
-								<input value={dPhone} onChange={(e) => setDPhone(e.target.value)} />
+								<input placeholder="Telefone" value={dPhone} onChange={(e) => setDPhone(e.target.value)} />
 							</label>
 
 							<label className="login-label">
 								NIF
-								<input value={dNif} onChange={(e) => setDNif(e.target.value)} />
+								<input placeholder="NIF" value={dNif} onChange={(e) => setDNif(e.target.value)} />
 							</label>
 
 							{error && <p className="error-message">{error}</p>}
@@ -220,34 +216,34 @@ function RegisterPage() {
 						<form onSubmit={(e) => e.preventDefault()}>
 							<label className="login-label">
 								Nome
-								<input value={cName} onChange={(e) => setCName(e.target.value)} />
+								<input placeholder="Nome" value={cName} onChange={(e) => setCName(e.target.value)} />
 							</label>
 
 							<label className="login-label">
 								Company Name
-								<input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+								<input placeholder="Company Name" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
 							</label>
 
 							<label className="login-label">
 								Morada
-								<input value={address} onChange={(e) => setAddress(e.target.value)} />
+								<input placeholder="Morada" value={address} onChange={(e) => setAddress(e.target.value)} />
 							</label>
 
 							<label className="login-label">
 								Email
-								<input type="email" value={cEmail} onChange={(e) => setCEmail(e.target.value)} />
+								<input type="email" placeholder="Email" value={cEmail} onChange={(e) => setCEmail(e.target.value)} />
 							</label>
 
 							<PasswordInput label="Palavra-passe" value={cPassword} onChange={(e) => setCPassword(e.target.value)} />
 
 							<label className="login-label">
 								Telefone
-								<input value={cPhone} onChange={(e) => setCPhone(e.target.value)} />
+								<input placeholder="Telefone" value={cPhone} onChange={(e) => setCPhone(e.target.value)} />
 							</label>
 
 							<label className="login-label">
 								NIF
-								<input value={cNif} onChange={(e) => setCNif(e.target.value)} />
+								<input placeholder="NIF" value={cNif} onChange={(e) => setCNif(e.target.value)} />
 							</label>
 
 							{error && <p className="error-message">{error}</p>}
