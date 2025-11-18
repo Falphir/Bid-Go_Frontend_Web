@@ -43,6 +43,8 @@ function RequestDetailsPage() {
     const [savingEditTransport, setSavingEditTransport] = useState(false);
     const [confirmCancelTransport, setConfirmCancelTransport] = useState(false);
     const [cancelingTransport, setCancelingTransport] = useState(false);
+    const [statusUpdating, setStatusUpdating] = useState(false);
+    const [confirmStatusAction, setConfirmStatusAction] = useState(null); // { target, label }
 
     // Helper toast
     const showToast = (msg, type = "success") => {
@@ -350,6 +352,24 @@ function RequestDetailsPage() {
         }
     };
 
+    // Update transport status via endpoint
+    const updateTransportStatus = async (target) => {
+        if (!transportId) return;
+        setStatusUpdating(true);
+        try {
+            await api.put(`/transports/updateStatus/${transportId}`, { status: target });
+            showToast('Estado do pedido atualizado com sucesso!', 'success');
+            await refreshTransport();
+        } catch (err) {
+            console.error('Erro ao atualizar estado:', err);
+            const apiMsg = getApiErrorMessage(err);
+            showToast(apiMsg || 'Erro ao atualizar estado do pedido.', 'error');
+        } finally {
+            setStatusUpdating(false);
+            setConfirmStatusAction(null);
+        }
+    };
+
     // RENDER guards
     if (meLoading) return <p className="status-message">Validating Session…</p>;
     if (loading) return <p className="status-message">Loading…</p>;
@@ -548,6 +568,50 @@ function RequestDetailsPage() {
                                 {new Date(acceptedBid.deliveryDeadline).toLocaleDateString()}
                             </p>
                         </div>
+                        <div className="status-actions" style={{ marginTop: 12 }}>
+                            {/* Company: Pending -> WaitingPickup */}
+                            {isCompany && (status === "PENDING" || status === "PENDENT") && (
+                                <button
+                                    className="status-btn"
+                                    onClick={() => setConfirmStatusAction({ target: 'WaitingPickup', label: 'Marcar como Aguardando Recolha' })}
+                                    disabled={statusUpdating}
+                                >
+                                    {statusUpdating ? 'Aguarde…' : 'Marcar Recolha'}
+                                </button>
+                            )}
+
+                            {/* Driver: WaitingPickup -> InTransit */}
+                            {isDriver && status === "WAITINGPICKUP" && (
+                                <button
+                                    className="status-btn"
+                                    onClick={() => setConfirmStatusAction({ target: 'InTransit', label: 'Iniciar Transporte' })}
+                                    disabled={statusUpdating}
+                                >
+                                    {statusUpdating ? 'Aguarde…' : 'Iniciar Transporte'}
+                                </button>
+                            )}
+
+                            {/* Driver: InTransit -> Completed or Canceled */}
+                            {isDriver && status === "INTRANSIT" && (
+                                <>
+                                    <button
+                                        className="status-btn"
+                                        onClick={() => setConfirmStatusAction({ target: 'Completed', label: 'Marcar como Concluído' })}
+                                        disabled={statusUpdating}
+                                    >
+                                        {statusUpdating ? 'Aguarde…' : 'Concluir'}
+                                    </button>
+                                    <button
+                                        className="status-btn"
+                                        onClick={() => setConfirmStatusAction({ target: 'Canceled', label: 'Cancelar Transporte' })}
+                                        disabled={statusUpdating}
+                                        style={{ marginLeft: 8, background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}
+                                    >
+                                        {statusUpdating ? 'Aguarde…' : 'Cancelar'}
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                 )}
@@ -613,6 +677,20 @@ function RequestDetailsPage() {
                     }
                 }}
                 onCancel={() => setConfirmCancelTransport(false)}
+            />
+
+            <ConfirmDialog
+                open={!!confirmStatusAction}
+                title={confirmStatusAction?.label ?? 'Confirmar Ação'}
+                message={`Tem certeza que pretende ${confirmStatusAction?.label ?? 'executar esta ação'}?`}
+                confirmText="Sim"
+                cancelText="Cancelar"
+                loading={statusUpdating}
+                onConfirm={async () => {
+                    if (!confirmStatusAction) return;
+                    await updateTransportStatus(confirmStatusAction.target);
+                }}
+                onCancel={() => setConfirmStatusAction(null)}
             />
 
             {confirmAction && (
