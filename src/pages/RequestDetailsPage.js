@@ -188,6 +188,10 @@ function RequestDetailsPage() {
         transport?.canceled === true || transport?.isCanceled === true
     );
 
+    const isTransportOwner = !!transport && isCompany && (
+        transport?.companyId === userId 
+    );
+
     const isOwnerDriver = (bid) => isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
 
     // Refresh transport (used by publish/cancel)
@@ -407,7 +411,7 @@ function RequestDetailsPage() {
                                             </>
                                         )}
 
-                                        {!isTransportCanceled && (
+                                        {isTransportOwner && !isTransportCanceled && (
                                             <button type="button" className="btn-cancel" onClick={() => setConfirmCancelTransport(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
                                                 Cancelar
                                             </button>
