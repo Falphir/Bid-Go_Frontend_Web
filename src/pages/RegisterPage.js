@@ -73,7 +73,6 @@ function RegisterPage() {
 		form.append("PhoneNumber", dPhone);
 		form.append("Nif", dNif);
 		form.append("DriverLicense", dDriverLicense);
-		// backend expects the field named "Insurance" (validation error showed this key)
 		form.append("Insurance", dInsurance);
 
 		setLoading(true);
@@ -83,7 +82,7 @@ function RegisterPage() {
 			});
 			const { token } = res.data || {};
 			if (token) localStorage.setItem("token", token);
-			navigate("/login");
+			navigate("/login", { state: { toast: { type: "success", msg: "Conta registada com sucesso" } } });
 		} catch (err) {
 			if (err.name === "CanceledError") return;
 			let msg = getApiErrorMessage(err);
@@ -127,7 +126,7 @@ function RegisterPage() {
 			});
 			const { token } = res.data || {};
 			if (token) localStorage.setItem("token", token);
-			navigate("/login");
+			navigate("/login", { state: { toast: { type: "success", msg: "Conta registada com sucesso" } } });
 		} catch (err) {
 			if (err.name === "CanceledError") return;
 			let msg = getApiErrorMessage(err);
