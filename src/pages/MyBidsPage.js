@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import api from "../api/axiosConfig";
 import "../styles/MyBidsPage.css";
 import { useMe } from "../hooks/useMe";
+import { useNavigate } from "react-router";
 
 export default function MyBidsPage() {
 	const [bids, setBids] = useState([]);
@@ -9,6 +10,7 @@ export default function MyBidsPage() {
 	const [error, setError] = useState(null);
 	const abortRef = useRef(null);
 	const { userId, loading: meLoading } = useMe();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		// wait until we have the userId from useMe
@@ -62,6 +64,11 @@ export default function MyBidsPage() {
 									<div className="bid-right">
 										<div className="bid-field"><span className="kw">Estado da Bid:</span> {bid.status ?? '—'}</div>
 										<div className="bid-field"><span className="kw">Estado do Pedido:</span> {bid.transportRequest?.status ?? '—'}</div>
+										<div style={{ marginTop: 8 }}>
+											<button className="bid-btn" onClick={() => navigate(`/transportRequest/${bid.transportRequestId}`)}>
+												Ver pedido
+											</button>
+										</div>
 									</div>
 								</article>
 							))}

@@ -124,14 +124,8 @@ function CreateTransportPage() {
         abortRef.current = controller;
 
         try {
-            // Try multiple common storage keys for the auth token (backwards compat)
             const token =
-                localStorage.getItem("token") ||
-                localStorage.getItem("access_token") ||
-                sessionStorage.getItem("accessToken") ||
-                localStorage.getItem("auth_token") ||
-                sessionStorage.getItem("token");
-
+                localStorage.getItem("token") 
             if (!token) {
                 console.warn("No auth token found in known storage keys");
                 showToast(
