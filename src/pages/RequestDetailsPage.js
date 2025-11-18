@@ -584,8 +584,8 @@ function RequestDetailsPage() {
                                 </button>
                             )}
 
-                            {/* Driver: WaitingPickup -> InTransit */}
-                            {isDriver && status === "WAITINGPICKUP" && (
+                            {/* Driver (only accepted bid owner): WaitingPickup -> InTransit */}
+                            {isOwnerDriver(acceptedBid) && status === "WAITINGPICKUP" && (
                                 <button
                                     className="status-btn"
                                     onClick={() => setConfirmStatusAction({ target: 'InTransit', label: 'Iniciar Transporte' })}
@@ -595,8 +595,8 @@ function RequestDetailsPage() {
                                 </button>
                             )}
 
-                            {/* Driver: InTransit -> Completed or Canceled */}
-                            {isDriver && status === "INTRANSIT" && (
+                            {/* Driver (only accepted bid owner): InTransit -> Completed or Canceled */}
+                            {isOwnerDriver(acceptedBid) && status === "INTRANSIT" && (
                                 <>
                                     <button
                                         className="status-btn"
