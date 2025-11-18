@@ -133,10 +133,15 @@ function HistoryPage() {
   if (error) return <p className="status-message error">{error}</p>;
 
   const isEmpty = !items || items.length === 0;
+  const title = isDriver
+    ? "Histórico de Licitações"
+    : isCompany
+    ? "Histórico de TransportRequests"
+    : "Histórico";
 
   return (
     <div className="history-page">
-      <h2 className="section-title">Histórico</h2>
+      <h2 className="section-title">{title}</h2>
       {isEmpty ? (
         <p className="no-bids">Sem registos para apresentar.</p>
       ) : (
