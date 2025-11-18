@@ -9,6 +9,10 @@ export default function Navbar() {
     const [user, setUser] = useState(null);
     const [openMenu, setOpenMenu] = useState(false);
     const navigate = useNavigate();
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
+    const [latestNotifications, setLatestNotifications] = useState([]);
+
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -30,6 +34,17 @@ export default function Navbar() {
 
                 const [profileRes] = await Promise.all([profilePromise]);
                 const profile = profileRes.data;
+// Buscar notificações não lidas
+                const notifRes = await api.get(`/notifications?userId=${userId}`);
+                const unread = notifRes.data.filter(n => !n.isRead).length;
+
+                setLatestNotifications(
+                    notifRes.data
+                        .sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp))
+                        .slice(0, 5)
+                );
+
+                setUnreadCount(unread);
 
                 setUser({
                     name: profile.name || "Utilizador",
@@ -58,7 +73,53 @@ export default function Navbar() {
             </div>
 
             <div className="user-info">
-                <span className="notifications">🔔</span>
+                <div className="notifications-wrapper">
+    <span
+        className="notifications"
+        onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
+    >
+        🔔
+        {unreadCount > 0 && (
+            <span className="notif-badge">{unreadCount}</span>
+        )}
+    </span>
+
+                    {notifDropdownOpen && (
+                        <div className="notif-dropdown">
+                            {latestNotifications.length === 0 ? (
+                                <p className="notif-empty">Sem notificações</p>
+                            ) : (
+                                latestNotifications.map(n => (
+                                    <div
+                                        key={n.notificationId}
+                                        className={`notif-item ${n.isRead ? "" : "unread"}`}
+                                        onClick={() => {
+                                            navigate("/notifications");
+                                            setNotifDropdownOpen(false);
+                                        }}
+                                    >
+                                        <p className="notif-text">{n.context}</p>
+                                        <span className="notif-date">
+                            {new Date(n.timeStamp).toLocaleDateString("pt-PT")}
+                        </span>
+                                    </div>
+                                ))
+                            )}
+
+                            <button
+                                className="notif-see-all"
+                                onClick={() => {
+                                    navigate("/notifications");
+                                    setNotifDropdownOpen(false);
+                                }}
+                            >
+                                Ver todas →
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+
 
                 {/* SKELETON antes dos dados carregarem */}
                 {!user && (
@@ -89,6 +150,8 @@ export default function Navbar() {
                         {openMenu && (
                             <div className="dropdown-menu">
                                 <button onClick={() => navigate("/profile")}>Perfil</button>
+                                <button onClick={() => navigate("/history")}>Histórico</button>
+                                <button onClick={() => navigate("/notifications")}>Notificações</button>
                                 <button onClick={handleLogout}>Logout</button>
                             </div>
                         )}

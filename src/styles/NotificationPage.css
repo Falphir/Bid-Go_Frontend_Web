@@ -1,0 +1,139 @@
+.notif-page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.notif-title {
+    font-size: 26px;
+    color: #062e5c;
+    margin-bottom: 20px;
+}
+
+.notif-mark-all {
+    background: #e8f0fc;
+    border: 1px solid #cdd9ef;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    font-weight: 600;
+    color: #062e5c;
+}
+
+.notif-mark-all:hover {
+    background: #dce9fb;
+}
+
+.notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notif-card {
+    background: #ffffff;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.notif-card:hover {
+    background: #f6f9ff;
+}
+
+.notif-card.unread {
+    border-left: 4px solid #3b82f6;
+    background: #f0f6ff;
+}
+
+.notif-card-text {
+    font-size: 15px;
+    color: #062e5c;
+    margin-bottom: 8px;
+}
+
+.notif-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notif-date {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.notif-dot {
+    width: 10px;
+    height: 10px;
+    background: #3b82f6;
+    border-radius: 50%;
+}
+
+.notif-empty-page {
+    padding: 20px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.notif-loading {
+    text-align: center;
+    padding: 30px;
+    font-size: 16px;
+    color: #6b7280;
+}
+.notif-filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.notif-filters select {
+    padding: 8px 12px;
+    border: 1px solid #d4dce7;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.notif-filters select:hover {
+    background: #f1f5fb;
+}
+/* Wrapper para centrar no ecrã */
+.notif-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 40px;
+}
+
+/* Card branco estilo login */
+.notif-card-container {
+    width: 100%;
+    max-width: 780px;
+    background: #ffffff;
+    padding: 35px 40px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* Ajusta filtros */
+.notif-filters {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.notif-filters select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #cdd9ef;
+    background: #f8fbff;
+    color: #062e5c;
+    font-size: 14px;
+}

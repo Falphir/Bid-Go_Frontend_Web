@@ -9,6 +9,7 @@ import RequestDetailsPage from "./pages/RequestDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
 import HistoryPage from "./pages/HistoryPage";
 import RegisterPage from "./pages/RegisterPage";
+import NotificationPage from "./pages/NotificationPage";
 
 export default function AppRouter() {
     return (
@@ -21,10 +22,10 @@ export default function AppRouter() {
                         <Route path="/createRequest" element={<CreateTransportPage />} />
                         <Route path="/history" element={<HistoryPage />} />
                         <Route path="/transportRequest/:id" element={<RequestDetailsPage />} />
+                        <Route path="/notifications" element={<NotificationPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/register" element={<RegisterPage />} />
                     </Route>
-
                     <Route path="/Login" element={<LoginPage />} />
                     <Route path="*" element={<div>NOT FOUND</div>} />
                 </Routes>
