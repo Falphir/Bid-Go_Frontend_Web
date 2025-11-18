@@ -128,12 +128,19 @@ function RegisterPage() {
 			const { token } = res.data || {};
 			if (token) localStorage.setItem("token", token);
 			navigate("/login");
-		} catch(err){
-                    const msg = getApiErrorMessage(err);
-                    setToast({ type: "error", msg });
-                }finally {
-                    setTimeout(() => setToast(null), 3000);
-                }
+		} catch (err) {
+			if (err.name === "CanceledError") return;
+			let msg = getApiErrorMessage(err);
+			if (!msg) {
+				if (err.response) msg = err.response.data?.message || `Erro ${err.response.status}`;
+				else if (err.request) msg = "Falha de rede: sem resposta do servidor.";
+				else msg = `Erro: ${err.message}`;
+			}
+			setToast({ type: "error", msg });
+		} finally {
+			setLoading(false);
+			setTimeout(() => setToast(null), 3000);
+		}
             };
 
 	return (
