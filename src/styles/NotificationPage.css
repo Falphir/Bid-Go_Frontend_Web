@@ -39,6 +39,7 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.04);
     cursor: pointer;
     transition: 0.2s;
+    position:relative;
 }
 
 .notif-card:hover {
@@ -50,16 +51,62 @@
     background: #f0f6ff;
 }
 
+.notif-card.fade-in { animation: notifCardFade .35s ease; }
+@keyframes notifCardFade { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform: translateY(0);} }
+
 .notif-card-text {
     font-size: 15px;
     color: #062e5c;
     margin-bottom: 8px;
 }
 
+.notif-card-head {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:6px;
+    flex-wrap:wrap;
+}
+
+.notif-icon-circle {
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:#eef4fb;
+    color:#062e5c;
+    font-size:18px;
+    flex-shrink:0;
+}
+.notif-card.unread .notif-icon-circle { background:#3b82f6; color:#fff; }
+
+.type-badge {
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-size:12px;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:999px;
+    letter-spacing:.3px;
+    line-height:1;
+}
+.type-Accepted { background:#e6f9ed; color:#087443; }
+.type-Rejected { background:#ffecee; color:#b11a29; }
+.type-Canceled { background:#f7e9ff; color:#6e1a96; }
+.type-New_message { background:#e8f2ff; color:#0b519b; }
+.type-Confirmed_Payment { background:#e8fff3; color:#0b7b54; }
+
+.notif-dot { width:10px; height:10px; background:#3b82f6; border-radius:50%; }
+
 .notif-card-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap:12px;
+    flex-wrap:wrap;
 }
 
 .notif-date {

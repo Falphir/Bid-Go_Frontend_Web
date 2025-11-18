@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axiosConfig";
 import "../styles/NotificationPage.css";
+import { FaCheckCircle, FaTimesCircle, FaCommentDots, FaMoneyBillWave, FaBan } from "react-icons/fa";
 
 export default function NotificationPage() {
     const [notifications, setNotifications] = useState([]);
@@ -78,6 +79,28 @@ export default function NotificationPage() {
 
     if (loading) return <div className="notif-loading">A carregar notificações...</div>;
 
+    const iconForType = (type) => {
+        switch (type) {
+            case "Accepted": return <FaCheckCircle />;
+            case "Rejected": return <FaTimesCircle />;
+            case "Canceled": return <FaBan />;
+            case "New_message": return <FaCommentDots />;
+            case "Confirmed_Payment": return <FaMoneyBillWave />;
+            default: return <FaCommentDots />;
+        }
+    };
+
+    const labelForType = (type) => {
+        switch (type) {
+            case "Accepted": return "Bid Aceite";
+            case "Rejected": return "Bid Rejeitada";
+            case "Canceled": return "Pedido Cancelado";
+            case "New_message": return "Nova Mensagem";
+            case "Confirmed_Payment": return "Pagamento Confirmado";
+            default: return "Notificação";
+        }
+    };
+
     return (
         <div className="notif-wrapper">
             <div className="notif-card-container">
@@ -117,18 +140,16 @@ export default function NotificationPage() {
                     {filtered.map((n) => (
                         <div
                             key={n.notificationId}
-                            className={`notif-card ${!n.isRead ? "unread" : ""}`}
+                            className={`notif-card fade-in ${!n.isRead ? "unread" : ""}`}
                             onClick={() => !n.isRead && markAsRead(n.notificationId)}
                         >
-                            <div className="notif-card-text">{n.context}</div>
-
-                            <div className="notif-card-footer">
-                            <span className="notif-date">
-                                {new Date(n.timeStamp).toLocaleString("pt-PT")}
-                            </span>
-
+                            <div className="notif-card-head">
+                                <div className="notif-icon-circle">{iconForType(n.type)}</div>
+                                <span className={`type-badge type-${n.type}`}>{labelForType(n.type)}</span>
+                                <span className="notif-date">{new Date(n.timeStamp).toLocaleString("pt-PT")}</span>
                                 {!n.isRead && <span className="notif-dot"></span>}
                             </div>
+                            <div className="notif-card-text">{n.context}</div>
                         </div>
                     ))}
                 </div>
