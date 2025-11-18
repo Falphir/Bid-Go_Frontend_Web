@@ -15,6 +15,25 @@
     gap: 16px;
 }
 
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: 8px;
+}
+
+.nav-link {
+    color: #062e5c;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+
+.nav-link:hover {
+    background: #e7effa;
+}
+
 .notifications {
     font-size: 20px;
     position: relative;
