@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
 import PasswordInput from "../components/PasswordInput";
+import { getApiErrorMessage } from "../utils/httpError";
 
 function RegisterPage() {
 	const [mode, setMode] = useState(null); // 'driver' | 'company' | null
@@ -30,6 +31,7 @@ function RegisterPage() {
 	const [error, setError] = useState(null);
 	const abortRef = useRef(null);
 	const navigate = useNavigate();
+    const [toast, setToast] = useState(null);
 
 	useEffect(() => {
 		return () => abortRef.current?.abort();
@@ -81,7 +83,7 @@ function RegisterPage() {
 			});
 			const { token } = res.data || {};
 			if (token) localStorage.setItem("token", token);
-			navigate("/");
+			navigate("/login");
 		} catch (err) {
 			if (err.name === "CanceledError") return;
 			if (err.response) {
@@ -125,21 +127,14 @@ function RegisterPage() {
 			});
 			const { token } = res.data || {};
 			if (token) localStorage.setItem("token", token);
-			navigate("/");
-		} catch (err) {
-			if (err.name === "CanceledError") return;
-			if (err.response) {
-				const msg = err.response.data?.message || `Erro ${err.response.status}`;
-				setError(msg);
-			} else if (err.request) {
-				setError("Falha de rede: sem resposta do servidor.");
-			} else {
-				setError(`Erro: ${err.message}`);
-			}
-		} finally {
-			setLoading(false);
-		}
-	};
+			navigate("/login");
+		} catch(err){
+                    const msg = getApiErrorMessage(err);
+                    setToast({ type: "error", msg });
+                }finally {
+                    setTimeout(() => setToast(null), 3000);
+                }
+            };
 
 	return (
 		<div className="login-page">
@@ -263,8 +258,15 @@ function RegisterPage() {
 					)}
 				</div>
 			</div>
+             {toast && (
+                <div className={`toast ${toast.type}`}>
+                    {toast.msg}
+                </div>
+            )}
 		</div>
 	);
+
+    
 }
 
 export default RegisterPage;
