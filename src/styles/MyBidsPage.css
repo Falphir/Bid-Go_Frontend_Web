@@ -1,0 +1,81 @@
+.my-bids-page-root {
+  min-height: 100dvh;
+  background: #f7fbff;
+  display: flex;
+  flex-direction: column;
+}
+
+.my-bids-container {
+  display: flex;
+  justify-content: center;
+  padding: 28px 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.my-bids-panel {
+  background: #fff;
+  width: min(980px, 100%);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 6px 18px rgba(6,46,92,0.06);
+}
+
+.my-bids-title {
+  margin: 0 0 18px 0;
+  font-size: 22px;
+  color: #062e5c;
+}
+
+.info-text {
+  color: #556b88;
+  margin: 8px 0;
+}
+
+.bids-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bid-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e6eef8;
+  background: #ffffff;
+}
+
+.bid-left, .bid-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bid-field {
+  font-size: 14px;
+  color: #233449;
+}
+
+.kw {
+  color: #294766;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.error-message {
+  color: #dc3545;
+  margin: 8px 0;
+}
+
+@media (max-width: 600px) {
+  .bid-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .bid-right {
+    align-self: flex-end;
+  }
+}

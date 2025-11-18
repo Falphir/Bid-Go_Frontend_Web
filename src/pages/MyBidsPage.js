@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import api from "../api/axiosConfig";
-import "../styles/LoginPage.css";
+import "../styles/MyBidsPage.css";
 
 export default function MyBidsPage() {
 	const [bids, setBids] = useState([]);
@@ -34,39 +34,34 @@ export default function MyBidsPage() {
 	}, []);
 
 	return (
-		<div>
-	
-			<div className="login-page" style={{ paddingTop: 24 }}>
-				<div className="login-container">
-					<div className="login-form" style={{ width: 'min(980px, 95%)' }}>
-						<h2 className="login-title">Minhas Bids</h2>
+		<div className="my-bids-page-root">
+			<main className="my-bids-container">
+				<section className="my-bids-panel">
+					<h2 className="my-bids-title">Minhas Bids</h2>
 
-						{loading && <p>Carregando bids…</p>}
-						{error && <p className="error-message">{error}</p>}
+					{loading && <p className="info-text">Carregando bids…</p>}
+					{error && <p className="error-message">{error}</p>}
 
-						{!loading && !error && (
-							<div>
-								{bids.length === 0 && <p>Nenhuma bid encontrada.</p>}
-								{bids.map((bid) => (
-									<div key={bid.id || bid.bidId || JSON.stringify(bid)} style={{ border: '1px solid #e3e8ef', padding: 12, borderRadius: 8, marginBottom: 12 }}>
-										<div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-											<div>
-												<strong>Pedido:</strong> {bid.requestId ?? bid.request?.id ?? '—'}
-												<div><strong>Valor:</strong> {bid.amount ?? bid.value ?? '—'}</div>
-												<div><strong>Estado:</strong> {bid.status ?? bid.state ?? '—'}</div>
-											</div>
-											<div style={{ textAlign: 'right' }}>
-												<div><strong>Data:</strong> {bid.createdAt ? new Date(bid.createdAt).toLocaleString() : bid.date ?? '—'}</div>
-												<div><strong>ID:</strong> {bid.id ?? bid.bidId ?? '—'}</div>
-											</div>
-										</div>
+					{!loading && !error && (
+						<div className="bids-list">
+							{bids.length === 0 && <p className="info-text">Nenhuma bid encontrada.</p>}
+							{bids.map((bid) => (
+								<article className="bid-card" key={bid.id || bid.bidId || bid.transportRequestId || JSON.stringify(bid)}>
+									<div className="bid-left">
+										<div className="bid-field"><span className="kw">Pedido (ID):</span> {bid.transportRequestId ?? '—'}</div>
+										<div className="bid-field"><span className="kw">Valor:</span> {bid.value != null ? bid.value : '—'}</div>
+										<div className="bid-field"><span className="kw">Data de Entrega:</span> {bid.deliveryDeadline ? new Date(bid.deliveryDeadline).toLocaleDateString() : '—'}</div>
 									</div>
-								))}
-							</div>
-						)}
-					</div>
-				</div>
-			</div>
+									<div className="bid-right">
+										<div className="bid-field"><span className="kw">Estado da Bid:</span> {bid.status ?? '—'}</div>
+										<div className="bid-field"><span className="kw">Estado do Pedido:</span> {bid.transportRequest?.status ?? '—'}</div>
+									</div>
+								</article>
+							))}
+						</div>
+					)}
+				</section>
+			</main>
 		</div>
 	);
 }
