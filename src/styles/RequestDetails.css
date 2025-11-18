@@ -406,6 +406,55 @@
     transform: scale(1.05);
 }
 
+.status-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.bid-card > .status-actions {
+  margin-left: auto;
+  margin-top: 0;
+  align-self: flex-end;
+}
+
+.status-btn {
+  appearance: none;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .1s ease, box-shadow .2s ease;
+  box-shadow: 0 4px 12px rgba(2,6,23,0.08);
+}
+
+.status-btn:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.status-btn--primary { background: #2563eb; color: #fff; }
+.status-btn--primary:hover:not(:disabled) { filter: brightness(.95); transform: translateY(-1px); }
+.status-btn--primary:active:not(:disabled) { transform: translateY(0); }
+
+.status-btn--success { background: #16a34a; color: #fff; }
+.status-btn--success:hover:not(:disabled) { filter: brightness(.95); transform: translateY(-1px); }
+.status-btn--success:active:not(:disabled) { transform: translateY(0); }
+
+.status-btn--danger { background: #ef4444; color: #fff; }
+.status-btn--danger:hover:not(:disabled) { filter: brightness(.95); transform: translateY(-1px); }
+.status-btn--danger:active:not(:disabled) { transform: translateY(0); }
+
+.status-btn--warning { background: #f59e0b; color: #1f2937; }
+.status-btn--warning:hover:not(:disabled) { filter: brightness(.95); transform: translateY(-1px); }
+.status-btn--warning:active:not(:disabled) { transform: translateY(0); }
+
 /* Status messages */
 .status-message {
     text-align: center;

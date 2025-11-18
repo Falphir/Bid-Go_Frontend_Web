@@ -40,18 +40,35 @@
 
 .bid-card {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 14px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
   border-radius: 10px;
   border: 1px solid #e6eef8;
   background: #ffffff;
 }
 
-.bid-left, .bid-right {
+.bid-left, .bid-right { display: contents; }
+
+/* Clean header */
+.bid-header {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bid-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bid-id {
+  font-size: 15px;
+  font-weight: 700;
+  color: #062e5c;
 }
 
 .bid-field {
@@ -70,12 +87,74 @@
   margin: 8px 0;
 }
 
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  vertical-align: baseline;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Softer status colors for a clean look */
+.status-pending { background: #fff7e6; color: #b45309; }
+.status-accepted, .status-active { background: #ecfdf5; color: #065f46; }
+.status-rejected, .status-canceled, .status-cancelled { background: #fef2f2; color: #991b1b; }
+.status-completed, .status-finished { background: #eff6ff; color: #075985; }
+.status-intransit, .status-in_transit { background: #eef2ff; color: #4338ca; }
+.status-waitingpickup, .status-waiting_pickup { background: #fff7ed; color: #9a3412; }
+.status-draft { background: #f1f5f9; color: #334155; }
+.status-unknown { background: #f1f5f9; color: #334155; }
+
+/* Compact label above badges */
+.label-small {
+  font-size: 12px;
+  color: #556b88;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+/* Badges row */
+.badges-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* (reverted) badges now contain their own labels */
+
+/* Meta info row */
+.bid-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.meta-item { display: flex; gap: 6px; align-items: baseline; }
+.meta-label { font-size: 12px; color: #7a8fa6; font-weight: 600; }
+.meta-value { font-size: 14px; color: #233449; }
+
+/* Primary action button */
+.bid-btn {
+  background: transparent;
+  color: #0b63c9;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.bid-btn:hover { background-color: #eef4fb; }
+.bid-btn:active { background-color: #e2ecf9; }
+
 @media (max-width: 600px) {
-  .bid-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .bid-right {
-    align-self: flex-end;
-  }
+  .bid-card { align-items: stretch; }
 }

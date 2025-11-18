@@ -572,11 +572,11 @@ function RequestDetailsPage() {
                                 {new Date(acceptedBid.deliveryDeadline).toLocaleDateString()}
                             </p>
                         </div>
-                        <div className="status-actions" style={{ marginTop: 12 }}>
+                        <div className="status-actions">
                             {/* Company: Pending -> WaitingPickup */}
                             {isCompany && (status === "PENDING" || status === "PENDENT") && (
                                 <button
-                                    className="status-btn"
+                                    className="status-btn status-btn--primary"
                                     onClick={() => setConfirmStatusAction({ target: 'WaitingPickup', label: 'Marcar como Aguardando Recolha' })}
                                     disabled={statusUpdating}
                                 >
@@ -587,7 +587,7 @@ function RequestDetailsPage() {
                             {/* Driver (only accepted bid owner): WaitingPickup -> InTransit */}
                             {isOwnerDriver(acceptedBid) && status === "WAITINGPICKUP" && (
                                 <button
-                                    className="status-btn"
+                                    className="status-btn status-btn--success"
                                     onClick={() => setConfirmStatusAction({ target: 'InTransit', label: 'Iniciar Transporte' })}
                                     disabled={statusUpdating}
                                 >
@@ -599,17 +599,16 @@ function RequestDetailsPage() {
                             {isOwnerDriver(acceptedBid) && status === "INTRANSIT" && (
                                 <>
                                     <button
-                                        className="status-btn"
+                                        className="status-btn status-btn--success"
                                         onClick={() => setConfirmStatusAction({ target: 'Completed', label: 'Marcar como Concluído' })}
                                         disabled={statusUpdating}
                                     >
                                         {statusUpdating ? 'Aguarde…' : 'Concluir'}
                                     </button>
                                     <button
-                                        className="status-btn"
+                                        className="status-btn status-btn--danger"
                                         onClick={() => setConfirmStatusAction({ target: 'Canceled', label: 'Cancelar Transporte' })}
                                         disabled={statusUpdating}
-                                        style={{ marginLeft: 8, background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}
                                     >
                                         {statusUpdating ? 'Aguarde…' : 'Cancelar'}
                                     </button>
