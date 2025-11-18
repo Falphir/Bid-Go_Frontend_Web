@@ -1,14 +1,19 @@
 import React, { useRef, useState, useEffect } from "react";
 import api from "../api/axiosConfig";
 import "../styles/MyBidsPage.css";
+import { useMe } from "../hooks/useMe";
 
 export default function MyBidsPage() {
 	const [bids, setBids] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const abortRef = useRef(null);
+	const { userId, loading: meLoading } = useMe();
 
 	useEffect(() => {
+		// wait until we have the userId from useMe
+		if (!userId) return;
+
 		const controller = new AbortController();
 		abortRef.current = controller;
 
@@ -16,7 +21,7 @@ export default function MyBidsPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const res = await api.get("/bids/bidsByDriver", { signal: controller.signal });
+				const res = await api.get(`/bids/bidsByDriver/${userId}`, { signal: controller.signal });
 				setBids(res.data || []);
 			} catch (err) {
 				if (err.name === "CanceledError") return;
@@ -31,7 +36,9 @@ export default function MyBidsPage() {
 		fetchBids();
 
 		return () => controller.abort();
-	}, []);
+	}, [userId]);
+
+	if (meLoading) return <p className="status-message">A validar sessão…</p>;
 
 	return (
 		<div className="my-bids-page-root">
