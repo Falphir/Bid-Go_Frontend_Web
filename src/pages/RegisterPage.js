@@ -86,16 +86,16 @@ function RegisterPage() {
 			navigate("/login");
 		} catch (err) {
 			if (err.name === "CanceledError") return;
-			if (err.response) {
-				const msg = err.response.data?.message || `Erro ${err.response.status}`;
-				setError(msg);
-			} else if (err.request) {
-				setError("Falha de rede: sem resposta do servidor.");
-			} else {
-				setError(`Erro: ${err.message}`);
+			let msg = getApiErrorMessage(err);
+			if (!msg) {
+				if (err.response) msg = err.response.data?.message || `Erro ${err.response.status}`;
+				else if (err.request) msg = "Falha de rede: sem resposta do servidor.";
+				else msg = `Erro: ${err.message}`;
 			}
+			setToast({ type: "error", msg });
 		} finally {
 			setLoading(false);
+			setTimeout(() => setToast(null), 3000);
 		}
 	};
 
