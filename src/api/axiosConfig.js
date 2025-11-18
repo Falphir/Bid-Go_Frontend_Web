@@ -16,15 +16,24 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// 🚨 Interceptor opcional para lidar com 401 (token expirado)
+// 🚨 Interceptor para lidar com sessão expirada (401),
+// mas **IGNORAR** este comportamento no login
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
+        const requestUrl = error.config?.url || "";
+
+        // ⚠️ Se for 401 mas NAO for a rota de login → sessão expirada
+        if (
+            error.response?.status === 401 &&
+            !requestUrl.includes("/auth/login")
+        ) {
             console.warn("⚠️ Sessão expirada. Faz login novamente.");
             localStorage.removeItem("token");
-            window.location.href = "/login"; // redireciona para o login
+            sessionStorage.removeItem("token");
+            window.location.href = "/login";
         }
+
         return Promise.reject(error);
     }
 );

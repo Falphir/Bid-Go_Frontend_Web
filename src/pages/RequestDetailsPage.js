@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/RequestDetails.css";
-import { useParams, useNavigate  } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import api from "../api/axiosConfig";
-import {useMe} from "../hooks/useMe";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPencil, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useMe } from "../hooks/useMe";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import EditBidModal from "../components/EditBidModal";
 import EditTransportModal from "../components/EditTransportModal";
-import { getApiErrorMessage } from "../utils/httpError";
 import ConfirmDialog from "../components/ConfirmDialog";
 import AddBidModal from "../components/AddBidModal";
 import Countdown from "../components/Countdown";
+import { getApiErrorMessage } from "../utils/httpError";
 
 function RequestDetailsPage() {
     const navigate = useNavigate();
     const { role, userId, isDriver, isCompany, loading: meLoading } = useMe();
     const { id } = useParams();
     const transportId = id;
+
     const [transport, setTransport] = useState(null);
-    const [bids, setBids] = useState([]);
+    const [bids, setBids] = useState([]); // Active bids or empty
+    const [acceptedBid, setAcceptedBid] = useState(null); // For non-active states
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortBy, setSortBy] = useState("value");
     const [ascending, setAscending] = useState(true);
+
     const [editingBid, setEditingBid] = useState(null);
     const [savingEdit, setSavingEdit] = useState(false);
     const [confirmBidId, setConfirmBidId] = useState(null);
@@ -31,20 +34,27 @@ function RequestDetailsPage() {
     const [addOpen, setAddOpen] = useState(false);
     const [savingAdd, setSavingAdd] = useState(false);
 
-    const [confirmAction, setConfirmAction] = useState(null); // {type, bidId}
-    const [processing, setProcessing] = useState(null); // bidId que está em ação
+    const [confirmAction, setConfirmAction] = useState(null); // { type, bidId }
+    const [processing, setProcessing] = useState(null); // bidId or 'publish'
+
     const [toast, setToast] = useState(null);
+
     const [isEditTransportOpen, setIsEditTransportOpen] = useState(false);
     const [savingEditTransport, setSavingEditTransport] = useState(false);
     const [confirmCancelTransport, setConfirmCancelTransport] = useState(false);
     const [cancelingTransport, setCancelingTransport] = useState(false);
 
+    // Helper toast
+    const showToast = (msg, type = "success") => {
+        setToast({ msg, type });
+        setTimeout(() => setToast(null), 3000);
+    };
+
+    // ---------------------------
+    // FETCH MAIN
+    // ---------------------------
     useEffect(() => {
-        if (!transportId) {
-            setError(`Transport Request with ID ${transportId} not found.`);
-            setLoading(false);
-            return;
-        }
+        if (!transportId) return;
 
         const controller = new AbortController();
 
@@ -53,32 +63,94 @@ function RequestDetailsPage() {
                 setLoading(true);
                 setError(null);
 
+                // 1) transport
                 const transportRes = await api.get(`/transports/${transportId}`, {
                     signal: controller.signal,
                 });
-                setTransport(transportRes.data);
-                console.debug('Fetched transport', transportRes.data, { isCompany, userId });
+                const tr = transportRes.data;
+                setTransport(tr);
 
-                const bidsRes = await api.get(
-                    `/bids/bidsActive?transportRequestId=${transportId}`,
-                    { signal: controller.signal }
-                );
+                // Decide what to load based on transport status
+                const status = String(tr?.status ?? "").toUpperCase();
 
-                const updatedBids = await Promise.all(
-                    bidsRes.data.map(async (bid) => {
-                        try {
-                            const ratingRes = await api.get(`/reviewRequest/average/driver/${bid.driver.driverId}`);
-                            return { ...bid, driver: { ...bid.driver, averageRating: ratingRes.data.average } };
-                        } catch {
-                            return { ...bid, driver: { ...bid.driver, averageRating: null } };
+                // If draft or canceled: no bids shown
+                if (status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") {
+                    setBids([]);
+                    setAcceptedBid(null);
+                    return;
+                }
+
+                // If active: load active bids
+                if (status === "ACTIVE") {
+                    try {
+                        const bidsRes = await api.get(
+                            `/bids/bidsActive?transportRequestId=${transportId}`,
+                            { signal: controller.signal }
+                        );
+
+                        // augment with rating (best-effort)
+                        const updatedBids = await Promise.all(
+                            bidsRes.data.map(async (bid) => {
+                                try {
+                                    const ratingRes = await api.get(
+                                        `/reviewRequest/average/driver/${bid.driver.driverId}`
+                                    );
+                                    return { ...bid, driver: { ...bid.driver, averageRating: ratingRes.data.average } };
+                                } catch {
+                                    return { ...bid, driver: { ...bid.driver, averageRating: null } };
+                                }
+                            })
+                        );
+
+                        setBids(updatedBids);
+                        setAcceptedBid(null);
+                    } catch (err) {
+                        // Backend may return 404 when there are no active bids (new behaviour)
+                        if (err?.response?.status === 404) {
+                            console.warn("No active bids found — returning empty list.");
+                            setBids([]);
+                            setAcceptedBid(null);
+                        } else {
+                            throw err;
                         }
-                    })
-                );
+                    }
+                    return;
+                }
 
-                setBids(updatedBids);
+                // For WaitingPickup / Pendent / InTransit / Completed: load accepted bid
+                // Accepting both "PENDENT" (your backend) and "PENDING" just in case
+                if (
+                    status === "WAITINGPICKUP" ||
+                    status === "PENDENT" ||
+                    status === "PENDING" ||
+                    status === "INTRANSIT" ||
+                    status === "COMPLETED"
+                ) {
+                    try {
+                        const accRes = await api.get(`/bids/manual/byrequest/${transportId}/Accepted`);
+                        // API may return array or object
+                        const bid = Array.isArray(accRes.data) ? accRes.data[0] : accRes.data;
+                        setAcceptedBid(bid || null);
+                        setBids([]);
+                    } catch (err) {
+                        // If no accepted bid, backend might return 404; swallow and set null
+                        if (err?.response?.status === 404) {
+                            console.warn("No accepted bid found for transport", transportId);
+                            setAcceptedBid(null);
+                            setBids([]);
+                        } else {
+                            throw err;
+                        }
+                    }
+                    return;
+                }
 
+                // Default: clear
+                setBids([]);
+                setAcceptedBid(null);
             } catch (err) {
                 if (axios.isCancel(err)) return;
+                console.error("Failed to load data:", err);
                 setError("Failed to load Data.");
             } finally {
                 setLoading(false);
@@ -89,35 +161,47 @@ function RequestDetailsPage() {
         return () => controller.abort();
     }, [transportId]);
 
-    if (meLoading) return <p className="status-message">Validating Session…</p>;
-    if (loading) return <p className="status-message">Loading…</p>;
-    if (error) return <p className="status-message error">Error: {error}</p>;
-
+    // sorted bids
     const sortedBids = [...bids].sort((a, b) => {
         if (sortBy === "value") {
             return ascending ? a.value - b.value : b.value - a.value;
-        } else if (sortBy === "deadline") {
-            const dateA = new Date(a.deliveryDeadline);
-            const dateB = new Date(b.deliveryDeadline);
-            return ascending ? dateA - dateB : dateB - dateA;
+        }
+        if (sortBy === "deadline") {
+            const da = new Date(a.deliveryDeadline);
+            const db = new Date(b.deliveryDeadline);
+            return ascending ? da - db : db - da;
         }
         return 0;
     });
 
+    // Helpers from original code: transport draft/canceled detection
     const isTransportDraft = !!transport && (
-        (transport?.status && String(transport.status).toUpperCase() === 'DRAFT') ||
+        (transport?.status && String(transport.status).toUpperCase() === "DRAFT") ||
         transport?.draft === true ||
         transport?.isDraft === true
     );
 
     const isTransportCanceled = !!transport && (
-        (transport?.status && (String(transport.status).toUpperCase() === 'CANCELED' || String(transport.status).toUpperCase() === 'CANCELLED')) ||
+        (transport?.status && (String(transport.status).toUpperCase() === "CANCELED" || String(transport.status).toUpperCase() === "CANCELLED")) ||
         transport?.canceled === true || transport?.isCanceled === true
     );
 
-    const isOwnerDriver = (bid) =>
-        isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
+    const isOwnerDriver = (bid) => isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
 
+    // Refresh transport (used by publish/cancel)
+    const refreshTransport = async () => {
+        if (!transportId) return;
+        try {
+            const res = await api.get(`/transports/${transportId}`);
+            setTransport(res.data);
+        } catch (err) {
+            console.error("Failed to refresh transport", err);
+        }
+    };
+
+    // ---------------------------
+    // ACTIONS: Add / Edit / Cancel / Accept-Reject
+    // ---------------------------
     const handleOpenAdd = () => setAddOpen(true);
     const handleCloseAdd = () => { if (!savingAdd) setAddOpen(false); };
 
@@ -125,20 +209,14 @@ function RequestDetailsPage() {
         try {
             setSavingAdd(true);
             const res = await api.post(`/bids/createBid`, payload);
-            const created = res.data || {
-                bidId: Math.random().toString(36).slice(2),
-                driver: { name: "Tu", driverId: userId },
-                ...payload,
-            };
-
+            const created = res.data || { bidId: Math.random().toString(36).slice(2), driver: { name: "Tu", driverId: userId }, ...payload };
             setBids((prev) => [created, ...prev]);
-            setToast({ type: "success", msg: "Bid created." });
+            showToast("Bid created.", "success");
             setAddOpen(false);
-        } catch {
-            setToast({ type: "error", msg: "Failed to create Bid." });
+        } catch (err) {
+            showToast(getApiErrorMessage(err), "error");
         } finally {
             setSavingAdd(false);
-            setTimeout(() => setToast(null), 2500);
         }
     };
 
@@ -149,18 +227,13 @@ function RequestDetailsPage() {
         try {
             setSavingEdit(true);
             await api.put(`/bids/updatebid/${editingBid.bidId}`, payload);
-
-            setBids((prev) =>
-                prev.map((b) => (b.bidId === editingBid.bidId ? { ...b, ...payload } : b))
-            );
-
-            setToast({ type: "success", msg: "Bid Updated." });
+            setBids((prev) => prev.map((b) => (b.bidId === editingBid.bidId ? { ...b, ...payload } : b)));
+            showToast("Bid Updated.", "success");
             setEditingBid(null);
-        } catch {
-            setToast({ type: "error", msg: "Failed to Update Bid." });
+        } catch (err) {
+            showToast(getApiErrorMessage(err), "error");
         } finally {
             setSavingEdit(false);
-            setTimeout(() => setToast(null), 2500);
         }
     };
 
@@ -171,25 +244,17 @@ function RequestDetailsPage() {
         try {
             setCancelLoading(true);
             await api.patch(`/bids/cancel/${confirmBidId}`);
-
-            // update otimista
             setBids((prev) => prev.filter((b) => b.bidId !== confirmBidId));
-            setToast({ type: "success", msg: "Bid was canceled Successfully" });
-        } catch (e) {
-            setToast({ type: "error", msg: "Failed to cancel Bid" });
+            showToast("Bid was canceled Successfully", "success");
+        } catch (err) {
+            showToast(getApiErrorMessage(err), "error");
         } finally {
             setCancelLoading(false);
             setConfirmBidId(null);
-            setTimeout(() => setToast(null), 2500);
         }
     };
 
-    // Função para confirmar ação de aceitar/rejeitar licitação
-    const showToast = (msg, type = "success") => {
-        setToast({ msg, type });
-        setTimeout(() => setToast(null), 3000);
-    };
-
+    // Confirm overlay actions (accept/reject)
     const confirmBidAction = (type, bidId) => {
         setConfirmAction({ type, bidId });
     };
@@ -198,38 +263,20 @@ function RequestDetailsPage() {
         setProcessing(bidId);
         try {
             await api.post(`/bids/manual/${bidId}/${type}`);
-            showToast(
-                type === "accept"
-                    ? " Licitação aceite com sucesso!"
-                    : " Licitação rejeitada com sucesso!"
-            );
-
-            // Remove imediatamente a bid localmente (feedback instantâneo)
+            showToast(type === "accept" ? "Licitação aceite com sucesso!" : "Licitação rejeitada com sucesso!", "success");
+            // optimistic remove
             setBids((prev) => prev.filter((b) => b.bidId !== bidId));
             navigate(0);
-
         } catch (err) {
             console.error(err);
             showToast("Erro ao processar a ação.", "error");
         } finally {
             setProcessing(null);
             setConfirmAction(null);
-            setTimeout(() => setToast(null), 2500);
         }
     };
 
-
-    const refreshTransport = async () => {
-        if (!transportId) return;
-        try {
-            const res = await api.get(`/transports/${transportId}`);
-            setTransport(res.data);
-            console.debug('Refreshed transport', res.data, { isCompany, userId });
-        } catch (err) {
-            console.error('Failed to refresh transport', err);
-        }
-    };
-
+    // Transport edit/save/publish handlers (copied from original)
     const openEditTransport = () => {
         if (!transport) return;
         setIsEditTransportOpen(true);
@@ -276,7 +323,7 @@ function RequestDetailsPage() {
                 }
             }
 
-            showToast('✅ Pedido atualizado com sucesso!', 'success');
+            showToast('Pedido atualizado com sucesso!', 'success');
             setIsEditTransportOpen(false);
             await refreshTransport();
         } catch (err) {
@@ -292,28 +339,23 @@ function RequestDetailsPage() {
         if (!transportId) return;
         setProcessing('publish');
         try {
-            try {
-                try {
-                    await api.put(`/transports/company/publish/${transportId}`);
-                } catch (err) {
-                    if (err?.response?.status === 405) {
-                        await api.put(`/transports/company/publish/${transportId}`);
-                    } else throw err;
-                }
-            } catch (err) {
-                throw err;
-            }
-
-            showToast('✅ Pedido publicado com sucesso!', 'success');
+            await api.put(`/transports/company/publish/${transportId}`);
+            showToast('Pedido publicado com sucesso!', 'success');
             await refreshTransport();
         } catch (err) {
-            console.error('Erro ao ativar pedido:', err);
             const apiMsg = getApiErrorMessage(err);
             showToast(apiMsg || 'Erro ao publicar o pedido.', 'error');
         } finally {
             setProcessing(null);
         }
     };
+
+    // RENDER guards
+    if (meLoading) return <p className="status-message">Validating Session…</p>;
+    if (loading) return <p className="status-message">Loading…</p>;
+    if (error) return <p className="status-message error">Error: {error}</p>;
+
+    const status = String(transport?.status ?? "").toUpperCase();
 
     return (
         <>
@@ -352,54 +394,32 @@ function RequestDetailsPage() {
                                         )}
                                     </div>
                                 )}
-                                <div className="details-grid">
-                                    <div>
-                                        <span className="detail-label">Origem:</span>{" "}
-                                        {transport.origin || "—"}
-                                    </div>
-                                    <div>
-                                        <span className="detail-label">Destino:</span>{" "}
-                                        {transport.destination || "—"}
-                                    </div>
 
+                                <div className="details-grid">
+                                    <div><span className="detail-label">Origem:</span> {transport.origin || "—"}</div>
+                                    <div><span className="detail-label">Destino:</span> {transport.destination || "—"}</div>
                                     <div className="span-2">
                                         <span className="detail-label">Preço máximo:</span>{" "}
                                         {transport.maxPrice ? `${transport.maxPrice}€` : "—"}
                                     </div>
-
-                                    <div>
-                                        <span className="detail-label">Peso:</span>{" "}
-                                        {transport.weight ? `${transport.weight} kg` : "—"}
-                                    </div>
+                                    <div><span className="detail-label">Peso:</span> {transport.weight ? `${transport.weight} kg` : "—"}</div>
                                     <div>
                                         <span className="detail-label">Dimensões:</span>{" "}
                                         {transport.length && transport.width && transport.height
                                             ? `${transport.length} × ${transport.width} × ${transport.height} cm`
                                             : "—"}
-                                        {"  "}
-                                        {transport.volume
-                                            ? `(${transport.volume.toLocaleString("pt-PT")} cm³)`
-                                            : ""}
-                                    </div>
-
-                                    <div>
-                                        <span className="detail-label">Prazo de entrega:</span>{" "}
-                                        {transport.deliveryDate
-                                            ? new Date(transport.deliveryDate).toLocaleDateString()
-                                            : "—"}
                                     </div>
                                     <div>
-                                        <span className="detail-label">Prazo de recolha:</span>{" "}
-                                        {transport.pickupDate
-                                            ? new Date(transport.pickupDate).toLocaleDateString()
-                                            : "—"}
+                                        <span className="detail-label">Prazo entrega:</span>{" "}
+                                        {transport.deliveryDate ? new Date(transport.deliveryDate).toLocaleDateString() : "—"}
                                     </div>
-
+                                    <div>
+                                        <span className="detail-label">Prazo recolha:</span>{" "}
+                                        {transport.pickupDate ? new Date(transport.pickupDate).toLocaleDateString() : "—"}
+                                    </div>
                                     <div>
                                         <span className="detail-label">Início do leilão:</span>{" "}
-                                        {transport.biddingStartDate
-                                            ? new Date(transport.biddingStartDate).toLocaleDateString()
-                                            : "—"}
+                                        {transport.biddingStartDate ? new Date(transport.biddingStartDate).toLocaleDateString() : "—"}
                                     </div>
                                     <div>
                                         <span className="detail-label">Fim do leilão:</span>{" "}
@@ -408,180 +428,155 @@ function RequestDetailsPage() {
                                 </div>
                             </div>
                         </div>
-              
-
-                        {/* The transport-actions block was moved into .transport-details so it appears above the details grid. */}
                     </>
                 )}
-               
 
-                <div className="bids-section">
-                    <div className="bids-header">
-                        <h3>Active Bids</h3>
-                        <div className="sort-controls">
-                            <label>Sort By:</label>
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value)}
-                                className="sort-select"
-                            >
-                                <option value="value">Price</option>
-                                <option value="deadline">Deadline</option>
-                            </select>
-                            <button
-                                type="button"
-                                onClick={() => setAscending(!ascending)}
-                                className="order-btn"
-                            >
-                                {ascending ? "⬆" : "⬇"}
-                            </button>
-                            {isDriver && (
-                                <button type="button" className="add-bid-btn" onClick={handleOpenAdd}>
-                                    <FontAwesomeIcon icon={faPlus} />
-                                    <span>New Bid</span>
+                {/* BIDS SECTION */}
+                {/* Draft/Canceled -> show nothing */}
+                {(status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") && null}
+
+                {/* ACTIVE -> all active bids (drivers + company views preserved) */}
+                {status === "ACTIVE" && (
+                    <div className="bids-section">
+                        <div className="bids-header">
+                            <h3>Active Bids</h3>
+                            <div className="sort-controls">
+                                <label>Sort By:</label>
+                                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
+                                    <option value="value">Price</option>
+                                    <option value="deadline">Deadline</option>
+                                </select>
+
+                                <button type="button" onClick={() => setAscending(!ascending)} className="order-btn">
+                                    {ascending ? "⬆" : "⬇"}
                                 </button>
-                            )}
+
+                                {isDriver && (
+                                    <button type="button" className="add-bid-btn" onClick={handleOpenAdd}>
+                                        <FontAwesomeIcon icon={faPlus} />
+                                        <span>New Bid</span>
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                    {isDriver && (
-                    <div className="bids-list">
-                        {sortedBids.length === 0 ? (
-                            <p className="no-bids">No Bid was found.</p>
-                        ) : (
-                            sortedBids.map((bid) => (
-                                <div className="bid-card" key={bid.bidId}>
-                                    {/* ESQUERDA: info da bid */}
-                                    <div className="bid-info">
-                                        <h4 className="bid-title">Bid nº{bid.bidId}</h4>
-
-                                        <p className="bid-driver">
-                                            Driver: {bid.driver?.name || "—"}{" "}
-                                            {bid.driver?.averageRating > 0 && (
-                                                <span className="driver-rating">
-        ⭐ {bid.driver.averageRating.toFixed(1)}
-      </span>
-                                            )}
-                                        </p>
-
-                                        <p className="bid-value">
-                                            Bid Price: <span>{bid.value}€</span>
-                                        </p>
-
-                                        <p className="bid-deadline">
-                                            Deadline:{" "}
-                                            {new Date(bid.deliveryDeadline).toLocaleDateString()}
-                                        </p>
-                                    </div>
-
-
-                                    {/* DIREITA: botões */}
-                                    <div className="bid-right">
-                                        <div className="bid-actions">
-
-                                            {/* botões de ação */}
-                                            {isOwnerDriver(bid) && (
-                                            <div className="bid-buttons">
-                                                <button
-                                                    type="button"
-                                                    className="edit-icon-btn"
-                                                    onClick={() => handleEditBid(bid)}
-                                                    aria-label="Edit Bid"
-                                                    title="Edit"
-                                                >
-                                                    <FontAwesomeIcon className="edit-icon" icon={faPencil}/>
-                                                </button>
-
-
-                                                <button
-                                                    type="button"
-                                                    className="cancel-icon-btn"
-                                                    onClick={() => handleAskCancelBid(bid.bidId)}
-                                                    aria-label="Cancel Bid"
-                                                    title="Cancel"
-                                                >
-                                                    <FontAwesomeIcon className="cancel-icon" icon={faTrash}/>
-                                                </button>
-                                            </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                    )}
-                    <EditTransportModal open={isEditTransportOpen} transport={transport} onClose={closeEditTransport} onSave={handleSaveTransport} saving={savingEditTransport} />
-                    {isCompany && (
+                        {/* LISTA DE BIDS */}
                         <div className="bids-list">
                             {sortedBids.length === 0 ? (
-                                <p className="no-bids">Nenhuma licitação ativa encontrada.</p>
+                                <p className="no-bids">No active bids found.</p>
                             ) : (
                                 sortedBids.map((bid) => (
                                     <div className="bid-card" key={bid.bidId}>
+                                        {/* left column */}
                                         <div className="bid-info">
                                             <h4 className="bid-title">Licitação de {bid.driver.name}</h4>
+
                                             <p className="bid-driver">
                                                 Email do Motorista: {bid.driver?.email || "—"}{" "}
                                                 {bid.driver?.averageRating > 0 && (
-                                                    <span
-                                                        className="driver-rating">⭐ {bid.driver.averageRating.toFixed(1)}</span>
+                                                    <span className="driver-rating">⭐ {bid.driver.averageRating.toFixed(1)}</span>
                                                 )}
                                             </p>
 
-                                            <p className="bid-value">
-                                                Valor da Licitação: <span>{bid.value}€</span>
-                                            </p>
-                                            <p className="bid-deadline">
-                                                Prazo de Entrega:{" "}
-                                                {new Date(bid.deliveryDeadline).toLocaleDateString()}
-                                            </p>
+                                            <p className="bid-value">Bid Price: <span>{bid.value}€</span></p>
+
+                                            <p className="bid-deadline">Deadline: {new Date(bid.deliveryDeadline).toLocaleDateString()}</p>
                                         </div>
+
+                                        {/* right column: actions (driver/company) */}
                                         <div className="bid-right">
-                                            <div className="bid-buttons">
-                                                <button
-                                                    className="accept-btn"
-                                                    onClick={() => confirmBidAction("accept", bid.bidId)}
-                                                    disabled={processing === bid.bidId}
-                                                >
-                                                    {processing === bid.bidId &&
-                                                    confirmAction?.type === "accept"
-                                                        ? "Aceitando..."
-                                                        : "Aceitar"}
-                                                </button>
-                                                <button
-                                                    className="reject-btn"
-                                                    onClick={() => confirmBidAction("reject", bid.bidId)}
-                                                    disabled={processing === bid.bidId}
-                                                >
-                                                    {processing === bid.bidId &&
-                                                    confirmAction?.type === "reject"
-                                                        ? "Rejeitando..."
-                                                        : "Rejeitar"}
-                                                </button>
-                                            </div>
+                                            {/* driver's own actions */}
+                                            {isOwnerDriver(bid) && (
+                                                <div className="bid-buttons">
+                                                    <button type="button" className="edit-icon-btn" onClick={() => handleEditBid(bid)}>
+                                                        <FontAwesomeIcon icon={faPencil} />
+                                                    </button>
+                                                    <button type="button" className="cancel-icon-btn" onClick={() => handleAskCancelBid(bid.bidId)}>
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {/* company actions: accept/reject */}
+                                            {isCompany && (
+                                                <div className="bid-buttons">
+                                                    <button
+                                                        className="accept-btn"
+                                                        onClick={() => confirmBidAction("accept", bid.bidId)}
+                                                        disabled={processing === bid.bidId}
+                                                    >
+                                                        {processing === bid.bidId && confirmAction?.type === "accept" ? "Aceitando..." : "Aceitar"}
+                                                    </button>
+                                                    <button
+                                                        className="reject-btn"
+                                                        onClick={() => confirmBidAction("reject", bid.bidId)}
+                                                        disabled={processing === bid.bidId}
+                                                    >
+                                                        {processing === bid.bidId && confirmAction?.type === "reject" ? "Rejeitando..." : "Rejeitar"}
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))
                             )}
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
+
+                {/* ACCEPTED: WaitingPickup / Pendent / InTransit / Completed */}
+                {(status !== "ACTIVE" &&
+                    status !== "CANCELED" &&
+                    status !== "DRAFT" &&
+                    acceptedBid) && (
+
+                    <div className="bid-card">
+                        <div className="bid-info">
+                            <h4 className="bid-title">Bid nº{acceptedBid.bidId}</h4>
+
+                            <p className="bid-driver">
+                                <span className="detail-label">Driver:</span>{" "}
+                                {acceptedBid.driver?.name ?? "—"}
+                            </p>
+
+                            <p className="bid-value">
+                                <span>Accepted Price:</span> <strong>{acceptedBid.value}€</strong>
+                            </p>
+
+                            <p className="bid-deadline">
+                                <span className="detail-label">Deadline:</span>{" "}
+                                {new Date(acceptedBid.deliveryDeadline).toLocaleDateString()}
+                            </p>
+                        </div>
+                    </div>
+
+                )}
+
             </div>
+
+            {/* MODALS */}
             <AddBidModal
                 open={addOpen}
                 onClose={handleCloseAdd}
                 onSave={handleSaveAdd}
                 saving={savingAdd}
                 transport={transport}
+                maxPrice={transport?.maxPrice}
+                pickupDate={transport?.pickupDate}
+                deliveryDate={transport?.deliveryDate}
             />
+
             <EditBidModal
                 open={!!editingBid}
                 bid={editingBid}
                 onClose={handleCloseEdit}
                 onSave={handleSaveEdit}
                 saving={savingEdit}
+                maxPrice={transport?.maxPrice}
+                pickupDate={transport?.pickupDate}
+                deliveryDate={transport?.deliveryDate}
             />
+
             <ConfirmDialog
                 open={!!confirmBidId}
                 title="Cancel Bid"
@@ -592,6 +587,8 @@ function RequestDetailsPage() {
                 onConfirm={handleConfirmCancel}
                 onCancel={() => setConfirmBidId(null)}
             />
+
+            <EditTransportModal open={isEditTransportOpen} transport={transport} onClose={closeEditTransport} onSave={handleSaveTransport} saving={savingEditTransport} />
 
             <ConfirmDialog
                 open={confirmCancelTransport}
@@ -604,7 +601,7 @@ function RequestDetailsPage() {
                     setCancelingTransport(true);
                     try {
                         await api.put(`/transports/canceled/${transportId}`);
-                        showToast('✅ Pedido cancelado com sucesso!', 'success');
+                        showToast('Pedido cancelado com sucesso!', 'success');
                         await refreshTransport();
                     } catch (err) {
                         console.error('Erro ao cancelar pedido:', err);
@@ -622,27 +619,11 @@ function RequestDetailsPage() {
                 <div className="confirm-overlay">
                     <div className="confirm-modal">
                         <p>
-                            Tens a certeza que queres{" "}
-                            <strong>
-                                {confirmAction.type === "accept" ? "ACEITAR" : "RECUSAR"}
-                            </strong>{" "}
-                            a licitação nº{confirmAction.bidId}?
+                            Tens a certeza que queres <strong>{confirmAction.type === "accept" ? "ACEITAR" : "RECUSAR"}</strong> a licitação nº{confirmAction.bidId}?
                         </p>
                         <div className="confirm-buttons">
-                            <button
-                                className="confirm-yes"
-                                onClick={() =>
-                                    executeAction(confirmAction.bidId, confirmAction.type)
-                                }
-                            >
-                                Sim
-                            </button>
-                            <button
-                                className="confirm-no"
-                                onClick={() => setConfirmAction(null)}
-                            >
-                                Cancelar
-                            </button>
+                            <button className="confirm-yes" onClick={() => executeAction(confirmAction.bidId, confirmAction.type)}>Sim</button>
+                            <button className="confirm-no" onClick={() => setConfirmAction(null)}>Cancelar</button>
                         </div>
                     </div>
                 </div>

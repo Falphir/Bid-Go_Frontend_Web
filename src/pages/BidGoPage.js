@@ -301,9 +301,9 @@ function BidGoPage() {
 
                                         <button
                                             className="bid-btn"
-                                            onClick={() => navigate(`/accept-bids/${req.id}`)}
+                                            onClick={() => navigate(`/transportRequest/${req.id}`)}
                                         >
-                                            Licitações Abertas
+                                            Ver pedido
                                         </button>
                                     </div>
                                 </div>
