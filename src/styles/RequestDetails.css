@@ -52,7 +52,7 @@
   border-radius: 999px;
   font-weight: 700;
   font-size: 14px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* Transport card layout: image on the left and details on the right */
@@ -81,13 +81,25 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.12);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.12);
 }
 
-.transport-details .transport-actions .btn-edit { background: #06b6d4; color: #fff; }
-.transport-details .transport-actions .btn-edit:hover { filter: brightness(.95); transform: translateY(-1px); }
-.transport-details .transport-actions .btn-publish { background: #2563eb; color: #fff; }
-.transport-details .transport-actions .btn-publish[disabled] { opacity: .7; cursor: not-allowed; }
+.transport-details .transport-actions .btn-edit {
+  background: #06b6d4;
+  color: #fff;
+}
+.transport-details .transport-actions .btn-edit:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+.transport-details .transport-actions .btn-publish {
+  background: #2563eb;
+  color: #fff;
+}
+.transport-details .transport-actions .btn-publish[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
 
 /* detail-label moved to component */
 
@@ -127,39 +139,70 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color .2s ease, transform .1s ease, box-shadow .2s ease;
-  box-shadow: 0 4px 12px rgba(2,6,23,0.08);
+  transition: background-color 0.2s ease, transform 0.1s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(2, 6, 23, 0.08);
 }
 
 .status-btn:disabled {
-  opacity: .65;
+  opacity: 0.65;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-.status-btn--primary { background: #2563eb; color: #fff; }
-.status-btn--primary:hover:not(:disabled) { filter: brightness(.95); transform: translateY(-1px); }
-.status-btn--primary:active:not(:disabled) { transform: translateY(0); }
+.status-btn--primary {
+  background: #2563eb;
+  color: #fff;
+}
+.status-btn--primary:hover:not(:disabled) {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+.status-btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+}
 
-.status-btn--success { background: #16a34a; color: #fff; }
-.status-btn--success:hover:not(:disabled) { filter: brightness(.95); transform: translateY(-1px); }
-.status-btn--success:active:not(:disabled) { transform: translateY(0); }
+.status-btn--success {
+  background: #16a34a;
+  color: #fff;
+}
+.status-btn--success:hover:not(:disabled) {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+.status-btn--success:active:not(:disabled) {
+  transform: translateY(0);
+}
 
-.status-btn--danger { background: #ef4444; color: #fff; }
-.status-btn--danger:hover:not(:disabled) { filter: brightness(.95); transform: translateY(-1px); }
-.status-btn--danger:active:not(:disabled) { transform: translateY(0); }
+.status-btn--danger {
+  background: #ef4444;
+  color: #fff;
+}
+.status-btn--danger:hover:not(:disabled) {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+.status-btn--danger:active:not(:disabled) {
+  transform: translateY(0);
+}
 
-.status-btn--warning { background: #f59e0b; color: #1f2937; }
-.status-btn--warning:hover:not(:disabled) { filter: brightness(.95); transform: translateY(-1px); }
-.status-btn--warning:active:not(:disabled) { transform: translateY(0); }
+.status-btn--warning {
+  background: #f59e0b;
+  color: #1f2937;
+}
+.status-btn--warning:hover:not(:disabled) {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+.status-btn--warning:active:not(:disabled) {
+  transform: translateY(0);
+}
 
 /* Status messages */
 /* StatusMessage moved to components/feedback/StatusMessage.css */
 
 /* Confirmation modal styles moved to components/domain/AcceptRejectOverlay.css */
-
-
 
 /* No bids found */
 .no-bids {
@@ -171,6 +214,12 @@
 /* Toast moved to components/feedback/ToastContext.css */
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -1,5 +1,11 @@
-import React from 'react';
-import { FaCheckCircle, FaTimesCircle, FaCommentDots, FaMoneyBillWave, FaBan } from 'react-icons/fa';
+import React from "react";
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+  FaCommentDots,
+  FaMoneyBillWave,
+  FaBan,
+} from "react-icons/fa";
 import "./NotificationCard.css";
 
 // Componente reutilizável para uma notificação.
@@ -10,23 +16,35 @@ export default function NotificationCard({ notification, onMarkRead }) {
 
   const iconForType = (t) => {
     switch (t) {
-      case 'Accepted': return <FaCheckCircle />;
-      case 'Rejected': return <FaTimesCircle />;
-      case 'Canceled': return <FaBan />;
-      case 'New_message': return <FaCommentDots />;
-      case 'Confirmed_Payment': return <FaMoneyBillWave />;
-      default: return <FaCommentDots />;
+      case "Accepted":
+        return <FaCheckCircle />;
+      case "Rejected":
+        return <FaTimesCircle />;
+      case "Canceled":
+        return <FaBan />;
+      case "New_message":
+        return <FaCommentDots />;
+      case "Confirmed_Payment":
+        return <FaMoneyBillWave />;
+      default:
+        return <FaCommentDots />;
     }
   };
 
   const labelForType = (t) => {
     switch (t) {
-      case 'Accepted': return 'Bid Aceite';
-      case 'Rejected': return 'Bid Rejeitada';
-      case 'Canceled': return 'Pedido Cancelado';
-      case 'New_message': return 'Nova Mensagem';
-      case 'Confirmed_Payment': return 'Pagamento Confirmado';
-      default: return 'Notificação';
+      case "Accepted":
+        return "Bid Aceite";
+      case "Rejected":
+        return "Bid Rejeitada";
+      case "Canceled":
+        return "Pedido Cancelado";
+      case "New_message":
+        return "Nova Mensagem";
+      case "Confirmed_Payment":
+        return "Pagamento Confirmado";
+      default:
+        return "Notificação";
     }
   };
 
@@ -37,13 +55,15 @@ export default function NotificationCard({ notification, onMarkRead }) {
   return (
     <div
       key={notificationId}
-      className={`notif-card fade-in ${!isRead ? 'unread' : ''}`}
+      className={`notif-card fade-in ${!isRead ? "unread" : ""}`}
       onClick={handleClick}
     >
       <div className="notif-card-head">
         <div className="notif-icon-circle">{iconForType(type)}</div>
         <span className={`type-badge type-${type}`}>{labelForType(type)}</span>
-        <span className="notif-date">{new Date(timeStamp).toLocaleString('pt-PT')}</span>
+        <span className="notif-date">
+          {new Date(timeStamp).toLocaleString("pt-PT")}
+        </span>
         {!isRead && <span className="notif-dot"></span>}
       </div>
       <div className="notif-card-text">{context}</div>

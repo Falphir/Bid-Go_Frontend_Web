@@ -6,7 +6,6 @@
  * Inputs ganham destaque ao focar, e há um link discreto de “esqueceu-se da palavra-passe?”.
  */
 
-
 .login-page {
   min-height: 100dvh;
   overflow: hidden;
@@ -78,7 +77,6 @@
   box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25);
 }
 
-
 .login-remember {
   display: inline-flex;
   align-items: center;
@@ -87,13 +85,11 @@
   user-select: none;
 }
 
-
 .remember-text {
   font-size: 13px;
   font-weight: 500;
   color: #294766;
 }
-
 
 .login-remember input[type="checkbox"] {
   accent-color: #0066cc;
@@ -103,12 +99,10 @@
   border-radius: 4px;
 }
 
-
 .login-remember input[type="checkbox"]:focus-visible {
   outline: 2px solid rgba(0, 102, 204, 0.35);
   outline-offset: 2px;
 }
-
 
 .login-remember {
   display: inline-flex;
@@ -118,13 +112,11 @@
   user-select: none;
 }
 
-
 .remember-text {
   font-size: 13px;
   font-weight: 500;
   color: #294766;
 }
-
 
 .login-remember input[type="checkbox"] {
   accent-color: #0066cc;
@@ -174,4 +166,3 @@
 .forgot-password:hover {
   text-decoration: underline;
 }
-

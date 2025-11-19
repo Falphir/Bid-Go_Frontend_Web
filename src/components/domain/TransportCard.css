@@ -1,30 +1,88 @@
 /* Styles for TransportCard (copied from styles/BidGoPage.css) */
 .card {
-	background-color: #ffffff;
-	border-radius: 16px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-	overflow: hidden;
-	width: 280px;
-	display: flex;
-	flex-direction: column;
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); }
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
 
-.card-image img { width: 100%; height: 160px; object-fit: contain; }
+.card-image img {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+}
 
-.card-body { padding: 16px 20px 20px; display: flex; flex-direction: column; align-items: flex-start; flex: 1; }
+.card-body {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
 
-.title-with-badge { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 0; }
-.title-with-badge .card-title { margin: 0; font-size: 18px; font-weight: 600; color: #062e5c; }
-.title-with-badge .status-badge { margin: 0; }
+.title-with-badge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0;
+}
+.title-with-badge .card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #062e5c;
+}
+.title-with-badge .status-badge {
+  margin: 0;
+}
 
-.card-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #062e5c; }
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #062e5c;
+}
 
-.card-route { font-size: 4px; color: #0066cc; text-decoration: underline; margin-bottom: 0; }
-.card-time { font-size: 13px; color: #7a8fa6; margin-bottom: 16px; }
+.card-route {
+  font-size: 4px;
+  color: #0066cc;
+  text-decoration: underline;
+  margin-bottom: 0;
+}
+.card-time {
+  font-size: 13px;
+  color: #7a8fa6;
+  margin-bottom: 16px;
+}
 
-.bid-btn { background-color: #eef4fb; color: #0066cc; border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; align-self: stretch; }
-.bid-btn:hover { background-color: #d8e4f7; }
+.bid-btn {
+  background-color: #eef4fb;
+  color: #0066cc;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: stretch;
+}
+.bid-btn:hover {
+  background-color: #d8e4f7;
+}
 
-.label-small { font-size: 12px; color: #555; font-weight: 600; letter-spacing: 0.1px; }
+.label-small {
+  font-size: 12px;
+  color: #555;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}

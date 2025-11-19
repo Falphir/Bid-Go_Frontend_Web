@@ -1,7 +1,34 @@
 /* Styles for DriverFormGrid (migrated from styles/ProfilePage.css) */
-.form-grid { display: grid; gap: 14px 16px; margin-top: 8px; }
-.form-grid.one-col { grid-template-columns: 1fr; }
-.form-label { display: flex; flex-direction: column; font-weight: 600; color: #062e5c; font-size: 14px; }
-.form-label input { margin-top: 6px; padding: 10px 12px; border-radius: 8px; border: 1px solid #cdd7e1; font-size: 14px; transition: border-color .2s ease, box-shadow .2s ease; }
-.form-label input:focus { outline: none; border-color: #0066cc; box-shadow: 0 0 0 2px rgba(0,102,204,.25); }
-.form-grid.readonly input { background:#f7f9fc; color:#5c6e80; cursor:default; }
+.form-grid {
+  display: grid;
+  gap: 14px 16px;
+  margin-top: 8px;
+}
+.form-grid.one-col {
+  grid-template-columns: 1fr;
+}
+.form-label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  color: #062e5c;
+  font-size: 14px;
+}
+.form-label input {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cdd7e1;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-label input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25);
+}
+.form-grid.readonly input {
+  background: #f7f9fc;
+  color: #5c6e80;
+  cursor: default;
+}
