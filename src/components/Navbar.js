@@ -89,6 +89,9 @@ export default function Navbar() {
                         {openMenu && (
                             <div className="dropdown-menu">
                                 <button onClick={() => navigate("/profile")}>Perfil</button>
+                                {user?.role && user.role.toLowerCase().includes("driver") && (
+                                    <button onClick={() => navigate("/myBids")}>Minhas Bids</button>
+                                )}
                                 <button onClick={handleLogout}>Logout</button>
                             </div>
                         )}

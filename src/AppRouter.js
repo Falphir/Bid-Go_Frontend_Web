@@ -8,7 +8,9 @@ import AcceptBids from "./pages/AcceptBids";
 import RequestDetailsPage from "./pages/RequestDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
 import HistoryPage from "./pages/HistoryPage";
+import MyBidsPage from "./pages/MyBidsPage";
 import RegisterPage from "./pages/RegisterPage";
+
 
 export default function AppRouter() {
     return (
@@ -22,9 +24,9 @@ export default function AppRouter() {
                         <Route path="/history" element={<HistoryPage />} />
                         <Route path="/transportRequest/:id" element={<RequestDetailsPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
+                         <Route path="/myBids" element={<MyBidsPage />} />
                         <Route path="/register" element={<RegisterPage />} />
                     </Route>
-
                     <Route path="/Login" element={<LoginPage />} />
                     <Route path="*" element={<div>NOT FOUND</div>} />
                 </Routes>
