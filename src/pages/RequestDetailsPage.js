@@ -430,6 +430,7 @@ function RequestDetailsPage() {
                         onToggleOrder={() => setAscending(!ascending)}
                         isDriver={isDriver}
                         isCompany={isCompany}
+                        currentUserId={userId}
                         onAddBid={handleOpenAdd}
                         onEditBid={handleEditBid}
                         onAskCancelBid={handleAskCancelBid}

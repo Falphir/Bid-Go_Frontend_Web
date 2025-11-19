@@ -10,8 +10,9 @@ function BidList({
     ascending,
     onChangeSort,
     onToggleOrder,
-    isDriver,
+        isDriver,
     isCompany,
+        currentUserId,
     onAddBid,
     onEditBid,
     onAskCancelBid,
@@ -48,7 +49,7 @@ function BidList({
                         <BidCard
                             key={bid.bidId}
                             bid={bid}
-                            isOwnerDriver={isDriver && (bid?.driverId === bid?.driver?.driverId)}
+                            isOwnerDriver={isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === currentUserId)}
                             isCompany={isCompany}
                             onEdit={onEditBid}
                             onCancel={onAskCancelBid}
