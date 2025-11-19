@@ -1,0 +1,53 @@
+/* Styles for CompanyRegisterForm (aligned with LoginForm/RegisterPage) */
+.login-label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #062e5c;
+  font-size: 14px;
+}
+.login-label input {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cdd7e1;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.login-label input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25);
+}
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin: -8px 0 8px;
+}
+.login-button {
+  background-color: #0066cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.login-button:hover {
+  background-color: #004fa1;
+}
+.login-button.cancel {
+  background-color: #dc3545;
+}
+.login-button.cancel:hover {
+  background-color: #b52a37;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}

@@ -1,0 +1,61 @@
+/* Styles for AvatarSection (migrated from styles/ProfilePage.css) */
+.avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.avatar-wrapper {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+.avatar-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #cdd7e1;
+  background: #f0f6fc;
+}
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.avatar-wrapper:hover .avatar-overlay {
+  opacity: 1;
+}
+.avatar-overlay svg {
+  width: 22px;
+  height: 22px;
+}
+.header-text {
+  flex: 1;
+}
+.email-sub {
+  margin: 0;
+  color: #5c6e80;
+  font-size: 13px;
+}
+.link-button {
+  background: none;
+  border: none;
+  color: #0066cc;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.link-button:hover {
+  color: #004fa1;
+}

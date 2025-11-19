@@ -6,12 +6,18 @@ import api from "../api/axiosConfig";
 import { useMe } from "../hooks/useMe";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
-import EditBidModal from "../components/EditBidModal";
-import EditTransportModal from "../components/EditTransportModal";
-import ConfirmDialog from "../components/ConfirmDialog";
-import AddBidModal from "../components/AddBidModal";
-import Countdown from "../components/Countdown";
+import EditBidModal from "../components/EditBidModal/EditBidModal";
+import EditTransportModal from "../components/EditTransportModal/EditTransportModal";
+import ConfirmDialog from "../components/ConfirmDialog/ConfirmDialog";
+import AddBidModal from "../components/AddBidModal/AddBidModal";
+import Countdown from "../components/Countdown/Countdown";
 import { getApiErrorMessage } from "../utils/httpError";
+import StatusMessage from "../components/feedback/StatusMessage";
+import { useToast } from "../components/feedback/ToastContext";
+import BidList from "../components/domain/BidList";
+import AcceptRejectOverlay from "../components/domain/AcceptRejectOverlay";
+import TransportDetailsCard from "../components/domain/TransportDetailsCard";
+import useSortedBids from "../hooks/useSortedBids";
 
 function RequestDetailsPage() {
     const navigate = useNavigate();
@@ -37,7 +43,7 @@ function RequestDetailsPage() {
     const [confirmAction, setConfirmAction] = useState(null); // { type, bidId }
     const [processing, setProcessing] = useState(null); // bidId or 'publish'
 
-    const [toast, setToast] = useState(null);
+    const { showToast } = useToast();
 
     const [isEditTransportOpen, setIsEditTransportOpen] = useState(false);
     const [savingEditTransport, setSavingEditTransport] = useState(false);
@@ -46,11 +52,7 @@ function RequestDetailsPage() {
     const [statusUpdating, setStatusUpdating] = useState(false);
     const [confirmStatusAction, setConfirmStatusAction] = useState(null); // { target, label }
 
-    // Helper toast
-    const showToast = (msg, type = "success") => {
-        setToast({ msg, type });
-        setTimeout(() => setToast(null), 3000);
-    };
+    // Toast agora fornecido globalmente pelo ToastProvider
 
     // ---------------------------
     // FETCH MAIN
@@ -133,17 +135,7 @@ function RequestDetailsPage() {
     }, [transportId]);
 
     // sorted bids
-    const sortedBids = [...bids].sort((a, b) => {
-        if (sortBy === "value") {
-            return ascending ? a.value - b.value : b.value - a.value;
-        }
-        if (sortBy === "deadline") {
-            const da = new Date(a.deliveryDeadline);
-            const db = new Date(b.deliveryDeadline);
-            return ascending ? da - db : db - da;
-        }
-        return 0;
-    });
+    const sortedBids = useSortedBids(bids, sortBy, ascending);
 
     // Helpers from original code: transport draft/canceled detection
     const isTransportDraft = !!transport && (
@@ -381,9 +373,9 @@ function RequestDetailsPage() {
     };
 
     //RENDER guards
-    if (meLoading) return <p className="status-message">Validating Session…</p>;
-    if (loading) return <p className="status-message">Loading…</p>;
-    if (error) return <p className="status-message error">Error: {error}</p>;
+    if (meLoading) return <StatusMessage type="loading">Validating Session…</StatusMessage>;
+    if (loading) return <StatusMessage type="loading">Loading…</StatusMessage>;
+    if (error) return <StatusMessage type="error">Error: {error}</StatusMessage>;
 
     const status = String(transport?.status ?? "").toUpperCase();
 
@@ -397,67 +389,30 @@ function RequestDetailsPage() {
                             {transport.description ? ` (${transport.description})` : ""}
                         </h2>
 
-                        <div className="transport-card">
-                            <img
-                                src={transport.image || "https://via.placeholder.com/400x250"}
-                                alt={transport.package || "Item"}
-                                className="transport-image"
-                            />
-                            <div className="transport-details">
-                                {isCompany && (
-                                    <div className="transport-actions">
-                                        {isTransportDraft && (
-                                            <>
-                                                <button type="button" className="btn-edit" onClick={openEditTransport}>
-                                                    <FontAwesomeIcon icon={faPencil} /> <span style={{ marginLeft: 6 }}>Editar</span>
-                                                </button>
-                                                <button type="button" className="btn-publish" onClick={publishTransport} disabled={processing === 'publish'}>
-                                                    <span>{processing === 'publish' ? 'Publicando…' : 'Publicar'}</span>
-                                                </button>
-                                            </>
-                                        )}
-
-                                        {isTransportOwner && !isTransportCanceled && (
-                                            <button type="button" className="btn-cancel" onClick={() => setConfirmCancelTransport(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
-                                                Cancelar
+                        <TransportDetailsCard
+                            transport={transport}
+                            actions={isCompany && (
+                                <div className="transport-actions">
+                                    {isTransportDraft && (
+                                        <>
+                                            <button type="button" className="btn-edit" onClick={openEditTransport}>
+                                                <FontAwesomeIcon icon={faPencil} /> <span style={{ marginLeft: 6 }}>Editar</span>
                                             </button>
-                                        )}
-                                    </div>
-                                )}
-
-                                <div className="details-grid">
-                                    <div><span className="detail-label">Origem:</span> {transport.origin || "—"}</div>
-                                    <div><span className="detail-label">Destino:</span> {transport.destination || "—"}</div>
-                                    <div className="span-2">
-                                        <span className="detail-label">Preço máximo:</span>{" "}
-                                        {transport.maxPrice ? `${transport.maxPrice}€` : "—"}
-                                    </div>
-                                    <div><span className="detail-label">Peso:</span> {transport.weight ? `${transport.weight} kg` : "—"}</div>
-                                    <div>
-                                        <span className="detail-label">Dimensões:</span>{" "}
-                                        {transport.length && transport.width && transport.height
-                                            ? `${transport.length} × ${transport.width} × ${transport.height} cm`
-                                            : "—"}
-                                    </div>
-                                    <div>
-                                        <span className="detail-label">Prazo entrega:</span>{" "}
-                                        {transport.deliveryDate ? new Date(transport.deliveryDate).toLocaleDateString() : "—"}
-                                    </div>
-                                    <div>
-                                        <span className="detail-label">Prazo recolha:</span>{" "}
-                                        {transport.pickupDate ? new Date(transport.pickupDate).toLocaleDateString() : "—"}
-                                    </div>
-                                    <div>
-                                        <span className="detail-label">Início do leilão:</span>{" "}
-                                        {transport.biddingStartDate ? new Date(transport.biddingStartDate).toLocaleDateString() : "—"}
-                                    </div>
-                                    <div>
-                                        <span className="detail-label">Fim do leilão:</span>{" "}
-                                        <Countdown endDate={transport.biddingEndDate} />
-                                    </div>
+                                            <button type="button" className="btn-publish" onClick={publishTransport} disabled={processing === 'publish'}>
+                                                <span>{processing === 'publish' ? 'Publicando…' : 'Publicar'}</span>
+                                            </button>
+                                        </>
+                                    )}
+                                    {isTransportOwner && !isTransportCanceled && (
+                                        <button type="button" className="btn-cancel" onClick={() => setConfirmCancelTransport(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
+                                            Cancelar
+                                        </button>
+                                    )}
                                 </div>
-                            </div>
-                        </div>
+                            )}
+                            showMaxPrice={true}
+                            showAuction={true}
+                        />
                     </>
                 )}
 
@@ -467,91 +422,22 @@ function RequestDetailsPage() {
 
                 {/* ACTIVE -> all active bids (drivers + company views preserved) */}
                 {status === "ACTIVE" && (
-                    <div className="bids-section">
-                        <div className="bids-header">
-                            <h3>Active Bids</h3>
-                            <div className="sort-controls">
-                                <label>Sort By:</label>
-                                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
-                                    <option value="value">Price</option>
-                                    <option value="deadline">Deadline</option>
-                                </select>
-
-                                <button type="button" onClick={() => setAscending(!ascending)} className="order-btn">
-                                    {ascending ? "⬆" : "⬇"}
-                                </button>
-
-                                {isDriver && (
-                                    <button type="button" className="add-bid-btn" onClick={handleOpenAdd}>
-                                        <FontAwesomeIcon icon={faPlus} />
-                                        <span>New Bid</span>
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* LISTA DE BIDS */}
-                        <div className="bids-list">
-                            {sortedBids.length === 0 ? (
-                                <p className="no-bids">No active bids found.</p>
-                            ) : (
-                                sortedBids.map((bid) => (
-                                    <div className="bid-card" key={bid.bidId}>
-                                        {/* left column */}
-                                        <div className="bid-info">
-                                            <h4 className="bid-title">Licitação de {bid.driver?.name || "—"}</h4>
-
-                                            <p className="bid-driver">
-                                                Email do Motorista: {bid.driver?.email || "—"}{" "}
-                                                {bid.driver?.averageRating > 0 && (
-                                                    <span className="driver-rating">⭐ {bid.driver.averageRating.toFixed(1)}</span>
-                                                )}
-                                            </p>
-
-                                            <p className="bid-value">Bid Price: <span>{bid.value}€</span></p>
-
-                                            <p className="bid-deadline">Deadline: {new Date(bid.deliveryDeadline).toLocaleDateString()}</p>
-                                        </div>
-
-                                        {/* right column: actions (driver/company) */}
-                                        <div className="bid-right">
-                                            {/* driver's own actions */}
-                                            {isOwnerDriver(bid) && (
-                                                <div className="bid-buttons">
-                                                    <button type="button" className="edit-icon-btn" onClick={() => handleEditBid(bid)}>
-                                                        <FontAwesomeIcon icon={faPencil} />
-                                                    </button>
-                                                    <button type="button" className="cancel-icon-btn" onClick={() => handleAskCancelBid(bid.bidId)}>
-                                                        <FontAwesomeIcon icon={faTrash} />
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                            {/* company actions: accept/reject */}
-                                            {isCompany && (
-                                                <div className="bid-buttons">
-                                                    <button
-                                                        className="accept-btn"
-                                                        onClick={() => confirmBidAction("accept", bid.bidId)}
-                                                        disabled={processing === bid.bidId}
-                                                    >
-                                                        {processing === bid.bidId && confirmAction?.type === "accept" ? "Aceitando..." : "Aceitar"}
-                                                    </button>
-                                                    <button
-                                                        className="reject-btn"
-                                                        onClick={() => confirmBidAction("reject", bid.bidId)}
-                                                        disabled={processing === bid.bidId}
-                                                    >
-                                                        {processing === bid.bidId && confirmAction?.type === "reject" ? "Rejeitando..." : "Rejeitar"}
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
+                    <BidList
+                        bids={sortedBids}
+                        sortBy={sortBy}
+                        ascending={ascending}
+                        onChangeSort={setSortBy}
+                        onToggleOrder={() => setAscending(!ascending)}
+                        isDriver={isDriver}
+                        isCompany={isCompany}
+                        currentUserId={userId}
+                        onAddBid={handleOpenAdd}
+                        onEditBid={handleEditBid}
+                        onAskCancelBid={handleAskCancelBid}
+                        onConfirmAction={confirmBidAction}
+                        processing={processing}
+                        confirmAction={confirmAction}
+                    />
                 )}
 
                 {/* ACCEPTED: WaitingPickup / Pendent / InTransit / Completed */}
@@ -562,11 +448,11 @@ function RequestDetailsPage() {
 
                     <div className="bid-card">
                         <div className="bid-info">
-                            <h4 className="bid-title">Bid nº{acceptedBid.bidId}</h4>
+                            <h4 className="bid-title">Bid de {acceptedBid.driverName}</h4>
 
                             <p className="bid-driver">
-                                <span className="detail-label">Driver:</span>{" "}
-                                {acceptedBid.driver?.name ?? "—"}
+                                <span className="detail-label">Email:</span>{" "}
+                                {acceptedBid.driverEmail ?? "—"}
                             </p>
 
                             <p className="bid-value">
@@ -575,7 +461,7 @@ function RequestDetailsPage() {
 
                             <p className="bid-deadline">
                                 <span className="detail-label">Deadline:</span>{" "}
-                                {new Date(acceptedBid.deliveryDeadline).toLocaleDateString()}
+                                {new Date(acceptedBid.deadline).toLocaleDateString()}
                             </p>
                         </div>
                         <div className="status-actions">
@@ -702,21 +588,13 @@ function RequestDetailsPage() {
                 onCancel={() => setConfirmStatusAction(null)}
             />
 
-            {confirmAction && (
-                <div className="confirm-overlay">
-                    <div className="confirm-modal">
-                        <p>
-                            Tens a certeza que queres <strong>{confirmAction.type === "accept" ? "ACEITAR" : "RECUSAR"}</strong> a licitação nº{confirmAction.bidId}?
-                        </p>
-                        <div className="confirm-buttons">
-                            <button className="confirm-yes" onClick={() => executeAction(confirmAction.bidId, confirmAction.type)}>Sim</button>
-                            <button className="confirm-no" onClick={() => setConfirmAction(null)}>Cancelar</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {toast && <div className={`toast ${toast.type}`}>{toast.msg}</div>}
+            <AcceptRejectOverlay
+                action={confirmAction}
+                processing={processing}
+                onConfirm={executeAction}
+                onCancel={() => setConfirmAction(null)}
+            />
+            {/* Toasts agora são geridos globalmente (nenhum container local necessário) */}
         </>
     );
 }

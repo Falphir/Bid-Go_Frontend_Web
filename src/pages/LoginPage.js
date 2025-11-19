@@ -3,145 +3,111 @@ import "../styles/LoginPage.css";
 import { useNavigate, useLocation } from "react-router";
 import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
-import PasswordInput from "../components/PasswordInput";
-
+import PasswordInput from "../components/PasswordInput/PasswordInput"; // kept for reused component dependency
+import StatusMessage from "../components/feedback/StatusMessage"; // legacy inline removal now replaced by LoginForm
+import LoginForm from "../components/form/LoginForm";
+import { useToast } from "../components/feedback/ToastContext";
 
 function LoginPage() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [remember, setRemember] = useState(true);
-    const abortRef = useRef(null);
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [toast, setToast] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [remember, setRemember] = useState(true);
+  const abortRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { showToast, toasts } = useToast();
 
-    useEffect(() => {
-        // cleanup ao desmontar
-        return () => abortRef.current?.abort();
-    }, []);
+  useEffect(() => {
+    // cleanup ao desmontar
+    return () => abortRef.current?.abort();
+  }, []);
 
-    // show toast passed via navigation state (e.g. after successful register)
-    useEffect(() => {
-        if (location?.state?.toast) {
-            setToast(location.state.toast);
-            // clear toast after 3s
-            const t = setTimeout(() => setToast(null), 3000);
-            return () => clearTimeout(t);
-        }
-    }, [location]);
+  // show toast passed via navigation state (e.g. after successful register)
+  useEffect(() => {
+    if (location?.state?.toast) {
+      const t = location.state.toast;
+      showToast(t.msg, t.type);
+    }
+  }, [location]);
 
-    // Impede scroll no body enquanto a página de login estiver visível
-    useEffect(() => {
-        const prevOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-        return () => {
-            document.body.style.overflow = prevOverflow;
-        };
-    }, []);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError(null);
-
-        if (!email || !password) {
-            setError("Preenche email e password.");
-            return;
-        }
-
-        // cancela pedido anterior (se existir)
-        abortRef.current?.abort();
-
-        // cria novo controller e guarda no ref
-        const controller = new AbortController();
-        abortRef.current = controller;
-
-        setLoading(true);
-        try {
-            const res = await api.post(
-                "/auth/login",
-                { email, password },
-                { signal: controller.signal }
-            );
-
-            const { token, user } = res.data || {};
-            if (remember && token) localStorage.setItem("token", token);
-            navigate("/");
-        } catch (err) {
-            if (err.name === "CanceledError") return;
-            if (err.response) {
-                const msg =
-                    err.response.data?.message ||
-                    `Erro ${err.response.status}: ${err.response.statusText}`;
-                setError(msg);
-            } else if (err.request) {
-                setError("Falha de rede: sem resposta do servidor.");
-            } else {
-                setError(`Erro: ${err.message}`);
-            }
-        } finally {
-            setLoading(false);
-        }
+  // Impede scroll no body enquanto a página de login estiver visível
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
     };
+  }, []);
 
-    return (
-        <div className="login-page">
-            <img src={logo} alt="Bid&Go logo" className="page-logo" />
-            <div className="login-container">
-                <form className="login-form" onSubmit={handleSubmit}>
-                    <h2 className="login-title">Iniciar Sessão</h2>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
 
-                    {toast && (
-                        <div className={`toast ${toast.type}`}>
-                            {toast.msg}
-                        </div>
-                    )}
+    if (!email || !password) {
+      setError("Preenche email e password.");
+      return;
+    }
 
-                    <label className="login-label">
-                        Email
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Email"
-                            autoComplete="email"
-                            required
-                        />
+    // cancela pedido anterior (se existir)
+    abortRef.current?.abort();
 
-                    </label>
+    // cria novo controller e guarda no ref
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-                    <PasswordInput
-                        label="Palavra-passe"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="current-password"
-                        required
-                    />
+    setLoading(true);
+    try {
+      const res = await api.post(
+        "/auth/login",
+        { email, password },
+        { signal: controller.signal }
+      );
 
-                    <label className="login-remember" htmlFor="remember">
-                        <input
-                            id="remember"
-                            type="checkbox"
-                            checked={remember}
-                            onChange={(e) => setRemember(e.target.checked)}
-                        />
-                        <span className="remember-text">Manter sessão iniciada</span>
-                    </label>
+      const { token, user } = res.data || {};
+      if (remember && token) localStorage.setItem("token", token);
+      navigate("/");
+    } catch (err) {
+      if (err.name === "CanceledError") return;
+      if (err.response) {
+        const msg =
+          err.response.data?.message ||
+          `Erro ${err.response.status}: ${err.response.statusText}`;
+        setError(msg);
+        showToast(msg, "error");
+      } else if (err.request) {
+        const msg = "Falha de rede: sem resposta do servidor.";
+        setError(msg);
+        showToast(msg, "error");
+      } else {
+        const msg = `Erro: ${err.message}`;
+        setError(msg);
+        showToast(msg, "error");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                    {error && <p className="error-message">{error}</p>}
-
-                    <button type="submit" className="login-button" disabled={loading}>
-                        {loading ? "A entrar…" : "Entrar"}
-                    </button>
-
-                    <a href="#forgot" className="forgot-password">
-                        Esqueceu-se da palavra-passe?
-                    </a>
-                </form>
-            </div>
-        </div>
-    );
+  return (
+    <div className="login-page">
+      <img src={logo} alt="Bid&Go logo" className="page-logo" />
+      <div className="login-container">
+        <LoginForm
+          email={email}
+          password={password}
+          remember={remember}
+          loading={loading}
+          error={error}
+          onChangeEmail={setEmail}
+          onChangePassword={setPassword}
+          onToggleRemember={setRemember}
+          onSubmit={handleSubmit}
+        />
+      </div>
+    </div>
+  );
 }
 
 export default LoginPage;

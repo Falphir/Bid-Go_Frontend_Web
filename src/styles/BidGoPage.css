@@ -32,7 +32,9 @@
   margin-bottom: 32px;
   transition: background-color 0.2s ease;
 }
-.new-request-btn:hover { background-color: #004fa1; }
+.new-request-btn:hover {
+  background-color: #004fa1;
+}
 
 .section-title {
   color: #0a43a5;
@@ -61,19 +63,21 @@
   font-size: 13px;
   cursor: pointer;
 }
-.filters-toggle-top.active { background: #dfe9f8; }
+.filters-toggle-top.active {
+  background: #dfe9f8;
+}
 
 .filters-top {
   position: absolute;
   right: -12px; /* ligeiro ajuste mais à direita */
   top: calc(100% + 8px);
-  display: inline-block;            /* adapta ao tamanho dos campos */
+  display: inline-block; /* adapta ao tamanho dos campos */
   width: auto;
-  max-width: 90vw;                  /* proteção para ecrãs pequenos */
+  max-width: 90vw; /* proteção para ecrãs pequenos */
   background: #ffffff;
   border: 1px solid #e6eef8;
   border-radius: 10px;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.07);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
   padding: 10px; /* menos padding */
   text-align: left;
   z-index: 10;
@@ -82,16 +86,16 @@
 /* === Mantém um por linha, mas com largura curta === */
 .filters-top .filters-row {
   display: grid;
-  grid-template-columns: 1fr;   /* um campo por linha */
+  grid-template-columns: 1fr; /* um campo por linha */
   gap: 8px;
-  justify-items: start;         /* alinha inputs à esquerda */
+  justify-items: start; /* alinha inputs à esquerda */
 }
 
 .filters-top input,
 .filters-top select {
-  width: 180px;                 /* <<< largura pequena */
+  width: 180px; /* <<< largura pequena */
   max-width: 100%;
-  padding: 6px 8px;             /* inputs menores */
+  padding: 6px 8px; /* inputs menores */
   border: 1px solid #dbe5f3;
   border-radius: 6px;
   font-size: 12px;
@@ -99,7 +103,10 @@
   box-sizing: border-box;
 }
 
-.filters-top input::placeholder { font-size: 11.5px; color: #9aa9c1; }
+.filters-top input::placeholder {
+  font-size: 11.5px;
+  color: #9aa9c1;
+}
 
 .filters-top .filters-actions {
   display: flex;
@@ -118,7 +125,9 @@
   font-weight: 600;
   cursor: pointer;
 }
-.filters-top .bid-btn:hover { background-color: #d8e4f7; }
+.filters-top .bid-btn:hover {
+  background-color: #d8e4f7;
+}
 
 /* ====== Layout de cartões ====== */
 .cards-container {
@@ -170,7 +179,9 @@
   font-weight: 600;
   color: #062e5c;
 }
-.title-with-badge .status-badge { margin: 0; }
+.title-with-badge .status-badge {
+  margin: 0;
+}
 
 .card-title {
   font-size: 18px;
@@ -189,13 +200,27 @@
   color: #fff;
   margin-bottom: 8px;
 }
-.status-active { background: #10b981; }
-.status-canceled { background: #ef4444; }
-.status-completed { background: #0ea5e9; } 
-.status-pending { background: #f59e0b; }
-.status-intransit { background: #6366f1; } 
-.status-draft { background: #94a3b8; } 
-.status-waitingpickup { background: #f97316; }
+.status-active {
+  background: #10b981;
+}
+.status-canceled {
+  background: #ef4444;
+}
+.status-completed {
+  background: #0ea5e9;
+}
+.status-pending {
+  background: #f59e0b;
+}
+.status-intransit {
+  background: #6366f1;
+}
+.status-draft {
+  background: #94a3b8;
+}
+.status-waitingpickup {
+  background: #f97316;
+}
 
 .card-route {
   font-size: 4px;
@@ -222,10 +247,12 @@
   transition: background-color 0.2s ease;
   align-self: stretch;
 }
-.bid-btn:hover { background-color: #d8e4f7; }
+.bid-btn:hover {
+  background-color: #d8e4f7;
+}
 
 .label-small {
-  font-size: 12px; 
+  font-size: 12px;
   color: #555;
   font-weight: 600;
   letter-spacing: 0.1px;
