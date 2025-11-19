@@ -28,9 +28,11 @@ export default function AppRouter() {
             <Route path="/notifications" element={<NotificationPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/myBids" element={<MyBidsPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+              <Route path="/myTransports" element={<BidGoPage />} />
+
           </Route>
           <Route path="/Login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
           <Route path="*" element={<div>NOT FOUND</div>} />
         </Routes>
       </Suspense>

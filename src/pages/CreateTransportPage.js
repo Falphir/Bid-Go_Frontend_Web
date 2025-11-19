@@ -10,6 +10,7 @@ import DimensionFields from "../components/form/DimensionFields";
 import DateFields from "../components/form/DateFields";
 import AuctionDatesFields from "../components/form/AuctionDatesFields";
 import PriceAutoSelectionFields from "../components/form/PriceAutoSelectionFields";
+import { useNavigate } from "react-router";
 
 function CreateTransportPage() {
   const [imageFile, setImageFile] = useState(null);
@@ -33,6 +34,7 @@ function CreateTransportPage() {
   const [error, setError] = useState(null);
   const abortRef = useRef(null);
   const { showToast } = useToast();
+  const navigate = useNavigate();
 
   const handleCreateDraft = async () => {
     // Before sending a DRAFT, require all fields to be filled per backend rule.
@@ -261,6 +263,8 @@ function CreateTransportPage() {
       // Success: reset loading and show the provided success message
       setLoading(false);
       if (successMessage) showToast(successMessage, "success");
+      navigate("/myTransports");
+
     } catch (err) {
       if (axios.isCancel?.(err) || err.name === "CanceledError") return;
       const apiMsg = getApiErrorMessage(err);

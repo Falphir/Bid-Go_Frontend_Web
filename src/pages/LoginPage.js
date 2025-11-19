@@ -90,24 +90,39 @@ function LoginPage() {
     }
   };
 
-  return (
-    <div className="login-page">
-      <img src={logo} alt="Bid&Go logo" className="page-logo" />
-      <div className="login-container">
-        <LoginForm
-          email={email}
-          password={password}
-          remember={remember}
-          loading={loading}
-          error={error}
-          onChangeEmail={setEmail}
-          onChangePassword={setPassword}
-          onToggleRemember={setRemember}
-          onSubmit={handleSubmit}
-        />
-      </div>
-    </div>
-  );
+    return (
+        <div className="login-page">
+            <img src={logo} alt="Bid&Go logo" className="page-logo" />
+
+            <div className="login-container">
+                <div className="login-box">
+                    <LoginForm
+                        email={email}
+                        password={password}
+                        remember={remember}
+                        loading={loading}
+                        error={error}
+                        onChangeEmail={setEmail}
+                        onChangePassword={setPassword}
+                        onToggleRemember={setRemember}
+                        onSubmit={handleSubmit}
+                    />
+
+                    {/* bloco que fica por baixo do 'esqueceu password' */}
+                    <div className="login-register">
+                        <span className="login-register-text">Don’t have an account?</span>
+                        <button
+                            className="login-register-link"
+                            onClick={() => navigate("/register")}
+                        >
+                            Register here
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
 }
 
 export default LoginPage;

@@ -119,11 +119,16 @@ export default function Navbar() {
 
   return (
     <header className="header">
-      <div className="logo">
-        <img src={Logo} height={36} alt="Bid&Go" />
-      </div>
+        <div className="logo" onClick={() => navigate("/")}>
+            <img
+                src={Logo}
+                height={36}
+                alt="Bid&Go"
+                style={{ cursor: "pointer" }}
+            />
+        </div>
 
-      <div className="user-info">
+        <div className="user-info">
         <div className="notifications-wrapper">
           <span
             className="notifications"
@@ -243,6 +248,12 @@ export default function Navbar() {
                     Minhas Bids
                   </button>
                 )}
+
+                  {user?.role && user.role.toLowerCase().includes("company") && (
+                      <button onClick={() => navigate("/myTransports")}>
+                          Meus Transportes
+                      </button>
+                  )}
                 <button onClick={handleLogout}>Logout</button>
               </div>
             )}

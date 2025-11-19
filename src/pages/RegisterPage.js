@@ -201,6 +201,15 @@ function RegisterPage() {
               </div>
             </div>
           )}
+            <div className="register-login">
+                <span className="register-login-text">Already have an account?</span>
+                <button
+                    className="register-login-link"
+                    onClick={() => navigate("/login")}
+                >
+                    Login here
+                </button>
+            </div>
 
           {mode === "driver" && (
             <DriverRegisterForm
