@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import "../styles/LoginPage.css";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
 import PasswordInput from "../components/PasswordInput";
@@ -14,11 +14,23 @@ function LoginPage() {
     const [remember, setRemember] = useState(true);
     const abortRef = useRef(null);
     const navigate = useNavigate();
+    const location = useLocation();
+    const [toast, setToast] = useState(null);
 
     useEffect(() => {
         // cleanup ao desmontar
         return () => abortRef.current?.abort();
     }, []);
+
+    // show toast passed via navigation state (e.g. after successful register)
+    useEffect(() => {
+        if (location?.state?.toast) {
+            setToast(location.state.toast);
+            // clear toast after 3s
+            const t = setTimeout(() => setToast(null), 3000);
+            return () => clearTimeout(t);
+        }
+    }, [location]);
 
     // Impede scroll no body enquanto a página de login estiver visível
     useEffect(() => {
@@ -79,6 +91,12 @@ function LoginPage() {
             <div className="login-container">
                 <form className="login-form" onSubmit={handleSubmit}>
                     <h2 className="login-title">Iniciar Sessão</h2>
+
+                    {toast && (
+                        <div className={`toast ${toast.type}`}>
+                            {toast.msg}
+                        </div>
+                    )}
 
                     <label className="login-label">
                         Email
