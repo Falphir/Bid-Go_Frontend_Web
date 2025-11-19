@@ -1,108 +1,110 @@
 .notif-page {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .notif-title {
-    font-size: 26px;
-    color: #062e5c;
-    margin-bottom: 20px;
+  font-size: 26px;
+  color: #062e5c;
+  margin-bottom: 20px;
 }
 
 .notif-mark-all {
-    background: #e8f0fc;
-    border: 1px solid #cdd9ef;
-    padding: 10px 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-bottom: 16px;
-    font-weight: 600;
-    color: #062e5c;
+  background: #e8f0fc;
+  border: 1px solid #cdd9ef;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #062e5c;
 }
 
 .notif-mark-all:hover {
-    background: #dce9fb;
+  background: #dce9fb;
 }
 
 .notif-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* Card styles moved to components/domain/NotificationCard.css */
 
 .notif-card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap:12px;
-    flex-wrap:wrap;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.notif-date { /* moved to component stylesheet */ }
+.notif-date {
+  /* moved to component stylesheet */
+}
 
 .notif-empty-page {
-    padding: 20px;
-    text-align: center;
-    color: #6b7280;
+  padding: 20px;
+  text-align: center;
+  color: #6b7280;
 }
 
 .notif-loading {
-    text-align: center;
-    padding: 30px;
-    font-size: 16px;
-    color: #6b7280;
+  text-align: center;
+  padding: 30px;
+  font-size: 16px;
+  color: #6b7280;
 }
 .notif-filters {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .notif-filters select {
-    padding: 8px 12px;
-    border: 1px solid #d4dce7;
-    border-radius: 8px;
-    background: white;
-    font-size: 14px;
-    cursor: pointer;
+  padding: 8px 12px;
+  border: 1px solid #d4dce7;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .notif-filters select:hover {
-    background: #f1f5fb;
+  background: #f1f5fb;
 }
 /* Wrapper para centrar no ecrã */
 .notif-wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding-top: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
 }
 
 /* Card branco estilo login */
 .notif-card-container {
-    width: 100%;
-    max-width: 780px;
-    background: #ffffff;
-    padding: 35px 40px;
-    border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 780px;
+  background: #ffffff;
+  padding: 35px 40px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 /* Ajusta filtros */
 .notif-filters {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 20px;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .notif-filters select {
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid #cdd9ef;
-    background: #f8fbff;
-    color: #062e5c;
-    font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #cdd9ef;
+  background: #f8fbff;
+  color: #062e5c;
+  font-size: 14px;
 }

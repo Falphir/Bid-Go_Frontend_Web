@@ -25,14 +25,21 @@ export default function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div className="cd-overlay" onClick={onCancel} role="dialog" aria-modal="true">
+    <div
+      className="cd-overlay"
+      onClick={onCancel}
+      role="dialog"
+      aria-modal="true"
+    >
       <div
         className="cd-modal"
         onClick={(e) => e.stopPropagation()}
         ref={dialogRef}
         aria-labelledby="cd-title"
       >
-        <h3 id="cd-title" className="cd-title">{title}</h3>
+        <h3 id="cd-title" className="cd-title">
+          {title}
+        </h3>
         <p className="cd-message">{message}</p>
 
         <div className="cd-actions">

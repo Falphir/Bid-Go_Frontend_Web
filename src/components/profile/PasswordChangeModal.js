@@ -3,7 +3,13 @@ import ReactDOM from "react-dom";
 import PasswordInput from "../PasswordInput/PasswordInput";
 import "./PasswordChangeModal.css";
 
-function PasswordChangeModal({ open, passwords, onChangeField, onClose, onSave }) {
+function PasswordChangeModal({
+  open,
+  passwords,
+  onChangeField,
+  onClose,
+  onSave,
+}) {
   if (!open) return null;
   return ReactDOM.createPortal(
     <div className="modal-overlay">
@@ -25,7 +31,9 @@ function PasswordChangeModal({ open, passwords, onChangeField, onClose, onSave }
           onChange={(e) => onChangeField("confirm", e.target.value)}
         />
         <div className="modal-actions">
-          <button onClick={onSave} className="btn primary">Guardar</button>
+          <button onClick={onSave} className="btn primary">
+            Guardar
+          </button>
           <button
             className="btn danger"
             onClick={() => {

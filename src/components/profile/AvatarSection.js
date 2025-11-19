@@ -2,14 +2,22 @@ import React from "react";
 import { FiEdit2, FiCamera } from "react-icons/fi";
 import "./AvatarSection.css";
 
-function AvatarSection({ profile, previewAvatar, editing, onStartEdit, onSelectAvatar }) {
+function AvatarSection({
+  profile,
+  previewAvatar,
+  editing,
+  onStartEdit,
+  onSelectAvatar,
+}) {
   return (
     <div className="avatar-section">
       <div className="avatar-wrapper">
         <img
           src={
             previewAvatar ||
-            (profile?.profileImage?.trim() ? profile.profileImage : "/Images/default-avatar.png")
+            (profile?.profileImage?.trim()
+              ? profile.profileImage
+              : "/Images/default-avatar.png")
           }
           alt="Foto de perfil"
           className="avatar-img"

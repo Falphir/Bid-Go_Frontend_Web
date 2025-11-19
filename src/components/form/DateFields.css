@@ -1,6 +1,32 @@
 /* Styles for DateFields (shared with AuctionDatesFields) */
-.row { display: flex; flex-wrap: wrap; gap: 16px; }
-.field { display: flex; flex-direction: column; flex: 1; min-width: 250px; }
-.field label { margin-bottom: 6px; font-weight: 600; color: #062e5c; font-size: 14px; }
-.field input { border: 1px solid #cdd7e1; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #294766; background-color: #ffffff; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-.field input:focus { outline: none; border-color: #0066cc; box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2); }
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 250px;
+}
+.field label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #062e5c;
+  font-size: 14px;
+}
+.field input {
+  border: 1px solid #cdd7e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #294766;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.field input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}

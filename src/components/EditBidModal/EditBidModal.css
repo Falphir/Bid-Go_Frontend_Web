@@ -1,99 +1,118 @@
 /* Overlay e modal */
 .ebm-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
 }
 
 .ebm-modal {
-    background: #ffffff;
-    width: 100%;
-    max-width: 420px;
-    border-radius: 14px;
-    padding: 24px 32px;
-    box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 14px;
+  padding: 24px 32px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 .ebm-title {
-    margin: 0 0 12px;
-    font-size: 18px;
-    color: #1e293b;
+  margin: 0 0 12px;
+  font-size: 18px;
+  color: #1e293b;
 }
 
 /* Form */
-.ebm-form { display: flex; flex-direction: column; gap: 12px; }
-.ebm-label { display: flex; flex-direction: column; gap: 6px; color: #1e293b; font-weight: 600; }
-
-.ebm-input, .ebm-textarea {
-    border: 1px solid #ccd6e2;
-    border-radius: 8px;
-    padding: 10px;
-    font-size: 14px;
-    background: #f8fafc;
-    color: #062e5c;
+.ebm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ebm-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #1e293b;
+  font-weight: 600;
 }
 
-.ebm-input:focus, .ebm-textarea:focus {
-    outline: 2px solid #3b82f6;
-    outline-offset: 1px;
+.ebm-input,
+.ebm-textarea {
+  border: 1px solid #ccd6e2;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  background: #f8fafc;
+  color: #062e5c;
+}
+
+.ebm-input:focus,
+.ebm-textarea:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
 }
 
 .ebm-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
 }
 
 /* Botões */
 .ebm-btn {
-    border: none;
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .2s
-    ease, transform .15s
-    ease;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .ebm-btn:hover {
-    transform: translateY(-1px);
+  transform: translateY(-1px);
 }
 
 .ebm-btn:active {
-    transform: translateY(0);
-    box-shadow: none;
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .ebm-help {
-    color: #64748b;
-    font-size: 12px;
-    margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 .ebm-error {
-    color: #dc2626;
-    font-size: 12px;
-    margin-top: 4px;
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 .ebm-input.invalid {
-    border-color: #ef4444;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, .15);
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
+.ebm-cancel {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+.ebm-save {
+  background: #16a34a;
+  color: #fff;
+}
 
-.ebm-cancel { background: #e2e8f0; color: #0f172a; }
-.ebm-save   { background: #16a34a; color: #fff; }
-
-.ebm-btn:disabled { opacity: .6; cursor: default; }
-
+.ebm-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
 
 @media (prefers-reduced-motion: reduce) {
-    .ebm-btn { transition: none !important; }
+  .ebm-btn {
+    transition: none !important;
+  }
 }

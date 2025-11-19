@@ -1,7 +1,12 @@
 import React from "react";
 import "./DriverDocsSection.css";
 
-function DriverDocsSection({ editing, previewLicense, previewInsurance, onFileChange }) {
+function DriverDocsSection({
+  editing,
+  previewLicense,
+  previewInsurance,
+  onFileChange,
+}) {
   return (
     <div className="driver-block">
       <div className="upload-tile">

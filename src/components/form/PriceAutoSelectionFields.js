@@ -1,7 +1,11 @@
-import React from 'react';
+import React from "react";
 import "./PriceAutoSelectionFields.css";
 
-export default function PriceAutoSelectionFields({ maxPrice, isAutomaticSelectionEnabled, onChange }) {
+export default function PriceAutoSelectionFields({
+  maxPrice,
+  isAutomaticSelectionEnabled,
+  onChange,
+}) {
   return (
     <div className="row">
       <div className="field">
@@ -11,7 +15,7 @@ export default function PriceAutoSelectionFields({ maxPrice, isAutomaticSelectio
           step="0.01"
           placeholder="Ex.: 150.00"
           value={maxPrice}
-          onChange={(e) => onChange('maxPrice', e.target.value)}
+          onChange={(e) => onChange("maxPrice", e.target.value)}
         />
       </div>
       <div className="field">
@@ -21,7 +25,9 @@ export default function PriceAutoSelectionFields({ maxPrice, isAutomaticSelectio
             <input
               type="checkbox"
               checked={isAutomaticSelectionEnabled}
-              onChange={(e) => onChange('isAutomaticSelectionEnabled', e.target.checked)}
+              onChange={(e) =>
+                onChange("isAutomaticSelectionEnabled", e.target.checked)
+              }
             />
             <span className="slider" />
           </label>

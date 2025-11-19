@@ -3,7 +3,10 @@ import api from "../api/axiosConfig";
 import { useMe } from "../hooks/useMe";
 import "../styles/HistoryPage.css";
 import StatusMessage from "../components/feedback/StatusMessage";
-import { normalizeHistoryDriver, normalizeHistoryCompany } from "../utils/normalizers";
+import {
+  normalizeHistoryDriver,
+  normalizeHistoryCompany,
+} from "../utils/normalizers";
 import HistoryTable from "../components/data/HistoryTable";
 
 function HistoryPage() {
@@ -47,10 +50,14 @@ function HistoryPage() {
       try {
         let res;
         if (isDriver) {
-          res = await api.get(`/history/driver/${userId}`, { signal: controller.signal });
+          res = await api.get(`/history/driver/${userId}`, {
+            signal: controller.signal,
+          });
           setItems(normalizeHistoryDriver(res.data));
         } else if (isCompany) {
-          res = await api.get(`/history/company/${userId}`, { signal: controller.signal });
+          res = await api.get(`/history/company/${userId}`, {
+            signal: controller.signal,
+          });
           setItems(normalizeHistoryCompany(res.data));
         } else {
           setItems([]);
@@ -58,7 +65,9 @@ function HistoryPage() {
       } catch (err) {
         if (err?.name === "CanceledError") return;
         setError(
-          err?.response?.data?.message || err?.message || "Não foi possível carregar o histórico."
+          err?.response?.data?.message ||
+            err?.message ||
+            "Não foi possível carregar o histórico."
         );
       } finally {
         setLoading(false);
@@ -69,8 +78,10 @@ function HistoryPage() {
     return () => controller.abort();
   }, [isDriver, isCompany, userId]);
 
-  if (meLoading) return <StatusMessage type="loading">A validar sessão…</StatusMessage>;
-  if (loading) return <StatusMessage type="loading">A carregar histórico…</StatusMessage>;
+  if (meLoading)
+    return <StatusMessage type="loading">A validar sessão…</StatusMessage>;
+  if (loading)
+    return <StatusMessage type="loading">A carregar histórico…</StatusMessage>;
   if (error) return <StatusMessage type="error">{error}</StatusMessage>;
 
   const isEmpty = !items || items.length === 0;
@@ -83,7 +94,11 @@ function HistoryPage() {
   return (
     <div className="history-page">
       <h2 className="section-title">{title}</h2>
-      <HistoryTable columns={columns} rows={items} emptyMessage="Sem registos para apresentar." />
+      <HistoryTable
+        columns={columns}
+        rows={items}
+        emptyMessage="Sem registos para apresentar."
+      />
     </div>
   );
 }

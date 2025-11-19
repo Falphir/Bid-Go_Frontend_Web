@@ -5,63 +5,69 @@ import BidCard from "./BidCard";
 import "./BidList.css";
 
 function BidList({
-    bids,
-    sortBy,
-    ascending,
-    onChangeSort,
-    onToggleOrder,
-    isDriver,
-    isCompany,
-    onAddBid,
-    onEditBid,
-    onAskCancelBid,
-    onConfirmAction,
-    processing,
-    confirmAction,
+  bids,
+  sortBy,
+  ascending,
+  onChangeSort,
+  onToggleOrder,
+  isDriver,
+  isCompany,
+  onAddBid,
+  onEditBid,
+  onAskCancelBid,
+  onConfirmAction,
+  processing,
+  confirmAction,
 }) {
-    return (
-        <div className="bids-section">
-            <div className="bids-header">
-                <h3>Active Bids</h3>
-                <div className="sort-controls">
-                    <label>Sort By:</label>
-                    <select value={sortBy} onChange={(e) => onChangeSort(e.target.value)} className="sort-select">
-                        <option value="value">Price</option>
-                        <option value="deadline">Deadline</option>
-                    </select>
-                    <button type="button" onClick={onToggleOrder} className="order-btn">
-                        {ascending ? "⬆" : "⬇"}
-                    </button>
-                    {isDriver && (
-                        <button type="button" className="add-bid-btn" onClick={onAddBid}>
-                            <FontAwesomeIcon icon={faPlus} />
-                            <span>New Bid</span>
-                        </button>
-                    )}
-                </div>
-            </div>
-            <div className="bids-list">
-                {bids.length === 0 ? (
-                    <p className="no-bids">No active bids found.</p>
-                ) : (
-                    bids.map((bid) => (
-                        <BidCard
-                            key={bid.bidId}
-                            bid={bid}
-                            isOwnerDriver={isDriver && (bid?.driverId === bid?.driver?.driverId)}
-                            isCompany={isCompany}
-                            onEdit={onEditBid}
-                            onCancel={onAskCancelBid}
-                            onAccept={(bidId) => onConfirmAction("accept", bidId)}
-                            onReject={(bidId) => onConfirmAction("reject", bidId)}
-                            processing={processing}
-                            confirmAction={confirmAction}
-                        />
-                    ))
-                )}
-            </div>
+  return (
+    <div className="bids-section">
+      <div className="bids-header">
+        <h3>Active Bids</h3>
+        <div className="sort-controls">
+          <label>Sort By:</label>
+          <select
+            value={sortBy}
+            onChange={(e) => onChangeSort(e.target.value)}
+            className="sort-select"
+          >
+            <option value="value">Price</option>
+            <option value="deadline">Deadline</option>
+          </select>
+          <button type="button" onClick={onToggleOrder} className="order-btn">
+            {ascending ? "⬆" : "⬇"}
+          </button>
+          {isDriver && (
+            <button type="button" className="add-bid-btn" onClick={onAddBid}>
+              <FontAwesomeIcon icon={faPlus} />
+              <span>New Bid</span>
+            </button>
+          )}
         </div>
-    );
+      </div>
+      <div className="bids-list">
+        {bids.length === 0 ? (
+          <p className="no-bids">No active bids found.</p>
+        ) : (
+          bids.map((bid) => (
+            <BidCard
+              key={bid.bidId}
+              bid={bid}
+              isOwnerDriver={
+                isDriver && bid?.driverId === bid?.driver?.driverId
+              }
+              isCompany={isCompany}
+              onEdit={onEditBid}
+              onCancel={onAskCancelBid}
+              onAccept={(bidId) => onConfirmAction("accept", bidId)}
+              onReject={(bidId) => onConfirmAction("reject", bidId)}
+              processing={processing}
+              confirmAction={confirmAction}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default BidList;

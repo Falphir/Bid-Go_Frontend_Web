@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import "./FiltersPanel.css";
 
 // Painel de filtros reutilizável (extraído de BidGoPage)
@@ -16,7 +16,12 @@ export default function FiltersPanel({ initialFilters, onApply, onClear }) {
   };
 
   const clear = () => {
-    const cleared = { origin: '', destination: '', deliveryDate: '', priceOrder: '' };
+    const cleared = {
+      origin: "",
+      destination: "",
+      deliveryDate: "",
+      priceOrder: "",
+    };
     setFilters(cleared);
     onClear?.(cleared);
   };
@@ -28,17 +33,17 @@ export default function FiltersPanel({ initialFilters, onApply, onClear }) {
           type="text"
           placeholder="Origem"
           value={filters.origin}
-          onChange={(e) => handleChange('origin', e.target.value)}
+          onChange={(e) => handleChange("origin", e.target.value)}
         />
         <input
           type="text"
           placeholder="Destino"
           value={filters.destination}
-          onChange={(e) => handleChange('destination', e.target.value)}
+          onChange={(e) => handleChange("destination", e.target.value)}
         />
         <select
           value={filters.priceOrder}
-          onChange={(e) => handleChange('priceOrder', e.target.value)}
+          onChange={(e) => handleChange("priceOrder", e.target.value)}
         >
           <option value="">Preço</option>
           <option value="asc">Mais barato</option>
@@ -46,8 +51,12 @@ export default function FiltersPanel({ initialFilters, onApply, onClear }) {
         </select>
       </div>
       <div className="filters-actions">
-        <button type="submit" className="bid-btn">Aplicar</button>
-        <button type="button" className="bid-btn" onClick={clear}>Limpar</button>
+        <button type="submit" className="bid-btn">
+          Aplicar
+        </button>
+        <button type="button" className="bid-btn" onClick={clear}>
+          Limpar
+        </button>
       </div>
     </form>
   );
