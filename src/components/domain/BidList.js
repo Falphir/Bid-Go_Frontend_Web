@@ -12,6 +12,7 @@ function BidList({
   onToggleOrder,
   isDriver,
   isCompany,
+  currentUserId,
   onAddBid,
   onEditBid,
   onAskCancelBid,
@@ -53,7 +54,7 @@ function BidList({
               key={bid.bidId}
               bid={bid}
               isOwnerDriver={
-                isDriver && bid?.driverId === bid?.driver?.driverId
+                isDriver && (bid?.driverId ?? bid?.driver?.driverId) === currentUserId
               }
               isCompany={isCompany}
               onEdit={onEditBid}
