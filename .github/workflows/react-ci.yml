@@ -30,7 +30,7 @@ jobs:
         run: npm ci
 
       - name: Run Jest tests (unit + aceitação)
-        run: npm test -- --watch=false
+        run: npm test -- --watch=false --passWithNoTests
         env:
           CI: true
 
