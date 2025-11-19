@@ -448,11 +448,11 @@ function RequestDetailsPage() {
 
                     <div className="bid-card">
                         <div className="bid-info">
-                            <h4 className="bid-title">Bid nº{acceptedBid.bidId}</h4>
+                            <h4 className="bid-title">Bid de {acceptedBid.driverName}</h4>
 
                             <p className="bid-driver">
-                                <span className="detail-label">Driver:</span>{" "}
-                                {acceptedBid.driver?.name ?? "—"}
+                                <span className="detail-label">Email:</span>{" "}
+                                {acceptedBid.driverEmail ?? "—"}
                             </p>
 
                             <p className="bid-value">
@@ -461,7 +461,7 @@ function RequestDetailsPage() {
 
                             <p className="bid-deadline">
                                 <span className="detail-label">Deadline:</span>{" "}
-                                {new Date(acceptedBid.deliveryDeadline).toLocaleDateString()}
+                                {new Date(acceptedBid.deadline).toLocaleDateString()}
                             </p>
                         </div>
                         <div className="status-actions">
