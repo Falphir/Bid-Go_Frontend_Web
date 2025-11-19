@@ -65,10 +65,10 @@ function CreateTransportPage() {
             }
 
             // If validation passes, call the shared submit logic targeting the DRAFT endpoint
-            try {
-                await handleSubmit?.(null, API_URL_DRAFT);
-                showToast("Rascunho criado com sucesso.", "success");
-            } catch (err) {
+                try {
+                    // Pass a custom success message to handleSubmit so it shows only one toast
+                    await handleSubmit?.(null, API_URL_DRAFT, "Rascunho criado com sucesso.");
+                } catch (err) {
                 if (axios.isCancel?.(err) || err?.name === "CanceledError") return;
                 const apiMsg = getApiErrorMessage(err);
                 showToast(apiMsg, "error");
@@ -118,7 +118,7 @@ function CreateTransportPage() {
     }, []);
 
     // Submission handler: sends FormData if there's an image, otherwise JSON
-    const handleSubmit = async (e, targetUrl = API_URL) => {
+    const handleSubmit = async (e, targetUrl = API_URL, successMessage = "Pedido criado com sucesso.") => {
         if (e?.preventDefault) e.preventDefault();
         setError(null);
         setLoading(true);
@@ -253,11 +253,9 @@ function CreateTransportPage() {
                 });
             }
 
-            // Success: you can clear the form or show a message here
-            // For now, reset loading and keep the data for user feedback
+            // Success: reset loading and show the provided success message
             setLoading(false);
-            // show success toast
-            showToast("Pedido criado com sucesso.", "success");
+            if (successMessage) showToast(successMessage, "success");
         } catch (err) {
             if (axios.isCancel?.(err) || err.name === "CanceledError") return;
             const apiMsg = getApiErrorMessage(err);
