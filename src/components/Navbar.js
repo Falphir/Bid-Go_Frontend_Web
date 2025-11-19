@@ -209,6 +209,9 @@ export default function Navbar() {
                                 <button onClick={() => navigate("/profile")}>Perfil</button>
                                 <button onClick={() => navigate("/history")}>Histórico</button>
                                 <button onClick={() => navigate("/notifications")}>Notificações</button>
+                                {user?.role && user.role.toLowerCase().includes("driver") && (
+                                    <button onClick={() => navigate("/myBids")}>Minhas Bids</button>
+                                )}
                                 <button onClick={handleLogout}>Logout</button>
                             </div>
                         )}

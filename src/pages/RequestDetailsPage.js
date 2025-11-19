@@ -43,6 +43,8 @@ function RequestDetailsPage() {
     const [savingEditTransport, setSavingEditTransport] = useState(false);
     const [confirmCancelTransport, setConfirmCancelTransport] = useState(false);
     const [cancelingTransport, setCancelingTransport] = useState(false);
+    const [statusUpdating, setStatusUpdating] = useState(false);
+    const [confirmStatusAction, setConfirmStatusAction] = useState(null); // { target, label }
 
     // Helper toast
     const showToast = (msg, type = "success") => {
@@ -82,38 +84,7 @@ function RequestDetailsPage() {
 
                 // If active: load active bids
                 if (status === "ACTIVE") {
-                    try {
-                        const bidsRes = await api.get(
-                            `/bids/bidsActive?transportRequestId=${transportId}`,
-                            { signal: controller.signal }
-                        );
-
-                        // augment with rating (best-effort)
-                        const updatedBids = await Promise.all(
-                            bidsRes.data.map(async (bid) => {
-                                try {
-                                    const ratingRes = await api.get(
-                                        `/reviewRequest/average/driver/${bid.driver.driverId}`
-                                    );
-                                    return { ...bid, driver: { ...bid.driver, averageRating: ratingRes.data.average } };
-                                } catch {
-                                    return { ...bid, driver: { ...bid.driver, averageRating: null } };
-                                }
-                            })
-                        );
-
-                        setBids(updatedBids);
-                        setAcceptedBid(null);
-                    } catch (err) {
-                        // Backend may return 404 when there are no active bids (new behaviour)
-                        if (err?.response?.status === 404) {
-                            console.warn("No active bids found — returning empty list.");
-                            setBids([]);
-                            setAcceptedBid(null);
-                        } else {
-                            throw err;
-                        }
-                    }
+                    await loadActiveBids(controller.signal);
                     return;
                 }
 
@@ -186,6 +157,10 @@ function RequestDetailsPage() {
         transport?.canceled === true || transport?.isCanceled === true
     );
 
+    const isTransportOwner = !!transport && isCompany && (
+        transport?.companyId === userId 
+    );
+
     const isOwnerDriver = (bid) => isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
 
     // Refresh transport (used by publish/cancel)
@@ -199,6 +174,43 @@ function RequestDetailsPage() {
         }
     };
 
+    // Load active bids (extracted for reuse after adding a bid)
+    const loadActiveBids = async (signal) => {
+        if (!transportId) return;
+        try {
+            const bidsRes = await api.get(
+                `/bids/bidsActive?transportRequestId=${transportId}`,
+                signal ? { signal } : undefined
+            );
+
+            const updatedBids = await Promise.all(
+                bidsRes.data.map(async (bid) => {
+                    try {
+                        const ratingRes = await api.get(
+                            `/reviewRequest/average/driver/${bid.driver.driverId}`
+                        );
+                        return { ...bid, driver: { ...bid.driver, averageRating: ratingRes.data.average } };
+                    } catch {
+                        return { ...bid, driver: { ...bid.driver, averageRating: null } };
+                    }
+                })
+            );
+
+            setBids(updatedBids);
+            setAcceptedBid(null);
+        } catch (err) {
+            if (err?.response?.status === 404) {
+                console.warn("No active bids found — returning empty list.");
+                setBids([]);
+                setAcceptedBid(null);
+            } else if (axios.isCancel(err)) {
+                return;
+            } else {
+                throw err;
+            }
+        }
+    };
+
     // ---------------------------
     // ACTIONS: Add / Edit / Cancel / Accept-Reject
     // ---------------------------
@@ -208,9 +220,9 @@ function RequestDetailsPage() {
     const handleSaveAdd = async (payload) => {
         try {
             setSavingAdd(true);
-            const res = await api.post(`/bids/createBid`, payload);
-            const created = res.data || { bidId: Math.random().toString(36).slice(2), driver: { name: "Tu", driverId: userId }, ...payload };
-            setBids((prev) => [created, ...prev]);
+            await api.post(`/bids/createBid`, payload);
+            // Reload full list to get fresh driver details & rating immediately
+            await loadActiveBids();
             showToast("Bid created.", "success");
             setAddOpen(false);
         } catch (err) {
@@ -350,7 +362,25 @@ function RequestDetailsPage() {
         }
     };
 
-    // RENDER guards
+    // Update transport status via endpoint
+    const updateTransportStatus = async (target) => {
+        if (!transportId) return;
+        setStatusUpdating(true);
+        try {
+            await api.put(`/transports/updateStatus/${transportId}`, { status: target });
+            showToast('Estado do pedido atualizado com sucesso!', 'success');
+            await refreshTransport();
+        } catch (err) {
+            console.error('Erro ao atualizar estado:', err);
+            const apiMsg = getApiErrorMessage(err);
+            showToast(apiMsg || 'Erro ao atualizar estado do pedido.', 'error');
+        } finally {
+            setStatusUpdating(false);
+            setConfirmStatusAction(null);
+        }
+    };
+
+    //RENDER guards
     if (meLoading) return <p className="status-message">Validating Session…</p>;
     if (loading) return <p className="status-message">Loading…</p>;
     if (error) return <p className="status-message error">Error: {error}</p>;
@@ -387,7 +417,7 @@ function RequestDetailsPage() {
                                             </>
                                         )}
 
-                                        {!isTransportCanceled && (
+                                        {isTransportOwner && !isTransportCanceled && (
                                             <button type="button" className="btn-cancel" onClick={() => setConfirmCancelTransport(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
                                                 Cancelar
                                             </button>
@@ -469,7 +499,7 @@ function RequestDetailsPage() {
                                     <div className="bid-card" key={bid.bidId}>
                                         {/* left column */}
                                         <div className="bid-info">
-                                            <h4 className="bid-title">Licitação de {bid.driver.name}</h4>
+                                            <h4 className="bid-title">Licitação de {bid.driver?.name || "—"}</h4>
 
                                             <p className="bid-driver">
                                                 Email do Motorista: {bid.driver?.email || "—"}{" "}
@@ -548,6 +578,49 @@ function RequestDetailsPage() {
                                 {new Date(acceptedBid.deliveryDeadline).toLocaleDateString()}
                             </p>
                         </div>
+                        <div className="status-actions">
+                            {/* Company: Pending -> WaitingPickup */}
+                            {isCompany && (status === "PENDING" || status === "PENDENT") && (
+                                <button
+                                    className="status-btn status-btn--primary"
+                                    onClick={() => setConfirmStatusAction({ target: 'WaitingPickup', label: 'Marcar como Aguardando Recolha' })}
+                                    disabled={statusUpdating}
+                                >
+                                    {statusUpdating ? 'Aguarde…' : 'Marcar Recolha'}
+                                </button>
+                            )}
+
+                            {/* Driver (only accepted bid owner): WaitingPickup -> InTransit */}
+                            {isOwnerDriver(acceptedBid) && status === "WAITINGPICKUP" && (
+                                <button
+                                    className="status-btn status-btn--success"
+                                    onClick={() => setConfirmStatusAction({ target: 'InTransit', label: 'Iniciar Transporte' })}
+                                    disabled={statusUpdating}
+                                >
+                                    {statusUpdating ? 'Aguarde…' : 'Iniciar Transporte'}
+                                </button>
+                            )}
+
+                            {/* Driver (only accepted bid owner): InTransit -> Completed or Canceled */}
+                            {isOwnerDriver(acceptedBid) && status === "INTRANSIT" && (
+                                <>
+                                    <button
+                                        className="status-btn status-btn--success"
+                                        onClick={() => setConfirmStatusAction({ target: 'Completed', label: 'Marcar como Concluído' })}
+                                        disabled={statusUpdating}
+                                    >
+                                        {statusUpdating ? 'Aguarde…' : 'Concluir'}
+                                    </button>
+                                    <button
+                                        className="status-btn status-btn--danger"
+                                        onClick={() => setConfirmStatusAction({ target: 'Canceled', label: 'Cancelar Transporte' })}
+                                        disabled={statusUpdating}
+                                    >
+                                        {statusUpdating ? 'Aguarde…' : 'Cancelar'}
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                 )}
@@ -613,6 +686,20 @@ function RequestDetailsPage() {
                     }
                 }}
                 onCancel={() => setConfirmCancelTransport(false)}
+            />
+
+            <ConfirmDialog
+                open={!!confirmStatusAction}
+                title={confirmStatusAction?.label ?? 'Confirmar Ação'}
+                message={`Tem certeza que pretende ${confirmStatusAction?.label ?? 'executar esta ação'}?`}
+                confirmText="Sim"
+                cancelText="Cancelar"
+                loading={statusUpdating}
+                onConfirm={async () => {
+                    if (!confirmStatusAction) return;
+                    await updateTransportStatus(confirmStatusAction.target);
+                }}
+                onCancel={() => setConfirmStatusAction(null)}
             />
 
             {confirmAction && (
