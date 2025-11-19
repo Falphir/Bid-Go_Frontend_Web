@@ -380,7 +380,7 @@ function RequestDetailsPage() {
         }
     };
 
-    // RENDER guards
+    //RENDER guards
     if (meLoading) return <p className="status-message">Validating Session…</p>;
     if (loading) return <p className="status-message">Loading…</p>;
     if (error) return <p className="status-message error">Error: {error}</p>;
