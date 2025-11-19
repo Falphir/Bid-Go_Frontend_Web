@@ -3,7 +3,10 @@ import "../styles/LoginPage.css";
 import { useNavigate, useLocation } from "react-router";
 import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
-import PasswordInput from "../components/PasswordInput";
+import PasswordInput from "../components/PasswordInput"; // kept for reused component dependency
+import StatusMessage from "../components/feedback/StatusMessage"; // legacy inline removal now replaced by LoginForm
+import LoginForm from "../components/form/LoginForm";
+import { useToast } from "../components/feedback/ToastContext";
 
 
 function LoginPage() {
@@ -15,7 +18,7 @@ function LoginPage() {
     const abortRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
-    const [toast, setToast] = useState(null);
+    const { showToast, toasts } = useToast();
 
     useEffect(() => {
         // cleanup ao desmontar
@@ -25,10 +28,8 @@ function LoginPage() {
     // show toast passed via navigation state (e.g. after successful register)
     useEffect(() => {
         if (location?.state?.toast) {
-            setToast(location.state.toast);
-            // clear toast after 3s
-            const t = setTimeout(() => setToast(null), 3000);
-            return () => clearTimeout(t);
+            const t = location.state.toast;
+            showToast(t.msg, t.type);
         }
     }, [location]);
 
@@ -75,10 +76,15 @@ function LoginPage() {
                     err.response.data?.message ||
                     `Erro ${err.response.status}: ${err.response.statusText}`;
                 setError(msg);
+                showToast(msg, "error");
             } else if (err.request) {
-                setError("Falha de rede: sem resposta do servidor.");
+                const msg = "Falha de rede: sem resposta do servidor.";
+                setError(msg);
+                showToast(msg, "error");
             } else {
-                setError(`Erro: ${err.message}`);
+                const msg = `Erro: ${err.message}`;
+                setError(msg);
+                showToast(msg, "error");
             }
         } finally {
             setLoading(false);
@@ -89,56 +95,17 @@ function LoginPage() {
         <div className="login-page">
             <img src={logo} alt="Bid&Go logo" className="page-logo" />
             <div className="login-container">
-                <form className="login-form" onSubmit={handleSubmit}>
-                    <h2 className="login-title">Iniciar Sessão</h2>
-
-                    {toast && (
-                        <div className={`toast ${toast.type}`}>
-                            {toast.msg}
-                        </div>
-                    )}
-
-                    <label className="login-label">
-                        Email
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Email"
-                            autoComplete="email"
-                            required
-                        />
-
-                    </label>
-
-                    <PasswordInput
-                        label="Palavra-passe"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="current-password"
-                        required
-                    />
-
-                    <label className="login-remember" htmlFor="remember">
-                        <input
-                            id="remember"
-                            type="checkbox"
-                            checked={remember}
-                            onChange={(e) => setRemember(e.target.checked)}
-                        />
-                        <span className="remember-text">Manter sessão iniciada</span>
-                    </label>
-
-                    {error && <p className="error-message">{error}</p>}
-
-                    <button type="submit" className="login-button" disabled={loading}>
-                        {loading ? "A entrar…" : "Entrar"}
-                    </button>
-
-                    <a href="#forgot" className="forgot-password">
-                        Esqueceu-se da palavra-passe?
-                    </a>
-                </form>
+                <LoginForm
+                    email={email}
+                    password={password}
+                    remember={remember}
+                    loading={loading}
+                    error={error}
+                    onChangeEmail={setEmail}
+                    onChangePassword={setPassword}
+                    onToggleRemember={setRemember}
+                    onSubmit={handleSubmit}
+                />
             </div>
         </div>
     );

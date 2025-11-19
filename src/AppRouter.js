@@ -4,13 +4,13 @@ import App from "./App";
 import BidGoPage from "./pages/BidGoPage";
 import LoginPage from "./pages/LoginPage";
 import CreateTransportPage from "./pages/CreateTransportPage";
-import AcceptBids from "./pages/AcceptBids";
 import RequestDetailsPage from "./pages/RequestDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
 import HistoryPage from "./pages/HistoryPage";
 import MyBidsPage from "./pages/MyBidsPage";
 import RegisterPage from "./pages/RegisterPage";
 import NotificationPage from "./pages/NotificationPage";
+import AcceptBids from "./pages/AcceptBids";
 
 
 export default function AppRouter() {
@@ -28,6 +28,7 @@ export default function AppRouter() {
                         <Route path="/profile" element={<ProfilePage />} />
                          <Route path="/myBids" element={<MyBidsPage />} />
                         <Route path="/register" element={<RegisterPage />} />
+                        <Route path="/acceptBids/:id" element={<AcceptBids />} />
                     </Route>
                     <Route path="/Login" element={<LoginPage />} />
                     <Route path="*" element={<div>NOT FOUND</div>} />

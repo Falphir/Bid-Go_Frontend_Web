@@ -3,6 +3,13 @@ import "../styles/CreateTransportPage.css";
 import axios from "axios";
 import api from "../api/axiosConfig";
 import { getApiErrorMessage } from "../utils/httpError";
+import StatusMessage from "../components/feedback/StatusMessage";
+import { useToast } from "../components/feedback/ToastContext";
+import ImageUpload from "../components/form/ImageUpload";
+import DimensionFields from "../components/form/DimensionFields";
+import DateFields from "../components/form/DateFields";
+import AuctionDatesFields from "../components/form/AuctionDatesFields";
+import PriceAutoSelectionFields from "../components/form/PriceAutoSelectionFields";
 
 function CreateTransportPage() {
     const [imageFile, setImageFile] = useState(null);
@@ -25,12 +32,7 @@ function CreateTransportPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const abortRef = useRef(null);
-    const [toast, setToast] = useState(null);
-
-    const showToast = (msg, type = "success") => {
-        setToast({ msg, type });
-        setTimeout(() => setToast(null), 4000);
-    };
+    const { showToast } = useToast();
 
 
         const handleCreateDraft = async () => {
@@ -268,210 +270,69 @@ function CreateTransportPage() {
         <div className="create-transport-container">
             <h2 className="create-title">Novo Pedido de Transporte</h2>
             <form className="transport-form" onSubmit={handleSubmit}>
-                {/* Image upload drop zone */}
-                <div className="drop-zone-wrapper">
-                    <input
-                        type="file"
-                        id="image-upload"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                    />
-                    <label htmlFor="image-upload" className="drop-zone">
-                        {/* Icon representing image upload */}
-                        <svg
-                            className="upload-icon"
-                            width="48"
-                            height="48"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <rect
-                                x="2"
-                                y="3"
-                                width="20"
-                                height="18"
-                                rx="2"
-                                stroke="#7a8fa6"
-                                strokeWidth="2"
-                            />
-                            <path
-                                d="M3 16l5-5 3 3 4-4 6 6"
-                                stroke="#7a8fa6"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                            <circle cx="16.5" cy="7.5" r="1.5" fill="#7a8fa6" />
-                        </svg>
-                        <p className="drop-title">Carregar Imagem</p>
-                        <span className="drop-instruction">
-              Arraste e solte ou clique para selecionar
-            </span>
-                    </label>
-                    {imageFile && <p className="file-name">{imageFile.name}</p>}
-                </div>
+                <ImageUpload file={imageFile} onChange={handleImageChange} />
 
-                {/* Fields for origin and destination */}
                 <div className="row">
                     <div className="field">
                         <label>Origem</label>
-                        <input
-                            type="text"
-                            placeholder="Morada / Distrito / Código Postal"
-                            value={origin}
-                            onChange={(e) => setOrigin(e.target.value)}
-                        />
+                        <input type="text" placeholder="Morada / Distrito / Código Postal" value={origin} onChange={(e) => setOrigin(e.target.value)} />
                     </div>
                     <div className="field">
                         <label>Destino</label>
-                        <input
-                            type="text"
-                            placeholder="Morada / Distrito / Código Postal"
-                            value={destination}
-                            onChange={(e) => setDestination(e.target.value)}
-                        />
+                        <input type="text" placeholder="Morada / Distrito / Código Postal" value={destination} onChange={(e) => setDestination(e.target.value)} />
                     </div>
                 </div>
 
-                {/* Cargo type */}
                 <div className="field">
                     <label>Tipo de Mercadoria</label>
-                    <input
-                        type="text"
-                        placeholder="Ex.: Eletrodoméstico"
-                        value={pckg}
-                        onChange={(e) => setPckg(e.target.value)}
-                    />
+                    <input type="text" placeholder="Ex.: Eletrodoméstico" value={pckg} onChange={(e) => setPckg(e.target.value)} />
                 </div>
 
-                {/* Weight and dimensions */}
                 <div className="row">
                     <div className="field">
                         <label>Peso (kg)</label>
-                        <input
-                            type="text"
-                            placeholder="Ex.: 10"
-                            value={weight}
-                            onChange={(e) => setWeight(e.target.value)}
-                        />
+                        <input type="text" placeholder="Ex.: 10" value={weight} onChange={(e) => setWeight(e.target.value)} />
                     </div>
-
-                    <div className="field">
-                        <div className="dimensions-header">
-                            <label>Dimensões (cm)</label>
-                            <div className="volume-inline">
-                                {volume ? `${volume} cm³` : ""}
-                            </div>
-                        </div>
-                        <div className="dimensions-group">
-                            <input
-                                className="dimensions-input"
-                                type="text"
-                                placeholder="Comprimento"
-                                value={length}
-                                onChange={(e) => {
-                                    setLength(e.target.value);
-                                    updateDimensionsString(e.target.value, width, height);
-                                }}
-                                aria-label="Comprimento (cm)"
-                            />
-                            <span className="dimensions-sep">/</span>
-                            <input
-                                className="dimensions-input"
-                                type="text"
-                                placeholder="Largura"
-                                value={width}
-                                onChange={(e) => {
-                                    setWidth(e.target.value);
-                                    updateDimensionsString(length, e.target.value, height);
-                                }}
-                                aria-label="Largura (cm)"
-                            />
-                            <span className="dimensions-sep">/</span>
-                            <input
-                                className="dimensions-input"
-                                type="text"
-                                placeholder="Altura"
-                                value={height}
-                                onChange={(e) => {
-                                    setHeight(e.target.value);
-                                    updateDimensionsString(length, width, e.target.value);
-                                }}
-                                aria-label="Altura (cm)"
-                            />
-                        </div>
-                        <input type="hidden" value={dimensions} readOnly />
-                    </div>
+                    <DimensionFields
+                        length={length}
+                        width={width}
+                        height={height}
+                        volume={volume}
+                        onChange={(field, value) => {
+                            if (field === 'length') setLength(value);
+                            if (field === 'width') setWidth(value);
+                            if (field === 'height') setHeight(value);
+                            updateDimensionsString(field === 'length' ? value : length, field === 'width' ? value : width, field === 'height' ? value : height);
+                        }}
+                    />
                 </div>
 
-                {/* Dates */}
-                <div className="row">
-                    <div className="field">
-                        <label>Data de recolha</label>
-                        <input
-                            type="date"
-                            value={pickupDate}
-                            onChange={(e) => setPickupDate(e.target.value)}
-                        />
-                    </div>
-                    <div className="field">
-                        <label>Data de entrega</label>
-                        <input
-                            type="date"
-                            value={deliveryDate}
-                            onChange={(e) => setDeliveryDate(e.target.value)}
-                        />
-                    </div>
-                </div>
+                <DateFields
+                    pickupDate={pickupDate}
+                    deliveryDate={deliveryDate}
+                    onChange={(field, value) => {
+                        if (field === 'pickupDate') setPickupDate(value);
+                        if (field === 'deliveryDate') setDeliveryDate(value);
+                    }}
+                />
 
-                {/* Auction start/end (moved to top) */}
-                <div className="row">
-                    <div className="field">
-                        <label>Início do Leilão</label>
-                        <input
-                            type="date"
-                            value={biddingStartDate}
-                            onChange={(e) => setBiddingStartDate(e.target.value)}
-                        />
-                    </div>
-                    <div className="field">
-                        <label>Fim do Leilão</label>
-                        <input
-                            type="date"
-                            value={biddingEndDate}
-                            onChange={(e) => setBiddingEndDate(e.target.value)}
-                        />
-                    </div>
-                </div>
+                <AuctionDatesFields
+                    biddingStartDate={biddingStartDate}
+                    biddingEndDate={biddingEndDate}
+                    onChange={(field, value) => {
+                        if (field === 'biddingStartDate') setBiddingStartDate(value);
+                        if (field === 'biddingEndDate') setBiddingEndDate(value);
+                    }}
+                />
 
-                <div className="row">
-                    <div className="field">
-                        <label>Preço Máximo (€)</label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            placeholder="Ex.: 150.00"
-                            value={maxPrice}
-                            onChange={(e) => setMaxPrice(e.target.value)}
-                        />
-                    </div>
-                    <div className="field">
-                        <label>Algoritmo Automático</label>
-                        <div className="auto-algo">
-                            <label className="switch">
-                                <input
-                                    type="checkbox"
-                                    checked={isAutomaticSelectionEnabled}
-                                    onChange={(e) =>
-                                        setIsAutomaticSelectionEnabled(e.target.checked)
-                                    }
-                                />
-                                <span className="slider" />
-                            </label>
-                        </div>
-                    </div>
-                </div>
+                <PriceAutoSelectionFields
+                    maxPrice={maxPrice}
+                    isAutomaticSelectionEnabled={isAutomaticSelectionEnabled}
+                    onChange={(field, value) => {
+                        if (field === 'maxPrice') setMaxPrice(value);
+                        if (field === 'isAutomaticSelectionEnabled') setIsAutomaticSelectionEnabled(value);
+                    }}
+                />
 
                 {/* errors are shown via toast only to avoid duplication */}
 
@@ -488,9 +349,7 @@ function CreateTransportPage() {
                         {loading ? "Enviando..." : "Criar Pedido"}
                     </button>
                 </div>
-                {toast && (
-                    <div className={`toast ${toast.type}`}>{toast.msg}</div>
-                )}
+                {/* Toasts agora são geridos globalmente */}
             </form>
         </div>
     );

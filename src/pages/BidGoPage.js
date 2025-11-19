@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import "../styles/BidGoPage.css";
 import api from "../api/axiosConfig";
 import { useNavigate } from "react-router";
-import Countdown from "../components/Countdown";
 import { useMe } from "../hooks/useMe";
+import TransportCard from "../components/domain/TransportCard";
+import StatusMessage from "../components/feedback/StatusMessage";
+import FiltersPanel from "../components/form/FiltersPanel";
+import { normalizeTransportList } from "../utils/normalizers";
 
 function BidGoPage() {
     const [requests, setRequests] = useState([]);
@@ -24,30 +27,7 @@ function BidGoPage() {
     // 👁️ Toggle para filtros (fechado por omissão)
     const [showFilters, setShowFilters] = useState(false);
 
-    // 🧩 Normalizar resposta da API
-    const normalizeList = (data) => {
-        const arr = Array.isArray(data)
-            ? data
-            : Array.isArray(data?.items)
-                ? data.items
-                : Array.isArray(data?.results)
-                    ? data.results
-                    : [];
-
-        return arr.map((t) => ({
-            id: t.id ?? t.transportRequestId ?? t.transportId,
-            image: t.image ?? "https://via.placeholder.com/400x250",
-            package: t.package ?? t.title ?? "Pedido",
-            route: t.route ?? "",
-            origin: t.origin ?? t.from ?? "—",
-            destination: t.destination ?? t.to ?? "—",
-            maxPrice: t.maxPrice ?? t.maxBudget ?? "—",
-            timeRemaining: t.timeRemaining ?? "",
-            biddingEndDate:
-                t.biddingEndDate ?? t.biddingEnd ?? t.bidding_end_date ?? null,
-            status: t.status ?? null,
-        }));
-    };
+    // Normalização agora em utils/normalizers.js (normalizeTransportList)
 
     // Helpers
     const buildQuery = (f) => {
@@ -66,7 +46,7 @@ function BidGoPage() {
         setIsRequestsEmpty(false);
         try {
             const res = await api.get(`/transports/company/${userId}`, { signal });
-            const normalized = normalizeList(res?.data);
+            const normalized = normalizeTransportList(res?.data);
             setRequests(normalized);
             if (normalized.length === 0) setIsRequestsEmpty(true);
         } catch (err) {
@@ -91,7 +71,7 @@ function BidGoPage() {
             const qs = buildQuery(currentFilters || filters);
             const url = qs ? `/pageTransports/filters?${qs}` : `/pageTransports/filters`;
             const res = await api.get(url, { signal });
-            const normalized = normalizeList(res?.data);
+            const normalized = normalizeTransportList(res?.data);
             setRequests(normalized);
             if (normalized.length === 0) setIsRequestsEmpty(true);
         } catch (err) {
@@ -121,9 +101,9 @@ function BidGoPage() {
     }, [isDriver, isCompany, userId]);
 
     // 🕐 Estados de carregamento
-    if (meLoading) return <p className="status-message">A validar sessão…</p>;
-    if (loading) return <p className="status-message">A carregar transportes…</p>;
-    if (error) return <p className="status-message error">{error}</p>;
+    if (meLoading) return <StatusMessage type="loading">A validar sessão…</StatusMessage>;
+    if (loading) return <StatusMessage type="loading">A carregar transportes…</StatusMessage>;
+    if (error) return <StatusMessage type="error">{error}</StatusMessage>;
 
     const list = Array.isArray(requests) ? requests : [];
     const isEmpty = list.length === 0 || isRequestsEmpty;
@@ -145,55 +125,21 @@ function BidGoPage() {
                         </button>
 
                         {showFilters && (
-                            <form
-                                id="filtersTopPanel"
-                                className="filters-top"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
+                            <FiltersPanel
+                                initialFilters={filters}
+                                onApply={(f) => {
+                                    setFilters(f);
                                     const controller = new AbortController();
-                                    fetchDriverTransports(controller.signal, filters);
+                                    fetchDriverTransports(controller.signal, f);
                                     setTimeout(() => controller.abort(), 30000);
                                 }}
-                            >
-                                <div className="filters-row">
-                                    <input
-                                        type="text"
-                                        placeholder="Origem"
-                                        value={filters.origin}
-                                        onChange={(e) => setFilters((f) => ({ ...f, origin: e.target.value }))}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Destino"
-                                        value={filters.destination}
-                                        onChange={(e) => setFilters((f) => ({ ...f, destination: e.target.value }))}
-                                    />
-                                    <select
-                                        value={filters.priceOrder}
-                                        onChange={(e) => setFilters((f) => ({ ...f, priceOrder: e.target.value }))}
-                                    >
-                                        <option value="">Preço</option>
-                                        <option value="asc">Mais barato</option>
-                                        <option value="desc">Mais caro</option>
-                                    </select>
-                                </div>
-                                <div className="filters-actions">
-                                    <button type="submit" className="bid-btn">Aplicar</button>
-                                    <button
-                                        type="button"
-                                        className="bid-btn"
-                                        onClick={() => {
-                                            const cleared = { origin: "", destination: "", deliveryDate: "", priceOrder: "" };
-                                            setFilters(cleared);
-                                            const controller = new AbortController();
-                                            fetchDriverTransports(controller.signal, cleared);
-                                            setTimeout(() => controller.abort(), 30000);
-                                        }}
-                                    >
-                                        Limpar
-                                    </button>
-                                </div>
-                            </form>
+                                onClear={(cleared) => {
+                                    setFilters(cleared);
+                                    const controller = new AbortController();
+                                    fetchDriverTransports(controller.signal, cleared);
+                                    setTimeout(() => controller.abort(), 30000);
+                                }}
+                            />
                         )}
                     </div>
                 )}
@@ -211,104 +157,15 @@ function BidGoPage() {
                     {isEmpty ? (
                         <p className="no-bids">Nenhum pedido encontrado.</p>
                     ) : (
-                        list.map((req) => {
-                            const transport = req;
-
-                            // Resolver o status
-                            const statusRaw = req?.status ?? null;
-                            const statusText = (() => {
-                                if (statusRaw == null) return null;
-                                if (typeof statusRaw === "number") {
-                                    switch (statusRaw) {
-                                        case 0:
-                                            return "Active";
-                                        case 1:
-                                            return "Canceled";
-                                        case 2:
-                                            return "Completed";
-                                        case 3:
-                                            return "Pending";
-                                        case 4:
-                                            return "InTransit";
-                                        case 5:
-                                            return "Draft";
-                                        case 6:
-                                            return "WaitingPickup";
-                                        default:
-                                            return String(statusRaw);
-                                    }
-                                }
-                                if (typeof statusRaw === "boolean")
-                                    return statusRaw ? "Canceled" : "Active";
-                                return String(statusRaw);
-                            })();
-
-                            const statusClass = statusText
-                                ? `status-${statusText.toLowerCase()}`
-                                : "";
-
-                            // Corrigir data de fim de leilão
-                            const endDate = transport?.biddingEndDate
-                                ? new Date(transport.biddingEndDate)
-                                : null;
-
-                            return (
-                                <div className="card" key={req.id}>
-                                    <div className="card-image">
-                                        <img src={req.image} alt={req.package} />
-                                    </div>
-
-                                    <div className="card-body">
-                                        <div className="title-with-badge">
-                                            <h3 className="card-title">{req.package}</h3>
-                                            {statusText &&
-                                                <span className={`status-badge ${statusClass}`}>{statusText}</span>}
-                                        </div>
-
-                                        <p className="card-route">{req.route}</p>
-                                        <div>
-                                            {req.origin} → {req.destination}
-                                        </div>
-                                        <div>
-                                            <span className="label-small">Preço Máx:</span>{" "}
-                                            {req.maxPrice}€
-                                        </div>
-
-                                        <p className="card-time">
-                                            {isCompany && statusText?.toLowerCase() === "active" ? (
-                                                <>
-                                                    Tempo Restante:{" "}
-                                                    {endDate ? (
-                                                        <Countdown endDate={endDate} />
-                                                    ) : (
-                                                        "—"
-                                                    )}
-                                                </>
-                                            ) : (
-                                                "\u00A0"
-                                            )}
-                                            {isDriver && (
-                                                <>
-                                                    Fim das Licitações:{" "}
-                                                    {endDate ? (
-                                                        <Countdown endDate={endDate} />
-                                                    ) : (
-                                                        "—"
-                                                    )}
-                                                </>
-                                            )}
-                                        </p>
-
-                                        <button
-                                            className="bid-btn"
-                                            onClick={() => navigate(`/transportRequest/${req.id}`)}
-                                        >
-                                            Ver pedido
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })
+                        list.map((req) => (
+                            <TransportCard
+                                key={req.id}
+                                data={req}
+                                isCompany={isCompany}
+                                isDriver={isDriver}
+                                onView={(id) => navigate(`/transportRequest/${id}`)}
+                            />
+                        ))
                     )}
                 </div>
             </main>

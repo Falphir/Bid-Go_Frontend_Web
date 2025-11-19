@@ -3,8 +3,11 @@ import "../styles/RegisterPage.css";
 import { useNavigate } from "react-router";
 import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
-import PasswordInput from "../components/PasswordInput";
+import PasswordInput from "../components/PasswordInput"; // legacy kept for compatibility if needed
+import DriverRegisterForm from "../components/form/DriverRegisterForm";
+import CompanyRegisterForm from "../components/form/CompanyRegisterForm";
 import { getApiErrorMessage } from "../utils/httpError";
+import { useToast } from "../components/feedback/ToastContext";
 
 function RegisterPage() {
 	const [mode, setMode] = useState(null); // 'driver' | 'company' | null
@@ -31,7 +34,7 @@ function RegisterPage() {
 	const [error, setError] = useState(null);
 	const abortRef = useRef(null);
 	const navigate = useNavigate();
-    const [toast, setToast] = useState(null);
+	const { showToast } = useToast();
 
 	useEffect(() => {
 		return () => abortRef.current?.abort();
@@ -82,7 +85,8 @@ function RegisterPage() {
 			});
 			const { token } = res.data || {};
 			if (token) localStorage.setItem("token", token);
-			navigate("/login", { state: { toast: { type: "success", msg: "Conta registada com sucesso" } } });
+			showToast("Conta registada com sucesso", "success");
+			navigate("/login");
 		} catch (err) {
 			if (err.name === "CanceledError") return;
 			let msg = getApiErrorMessage(err);
@@ -91,10 +95,9 @@ function RegisterPage() {
 				else if (err.request) msg = "Falha de rede: sem resposta do servidor.";
 				else msg = `Erro: ${err.message}`;
 			}
-			setToast({ type: "error", msg });
+			showToast(msg, "error");
 		} finally {
 			setLoading(false);
-			setTimeout(() => setToast(null), 3000);
 		}
 	};
 
@@ -126,7 +129,8 @@ function RegisterPage() {
 			});
 			const { token } = res.data || {};
 			if (token) localStorage.setItem("token", token);
-			navigate("/login", { state: { toast: { type: "success", msg: "Conta registada com sucesso" } } });
+			showToast("Conta registada com sucesso", "success");
+			navigate("/login");
 		} catch (err) {
 			if (err.name === "CanceledError") return;
 			let msg = getApiErrorMessage(err);
@@ -135,10 +139,9 @@ function RegisterPage() {
 				else if (err.request) msg = "Falha de rede: sem resposta do servidor.";
 				else msg = `Erro: ${err.message}`;
 			}
-			setToast({ type: "error", msg });
+			showToast(msg, "error");
 		} finally {
 			setLoading(false);
-			setTimeout(() => setToast(null), 3000);
 		}
             };
 
@@ -166,105 +169,59 @@ function RegisterPage() {
 					)}
 
 					{mode === "driver" && (
-						<form onSubmit={(e) => e.preventDefault()}>
-							<label className="login-label">
-								Nome
-								<input placeholder="Nome" value={dName} onChange={(e) => setDName(e.target.value)} />
-							</label>
-
-							<label className="login-label">
-								Carta de Condução (imagem)
-								<input type="file" accept="image/*" onChange={(e) => setDDriverLicense(e.target.files[0])} />
-							</label>
-
-							<label className="login-label">
-								Seguro (imagem)
-								<input type="file" accept="image/*" onChange={(e) => setDInsurance(e.target.files[0])} />
-							</label>
-
-							<label className="login-label">
-								Email
-								<input type="email" placeholder="Email" value={dEmail} onChange={(e) => setDEmail(e.target.value)} />
-							</label>
-
-							<PasswordInput label="Palavra-passe" value={dPassword} onChange={(e) => setDPassword(e.target.value)} />
-
-							<label className="login-label">
-								Telefone
-								<input placeholder="Telefone" value={dPhone} onChange={(e) => setDPhone(e.target.value)} />
-							</label>
-
-							<label className="login-label">
-								NIF
-								<input placeholder="NIF" value={dNif} onChange={(e) => setDNif(e.target.value)} />
-							</label>
-
-							{error && <p className="error-message">{error}</p>}
-
-							<div className="form-actions">
-								<button type="button" className="login-button" onClick={submitDriver} disabled={loading}>
-									{loading ? 'A processar…' : 'Registar'}
-								</button>
-								<button type="button" className="login-button cancel" onClick={() => setMode(null)} disabled={loading}>
-									Cancelar
-								</button>
-							</div>
-						</form>
+						<DriverRegisterForm
+							values={{
+								name: dName,
+								email: dEmail,
+								password: dPassword,
+								phone: dPhone,
+								nif: dNif,
+							}}
+							error={error}
+							loading={loading}
+							onChange={(field, value) => {
+								if (field === "name") setDName(value);
+								if (field === "email") setDEmail(value);
+								if (field === "password") setDPassword(value);
+								if (field === "phone") setDPhone(value);
+								if (field === "nif") setDNif(value);
+								if (field === "driverLicense") setDDriverLicense(value);
+								if (field === "insurance") setDInsurance(value);
+							}}
+							onSubmit={submitDriver}
+							onCancel={() => setMode(null)}
+						/>
 					)}
 
 					{mode === "company" && (
-						<form onSubmit={(e) => e.preventDefault()}>
-							<label className="login-label">
-								Nome
-								<input placeholder="Nome" value={cName} onChange={(e) => setCName(e.target.value)} />
-							</label>
-
-							<label className="login-label">
-								Company Name
-								<input placeholder="Company Name" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-							</label>
-
-							<label className="login-label">
-								Morada
-								<input placeholder="Morada" value={address} onChange={(e) => setAddress(e.target.value)} />
-							</label>
-
-							<label className="login-label">
-								Email
-								<input type="email" placeholder="Email" value={cEmail} onChange={(e) => setCEmail(e.target.value)} />
-							</label>
-
-							<PasswordInput label="Palavra-passe" value={cPassword} onChange={(e) => setCPassword(e.target.value)} />
-
-							<label className="login-label">
-								Telefone
-								<input placeholder="Telefone" value={cPhone} onChange={(e) => setCPhone(e.target.value)} />
-							</label>
-
-							<label className="login-label">
-								NIF
-								<input placeholder="NIF" value={cNif} onChange={(e) => setCNif(e.target.value)} />
-							</label>
-
-							{error && <p className="error-message">{error}</p>}
-
-							<div className="form-actions">
-								<button type="button" className="login-button" onClick={submitCompany} disabled={loading}>
-									{loading ? 'A processar…' : 'Registar'}
-								</button>
-								<button type="button" className="login-button cancel" onClick={() => setMode(null)} disabled={loading}>
-									Cancelar
-								</button>
-							</div>
-						</form>
+						<CompanyRegisterForm
+							values={{
+								name: cName,
+								companyName,
+								address,
+								email: cEmail,
+								password: cPassword,
+								phone: cPhone,
+								nif: cNif,
+							}}
+							error={error}
+							loading={loading}
+							onChange={(field, value) => {
+								if (field === "name") setCName(value);
+								if (field === "companyName") setCompanyName(value);
+								if (field === "address") setAddress(value);
+								if (field === "email") setCEmail(value);
+								if (field === "password") setCPassword(value);
+								if (field === "phone") setCPhone(value);
+								if (field === "nif") setCNif(value);
+							}}
+							onSubmit={submitCompany}
+							onCancel={() => setMode(null)}
+						/>
 					)}
 				</div>
 			</div>
-             {toast && (
-                <div className={`toast ${toast.type}`}>
-                    {toast.msg}
-                </div>
-            )}
+			{/* Toasts geridos globalmente pelo ToastProvider */}
 		</div>
 	);
 
