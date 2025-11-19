@@ -1,5 +1,5 @@
 import React from "react";
-import PasswordInput from "../PasswordInput";
+import PasswordInput from "../PasswordInput/PasswordInput";
 import StatusMessage from "../feedback/StatusMessage";
 import "./LoginForm.css";
 
