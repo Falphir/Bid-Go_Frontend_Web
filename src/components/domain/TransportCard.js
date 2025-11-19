@@ -1,5 +1,6 @@
 import React from 'react';
-import Countdown from '../../components/Countdown';
+import Countdown from '../../components/Countdown/Countdown';
+import "./TransportCard.css";
 
 // Card de transporte reutilizável. Mantém classes CSS existentes.
 export default function TransportCard({ data, isCompany, isDriver, onView }) {

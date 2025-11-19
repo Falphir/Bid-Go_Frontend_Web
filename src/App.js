@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar/Navbar";
 import {Outlet} from "react-router";
 import { ToastProvider } from "./components/feedback/ToastContext";
 

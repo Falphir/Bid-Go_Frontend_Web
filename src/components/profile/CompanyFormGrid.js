@@ -1,4 +1,5 @@
 import React from "react";
+import "./CompanyFormGrid.css";
 
 function CompanyFormGrid({ profile, editing, onChange }) {
   return (

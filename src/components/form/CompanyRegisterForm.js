@@ -1,5 +1,6 @@
 import React from "react";
-import PasswordInput from "../PasswordInput";
+import PasswordInput from "../PasswordInput/PasswordInput";
+import "./CompanyRegisterForm.css";
 
 function CompanyRegisterForm({
   values,

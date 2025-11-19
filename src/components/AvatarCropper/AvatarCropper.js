@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Cropper from "react-easy-crop";
+import "./AvatarCropper.css";
 
 function AvatarCropper({ image, onCancel, onSave }) {
     const [crop, setCrop] = useState({ x: 0, y: 0 });

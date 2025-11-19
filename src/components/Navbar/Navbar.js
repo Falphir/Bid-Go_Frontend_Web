@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./Navbar.css";
-import Logo from "../assets/logo.png";
-import DefaultUser from "../assets/person.png";
-import api from "../api/axiosConfig";
+import Logo from "../../assets/logo.png";
+import DefaultUser from "../../assets/person.png";
+import api from "../../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaTimesCircle, FaCommentDots, FaMoneyBillWave, FaBan } from "react-icons/fa";
 
@@ -19,7 +19,6 @@ export default function Navbar() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                // --- Primeiro: buscar /auth/me
                 const meRes = await api.get("/auth/me");
                 const claims = meRes.data?.claims || [];
 
@@ -66,7 +65,6 @@ export default function Navbar() {
     const markAllAsRead = async () => {
         try {
             await api.patch(`/notifications/mark-all-read`);
-            // Refetch minimal notifications list
             const meRes = await api.get("/auth/me");
             const claims = meRes.data?.claims || [];
             const getClaim = (type) => claims.find(c => c.type?.toLowerCase() === type.toLowerCase())?.value;
@@ -178,7 +176,6 @@ export default function Navbar() {
 
 
 
-                {/* SKELETON antes dos dados carregarem */}
                 {!user && (
                     <div className="user-box placeholder">
 
@@ -190,7 +187,6 @@ export default function Navbar() {
                     </div>
                 )}
 
-                {/* Dados reais */}
                 {user && (
                     <div className="user-box" onClick={() => setOpenMenu(!openMenu)}>
                         <img

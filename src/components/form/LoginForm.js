@@ -1,6 +1,7 @@
 import React from "react";
 import PasswordInput from "../PasswordInput";
 import StatusMessage from "../feedback/StatusMessage";
+import "./LoginForm.css";
 
 function LoginForm({ email, password, remember, loading, error, onChangeEmail, onChangePassword, onToggleRemember, onSubmit }) {
     return (

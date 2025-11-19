@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./Countdown.css";
 
 export default function Countdown({ endDate }) {
     const [timeLeft, setTimeLeft] = useState("");
@@ -36,12 +37,10 @@ export default function Countdown({ endDate }) {
         return () => clearInterval(timer);
     }, [endDate]);
 
-    // ✅ Escolher cor com base no tempo real restante (diffMs)
-    let color = "green"; // padrão
-    if (diffMs <= 0) color = "red"; // terminou
-    else if (diffMs < 60 * 60 * 1000) color = "orange"; // < 1h
-    else if (diffMs < 6 * 60 * 60 * 1000) color = "#e6b800"; // < 6h
-    // caso contrário, mantém verde
+    let color = "green";
+    if (diffMs <= 0) color = "red";
+    else if (diffMs < 60 * 60 * 1000) color = "orange";
+    else if (diffMs < 6 * 60 * 60 * 1000) color = "#e6b800";
 
     return <span style={{ color, fontWeight: 600 }}>{timeLeft}</span>;
 }

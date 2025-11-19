@@ -353,20 +353,7 @@ margin-top: 24px;
   cursor: not-allowed;
 }
 
-/* Toast (same visual style used elsewhere) */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    padding: 12px 18px;
-    border-radius: 10px;
-    color: white;
-    font-weight: 600;
-    animation: fadeIn 0.3s ease;
-    z-index: 1000;
-}
-.toast.success { background: #4caf50; }
-.toast.error { background: #f44336; }
+/* Toast styles moved to components/feedback/ToastContext.css */
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(15px); }

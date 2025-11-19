@@ -1,5 +1,6 @@
 import React from "react";
 import { FiEdit2, FiCamera } from "react-icons/fi";
+import "./AvatarSection.css";
 
 function AvatarSection({ profile, previewAvatar, editing, onStartEdit, onSelectAvatar }) {
   return (

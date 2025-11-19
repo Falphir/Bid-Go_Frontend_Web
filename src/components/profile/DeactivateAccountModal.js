@@ -1,5 +1,6 @@
 import React from "react";
-import ConfirmDialog from "../ConfirmDialog";
+import ConfirmDialog from "../ConfirmDialog/ConfirmDialog";
+import "./DeactivateAccountModal.css";
 
 function DeactivateAccountModal({ open, loading, onConfirm, onCancel }) {
   return (

@@ -1,4 +1,5 @@
 import React from "react";
+import "./DriverDocsSection.css";
 
 function DriverDocsSection({ editing, previewLicense, previewInsurance, onFileChange }) {
   return (

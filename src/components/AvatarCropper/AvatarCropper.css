@@ -1,0 +1,66 @@
+/* Overlay */
+.cropper-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 999;
+}
+
+/* Modal */
+.cropper-modal {
+	background: #fff;
+	width: 100%;
+	max-width: 620px;
+	border-radius: 14px;
+	padding: 20px 22px 16px;
+	box-shadow: 0 10px 30px rgba(2, 6, 23, 0.2);
+}
+
+/* Give the react-easy-crop container a fixed height */
+.cropper-modal .reactEasyCrop_Container {
+	position: relative;
+	width: 100%;
+	height: 340px; /* visible crop area */
+	background: #0b1220; /* subtle dark bg under the image */
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+/* Actions */
+.cropper-actions {
+	margin-top: 14px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+}
+
+/* Buttons (aligned with existing modals/buttons in app) */
+.btn {
+	border: none;
+	border-radius: 8px;
+	padding: 10px 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 6px 12px rgba(0,0,0,.08); }
+.btn:active { transform: translateY(0); box-shadow: none; }
+.btn:disabled { opacity: .65; cursor: default; transform: none; box-shadow: none; }
+
+.btn.primary { background: #0066cc; color: #fff; }
+.btn.primary:hover { background: #004fa1; }
+
+.btn.danger { background: #e2e8f0; color: #0f172a; }
+.btn.danger:hover { background: #d7dee7; }
+
+@media (max-width: 680px) {
+	.cropper-modal { max-width: 92vw; padding: 16px; }
+	.cropper-modal .reactEasyCrop_Container { height: 300px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.btn { transition: none !important; }
+}

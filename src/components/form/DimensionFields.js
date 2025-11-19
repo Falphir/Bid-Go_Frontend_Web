@@ -1,4 +1,5 @@
 import React from 'react';
+import "./DimensionFields.css";
 
 export default function DimensionFields({ length, width, height, volume, onChange }) {
   const handle = (field, value) => {

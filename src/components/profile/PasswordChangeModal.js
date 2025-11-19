@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import PasswordInput from "../PasswordInput";
+import PasswordInput from "../PasswordInput/PasswordInput";
+import "./PasswordChangeModal.css";
 
 function PasswordChangeModal({ open, passwords, onChangeField, onClose, onSave }) {
   if (!open) return null;

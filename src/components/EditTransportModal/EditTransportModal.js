@@ -35,7 +35,6 @@ export default function EditTransportModal({ open, transport, onClose, onSave, s
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // prepare payload
         const payload = {
             origin: form.origin || null,
             destination: form.destination || null,

@@ -1,8 +1,13 @@
-import React from 'react';
+import React from "react";
+import "./HistoryTable.css";
 
 // Componente de tabela reutilizável para histórico
 // Mantém classes existentes para não alterar estilos.
-export default function HistoryTable({ columns = [], rows = [], emptyMessage = 'Sem registos para apresentar.' }) {
+export default function HistoryTable({
+  columns = [],
+  rows = [],
+  emptyMessage = "Sem registos para apresentar.",
+}) {
   const isEmpty = !rows || rows.length === 0;
   if (isEmpty) return <p className="no-bids">{emptyMessage}</p>;
 
@@ -20,7 +25,7 @@ export default function HistoryTable({ columns = [], rows = [], emptyMessage = '
           {rows.map((row, idx) => (
             <tr key={row.requestId ?? row.id ?? idx}>
               {columns.map((c) => (
-                <td key={c.key}>{row[c.key] ?? '—'}</td>
+                <td key={c.key}>{row[c.key] ?? "—"}</td>
               ))}
             </tr>
           ))}

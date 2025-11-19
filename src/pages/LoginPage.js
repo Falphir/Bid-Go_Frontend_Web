@@ -3,7 +3,7 @@ import "../styles/LoginPage.css";
 import { useNavigate, useLocation } from "react-router";
 import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
-import PasswordInput from "../components/PasswordInput"; // kept for reused component dependency
+import PasswordInput from "../components/PasswordInput/PasswordInput"; // kept for reused component dependency
 import StatusMessage from "../components/feedback/StatusMessage"; // legacy inline removal now replaced by LoginForm
 import LoginForm from "../components/form/LoginForm";
 import { useToast } from "../components/feedback/ToastContext";

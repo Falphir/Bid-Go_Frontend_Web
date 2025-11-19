@@ -1,4 +1,5 @@
 import React from 'react';
+import "./PriceAutoSelectionFields.css";
 
 export default function PriceAutoSelectionFields({ maxPrice, isAutomaticSelectionEnabled, onChange }) {
   return (

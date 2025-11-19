@@ -3,7 +3,7 @@ import "../styles/RegisterPage.css";
 import { useNavigate } from "react-router";
 import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
-import PasswordInput from "../components/PasswordInput"; // legacy kept for compatibility if needed
+import PasswordInput from "../components/PasswordInput/PasswordInput"; // legacy kept for compatibility if needed
 import DriverRegisterForm from "../components/form/DriverRegisterForm";
 import CompanyRegisterForm from "../components/form/CompanyRegisterForm";
 import { getApiErrorMessage } from "../utils/httpError";

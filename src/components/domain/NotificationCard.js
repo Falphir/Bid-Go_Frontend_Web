@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaCheckCircle, FaTimesCircle, FaCommentDots, FaMoneyBillWave, FaBan } from 'react-icons/fa';
+import "./NotificationCard.css";
 
 // Componente reutilizável para uma notificação.
 // Mantém as mesmas classes CSS usadas na página original.

@@ -1,4 +1,5 @@
 import React from 'react';
+import "./AuctionDatesFields.css";
 
 export default function AuctionDatesFields({ biddingStartDate, biddingEndDate, onChange }) {
   return (

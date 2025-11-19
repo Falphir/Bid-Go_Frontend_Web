@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import "./FiltersPanel.css";
 
 // Painel de filtros reutilizável (extraído de BidGoPage)
 // Mantém classes CSS: filters-top, filters-row, filters-actions, bid-btn

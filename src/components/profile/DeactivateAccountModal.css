@@ -1,0 +1,6 @@
+/* Styles for DeactivateAccountModal (reuses ConfirmDialog look via component; keep button helpers) */
+.btn { border: none; border-radius: 8px; padding: 12px 16px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color .15s ease, border-color .15s ease, filter .15s ease; }
+.btn.primary { background:#0066cc; color:#fff; min-width: 120px; }
+.btn.primary:hover { background:#004fa1; }
+.btn.danger { background:#e74c3c; color:#fff; min-width: 120px; }
+.btn.danger:hover { background:#c53b2d; }
