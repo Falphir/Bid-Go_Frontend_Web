@@ -24,16 +24,6 @@ function RecoverPasswordPage() {
     return () => abortRef.current?.abort();
   }, []);
 
-  // RULES
-  const pwRules = {
-    minLength: { ok: password.length >= 8, label: "Pelo menos 8 caracteres" },
-    upper: { ok: /[A-Z]/.test(password), label: "Uma letra maiúscula" },
-    lower: { ok: /[a-z]/.test(password), label: "Uma letra minúscula" },
-    number: { ok: /[0-9]/.test(password), label: "Um número" },
-    special: { ok: /[!@#$%^&*(),.?":{}|<>]/.test(password), label: "Um carácter especial" },
-  };
-  const isPasswordStrong = Object.values(pwRules).every((r) => r.ok);
-
   const handleRequest = async (e) => {
     e.preventDefault();
     setError(null);
@@ -74,11 +64,6 @@ function RecoverPasswordPage() {
     }
     if (password !== confirm) {
       setError("As palavras-passe não coincidem.");
-      return;
-    }
-
-    if (!isPasswordStrong) {
-      setError("A palavra-passe não cumpre os requisitos obrigatórios.");
       return;
     }
 
@@ -172,23 +157,6 @@ function RecoverPasswordPage() {
               onChange={(e) => setConfirm(e.target.value)}
               required
             />
-
-            <div style={{ marginTop: 8, marginBottom: 8 }}>
-              <strong>Requisitos da palavra-passe:</strong>
-              <ul style={{ marginTop: 6, marginLeft: 18 }}>
-                {Object.keys(pwRules).map((k) => (
-                  <li key={k} style={{ color: pwRules[k].ok ? "#0a7f3a" : "#b02a37" }}>
-                    {pwRules[k].ok ? "✓" : "✗"} {pwRules[k].label}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {error && <StatusMessage type="error">{error}</StatusMessage>}
-
-            <button type="submit" className="login-button" disabled={loading || !isPasswordStrong}>
-              {loading ? "A processar…" : "Redefinir Palavra-passe"}
-            </button>
 
             {error && <StatusMessage type="error">{error}</StatusMessage>}
 
