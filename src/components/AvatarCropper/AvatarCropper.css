@@ -1,95 +1,75 @@
 /* Overlay */
 .cropper-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    z-index: 999;
 }
 
-/* Modal */
+/* Modal container */
 .cropper-modal {
-  background: #fff;
-  width: 100%;
-  max-width: 620px;
-  border-radius: 14px;
-  padding: 20px 22px 16px;
-  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.2);
+    background: #ffffff;
+    width: 100%;
+    max-width: 640px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    animation: modalIn 0.25s ease;
 }
 
-/* Give the react-easy-crop container a fixed height */
-.cropper-modal .reactEasyCrop_Container {
-  position: relative;
-  width: 100%;
-  height: 340px; /* visible crop area */
-  background: #0b1220; /* subtle dark bg under the image */
-  border-radius: 10px;
-  overflow: hidden;
+/* Header */
+.cropper-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
 }
 
-/* Actions */
-.cropper-actions {
-  margin-top: 14px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+/* Body - crop area */
+.cropper-body {
+    padding: 16px;
 }
 
-/* Buttons (aligned with existing modals/buttons in app) */
-.btn {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.15s ease,
-    box-shadow 0.2s ease;
-}
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-}
-.btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-.btn:disabled {
-  opacity: 0.65;
-  cursor: default;
-  transform: none;
-  box-shadow: none;
+.reactEasyCrop_Container {
+    width: 100%;
+    height: 340px;
+    background: #0b1220;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
-.btn.primary {
-  background: #0066cc;
-  color: #fff;
-}
-.btn.primary:hover {
-  background: #004fa1;
+/* Footer */
+.cropper-footer {
+    padding: 14px 22px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: #fafafa;
 }
 
-.btn.danger {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-.btn.danger:hover {
-  background: #d7dee7;
+/* Animation */
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 680px) {
-  .cropper-modal {
-    max-width: 92vw;
-    padding: 16px;
-  }
-  .cropper-modal .reactEasyCrop_Container {
-    height: 300px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .btn {
-    transition: none !important;
-  }
+    .cropper-modal {
+        max-width: 92vw;
+    }
+    .reactEasyCrop_Container {
+        height: 300px;
+    }
 }

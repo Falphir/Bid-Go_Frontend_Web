@@ -6,7 +6,7 @@ import "./HistoryTable.css";
 export default function HistoryTable({
   columns = [],
   rows = [],
-  emptyMessage = "Sem registos para apresentar.",
+  emptyMessage = "No history available to display.",
 }) {
   const isEmpty = !rows || rows.length === 0;
   if (isEmpty) return <p className="no-bids">{emptyMessage}</p>;

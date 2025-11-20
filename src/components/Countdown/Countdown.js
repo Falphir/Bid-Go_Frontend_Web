@@ -16,7 +16,7 @@ export default function Countdown({ endDate }) {
       setDiffMs(diff);
 
       if (diff <= 0) {
-        setTimeLeft("Leilão terminado");
+        setTimeLeft("Auction ended");
         return;
       }
 

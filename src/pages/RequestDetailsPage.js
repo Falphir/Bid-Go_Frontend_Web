@@ -18,11 +18,12 @@ import BidList from "../components/domain/BidList";
 import AcceptRejectOverlay from "../components/domain/AcceptRejectOverlay";
 import TransportDetailsCard from "../components/domain/TransportDetailsCard";
 import useSortedBids from "../hooks/useSortedBids";
+import Button from "../components/Button/Button";
 
 function RequestDetailsPage() {
     const navigate = useNavigate();
-    const { role, userId, isDriver, isCompany, loading: meLoading } = useMe();
-    const { id } = useParams();
+    const {role, userId, isDriver, isCompany, loading: meLoading} = useMe();
+    const {id} = useParams();
     const transportId = id;
 
     const [transport, setTransport] = useState(null);
@@ -43,7 +44,7 @@ function RequestDetailsPage() {
     const [confirmAction, setConfirmAction] = useState(null); // { type, bidId }
     const [processing, setProcessing] = useState(null); // bidId or 'publish'
 
-    const { showToast } = useToast();
+    const {showToast} = useToast();
 
     const [isEditTransportOpen, setIsEditTransportOpen] = useState(false);
     const [savingEditTransport, setSavingEditTransport] = useState(false);
@@ -52,7 +53,7 @@ function RequestDetailsPage() {
     const [statusUpdating, setStatusUpdating] = useState(false);
     const [confirmStatusAction, setConfirmStatusAction] = useState(null); // { target, label }
 
-    // Toast agora fornecido globalmente pelo ToastProvider
+    // Toast now provided globally by ToastProvider
 
     // ---------------------------
     // FETCH MAIN
@@ -91,7 +92,7 @@ function RequestDetailsPage() {
                 }
 
                 // For WaitingPickup / Pendent / InTransit / Completed: load accepted bid
-                // Accepting both "PENDENT" (your backend) and "PENDING" just in case
+                // Accepting both "PENDENT" (backend) and "PENDING"
                 if (
                     status === "WAITINGPICKUP" ||
                     status === "PENDENT" ||
@@ -106,7 +107,6 @@ function RequestDetailsPage() {
                         setAcceptedBid(bid || null);
                         setBids([]);
                     } catch (err) {
-                        // If no accepted bid, backend might return 404; swallow and set null
                         if (err?.response?.status === 404) {
                             console.warn("No accepted bid found for transport", transportId);
                             setAcceptedBid(null);
@@ -150,10 +150,11 @@ function RequestDetailsPage() {
     );
 
     const isTransportOwner = !!transport && isCompany && (
-        transport?.companyId === userId 
+        transport?.companyId === userId
     );
 
-    const isOwnerDriver = (bid) => isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
+    const isOwnerDriver = (bid) =>
+        isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
 
     // Refresh transport (used by publish/cancel)
     const refreshTransport = async () => {
@@ -172,7 +173,7 @@ function RequestDetailsPage() {
         try {
             const bidsRes = await api.get(
                 `/bids/bidsActive?transportRequestId=${transportId}`,
-                signal ? { signal } : undefined
+                signal ? {signal} : undefined
             );
 
             const updatedBids = await Promise.all(
@@ -181,9 +182,9 @@ function RequestDetailsPage() {
                         const ratingRes = await api.get(
                             `/reviewRequest/average/driver/${bid.driver.driverId}`
                         );
-                        return { ...bid, driver: { ...bid.driver, averageRating: ratingRes.data.average } };
+                        return {...bid, driver: {...bid.driver, averageRating: ratingRes.data.average}};
                     } catch {
-                        return { ...bid, driver: { ...bid.driver, averageRating: null } };
+                        return {...bid, driver: {...bid.driver, averageRating: null}};
                     }
                 })
             );
@@ -207,15 +208,17 @@ function RequestDetailsPage() {
     // ACTIONS: Add / Edit / Cancel / Accept-Reject
     // ---------------------------
     const handleOpenAdd = () => setAddOpen(true);
-    const handleCloseAdd = () => { if (!savingAdd) setAddOpen(false); };
+    const handleCloseAdd = () => {
+        if (!savingAdd) setAddOpen(false);
+    };
 
     const handleSaveAdd = async (payload) => {
         try {
             setSavingAdd(true);
             await api.post(`/bids/createBid`, payload);
-            // Reload full list to get fresh driver details & rating immediately
+
             await loadActiveBids();
-            showToast("Bid created.", "success");
+            showToast("Bid created successfully.", "success");
             setAddOpen(false);
         } catch (err) {
             showToast(getApiErrorMessage(err), "error");
@@ -225,14 +228,18 @@ function RequestDetailsPage() {
     };
 
     const handleEditBid = (bid) => setEditingBid(bid);
-    const handleCloseEdit = () => { if (!savingEdit) setEditingBid(null); };
+    const handleCloseEdit = () => {
+        if (!savingEdit) setEditingBid(null);
+    };
 
     const handleSaveEdit = async (payload) => {
         try {
             setSavingEdit(true);
             await api.put(`/bids/updatebid/${editingBid.bidId}`, payload);
-            setBids((prev) => prev.map((b) => (b.bidId === editingBid.bidId ? { ...b, ...payload } : b)));
-            showToast("Bid Updated.", "success");
+            setBids((prev) =>
+                prev.map((b) => (b.bidId === editingBid.bidId ? {...b, ...payload} : b))
+            );
+            showToast("Bid updated successfully.", "success");
             setEditingBid(null);
         } catch (err) {
             showToast(getApiErrorMessage(err), "error");
@@ -249,7 +256,7 @@ function RequestDetailsPage() {
             setCancelLoading(true);
             await api.patch(`/bids/cancel/${confirmBidId}`);
             setBids((prev) => prev.filter((b) => b.bidId !== confirmBidId));
-            showToast("Bid was canceled Successfully", "success");
+            showToast("Bid canceled successfully.", "success");
         } catch (err) {
             showToast(getApiErrorMessage(err), "error");
         } finally {
@@ -260,27 +267,32 @@ function RequestDetailsPage() {
 
     // Confirm overlay actions (accept/reject)
     const confirmBidAction = (type, bidId) => {
-        setConfirmAction({ type, bidId });
+        setConfirmAction({type, bidId});
     };
 
     const executeAction = async (bidId, type) => {
         setProcessing(bidId);
         try {
             await api.post(`/bids/manual/${bidId}/${type}`);
-            showToast(type === "accept" ? "Licitação aceite com sucesso!" : "Licitação rejeitada com sucesso!", "success");
-            // optimistic remove
+            showToast(
+                type === "accept"
+                    ? "Bid accepted successfully!"
+                    : "Bid rejected successfully!",
+                "success"
+            );
+
             setBids((prev) => prev.filter((b) => b.bidId !== bidId));
             navigate(0);
         } catch (err) {
             console.error(err);
-            showToast("Erro ao processar a ação.", "error");
+            showToast("Error processing action.", "error");
         } finally {
             setProcessing(null);
             setConfirmAction(null);
         }
     };
 
-    // Transport edit/save/publish handlers (copied from original)
+// Transport edit/save/publish handlers (copied from original)
     const openEditTransport = () => {
         if (!transport) return;
         setIsEditTransportOpen(true);
@@ -327,13 +339,13 @@ function RequestDetailsPage() {
                 }
             }
 
-            showToast('Pedido atualizado com sucesso!', 'success');
+            showToast('Request updated successfully!', 'success');
             setIsEditTransportOpen(false);
             await refreshTransport();
         } catch (err) {
-            console.error('Erro ao salvar edição do pedido:', err);
+            console.error('Error saving request edit:', err);
             const apiMsg = getApiErrorMessage(err);
-            showToast(apiMsg || 'Erro ao atualizar o pedido.', 'error');
+            showToast(apiMsg || 'Error updating request.', 'error');
         } finally {
             setSavingEditTransport(false);
         }
@@ -344,35 +356,35 @@ function RequestDetailsPage() {
         setProcessing('publish');
         try {
             await api.put(`/transports/company/publish/${transportId}`);
-            showToast('Pedido publicado com sucesso!', 'success');
+            showToast('Request published successfully!', 'success');
             await refreshTransport();
         } catch (err) {
             const apiMsg = getApiErrorMessage(err);
-            showToast(apiMsg || 'Erro ao publicar o pedido.', 'error');
+            showToast(apiMsg || 'Error publishing request.', 'error');
         } finally {
             setProcessing(null);
         }
     };
 
-    // Update transport status via endpoint
+// Update transport status via endpoint
     const updateTransportStatus = async (target) => {
         if (!transportId) return;
         setStatusUpdating(true);
         try {
-            await api.put(`/transports/updateStatus/${transportId}`, { status: target });
-            showToast('Estado do pedido atualizado com sucesso!', 'success');
+            await api.put(`/transports/updateStatus/${transportId}`, {status: target});
+            showToast('Request status updated successfully!', 'success');
             await refreshTransport();
         } catch (err) {
-            console.error('Erro ao atualizar estado:', err);
+            console.error('Error updating status:', err);
             const apiMsg = getApiErrorMessage(err);
-            showToast(apiMsg || 'Erro ao atualizar estado do pedido.', 'error');
+            showToast(apiMsg || 'Error updating request status.', 'error');
         } finally {
             setStatusUpdating(false);
             setConfirmStatusAction(null);
         }
     };
 
-    //RENDER guards
+// RENDER guards
     if (meLoading) return <StatusMessage type="loading">Validating Session…</StatusMessage>;
     if (loading) return <StatusMessage type="loading">Loading…</StatusMessage>;
     if (error) return <StatusMessage type="error">Error: {error}</StatusMessage>;
@@ -396,16 +408,29 @@ function RequestDetailsPage() {
                                     {isTransportDraft && (
                                         <>
                                             <button type="button" className="btn-edit" onClick={openEditTransport}>
-                                                <FontAwesomeIcon icon={faPencil} /> <span style={{ marginLeft: 6 }}>Editar</span>
+                                                <FontAwesomeIcon icon={faPencil}/> <span
+                                                style={{marginLeft: 6}}>Edit</span>
                                             </button>
-                                            <button type="button" className="btn-publish" onClick={publishTransport} disabled={processing === 'publish'}>
-                                                <span>{processing === 'publish' ? 'Publicando…' : 'Publicar'}</span>
+                                            <button type="button" className="btn-publish" onClick={publishTransport}
+                                                    disabled={processing === 'publish'}>
+                                                <span>{processing === 'publish' ? 'Publishing…' : 'Publish'}</span>
                                             </button>
                                         </>
                                     )}
                                     {isTransportOwner && !isTransportCanceled && (
-                                        <button type="button" className="btn-cancel" onClick={() => setConfirmCancelTransport(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6 }}>
-                                            Cancelar
+                                        <button
+                                            type="button"
+                                            className="btn-cancel"
+                                            onClick={() => setConfirmCancelTransport(true)}
+                                            style={{
+                                                background: '#ef4444',
+                                                color: '#fff',
+                                                border: 'none',
+                                                padding: '8px 12px',
+                                                borderRadius: 6
+                                            }}
+                                        >
+                                            Cancel
                                         </button>
                                     )}
                                 </div>
@@ -420,7 +445,7 @@ function RequestDetailsPage() {
                 {/* Draft/Canceled -> show nothing */}
                 {(status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") && null}
 
-                {/* ACTIVE -> all active bids (drivers + company views preserved) */}
+                {/* ACTIVE -> all active bids */}
                 {status === "ACTIVE" && (
                     <BidList
                         bids={sortedBids}
@@ -440,7 +465,7 @@ function RequestDetailsPage() {
                     />
                 )}
 
-                {/* ACCEPTED: WaitingPickup / Pendent / InTransit / Completed */}
+                {/* ACCEPTED: WaitingPickup / Pending / InTransit / Completed */}
                 {(status !== "ACTIVE" &&
                     status !== "CANCELED" &&
                     status !== "DRAFT" &&
@@ -448,7 +473,7 @@ function RequestDetailsPage() {
 
                     <div className="bid-card">
                         <div className="bid-info">
-                            <h4 className="bid-title">Bid de {acceptedBid.driverName}</h4>
+                            <h4 className="bid-title">Bid from {acceptedBid.driverName}</h4>
 
                             <p className="bid-driver">
                                 <span className="detail-label">Email:</span>{" "}
@@ -464,53 +489,70 @@ function RequestDetailsPage() {
                                 {new Date(acceptedBid.deadline).toLocaleDateString()}
                             </p>
                         </div>
+
                         <div className="status-actions">
                             {/* Company: Pending -> WaitingPickup */}
                             {isCompany && (status === "PENDING" || status === "PENDENT") && (
                                 <button
                                     className="status-btn status-btn--primary"
-                                    onClick={() => setConfirmStatusAction({ target: 'WaitingPickup', label: 'Marcar como Aguardando Recolha' })}
+                                    onClick={() => setConfirmStatusAction({
+                                        target: 'WaitingPickup',
+                                        label: 'Mark as Waiting for Pickup'
+                                    })}
                                     disabled={statusUpdating}
                                 >
-                                    {statusUpdating ? 'Aguarde…' : 'Marcar Recolha'}
+                                    {statusUpdating ? 'Please wait…' : 'Mark Pickup'}
                                 </button>
                             )}
 
-                            {/* Driver (only accepted bid owner): WaitingPickup -> InTransit */}
                             {isOwnerDriver(acceptedBid) && status === "WAITINGPICKUP" && (
-                                <button
-                                    className="status-btn status-btn--success"
-                                    onClick={() => setConfirmStatusAction({ target: 'InTransit', label: 'Iniciar Transporte' })}
+                                <Button
+                                    variant="primary"
+                                    onClick={() =>
+                                        setConfirmStatusAction({
+                                            target: "InTransit",
+                                            label: "Start Transport",
+                                        })
+                                    }
                                     disabled={statusUpdating}
                                 >
-                                    {statusUpdating ? 'Aguarde…' : 'Iniciar Transporte'}
-                                </button>
+                                    {statusUpdating ? "Please wait…" : "Start Transport"}
+                                </Button>
                             )}
 
-                            {/* Driver (only accepted bid owner): InTransit -> Completed or Canceled */}
                             {isOwnerDriver(acceptedBid) && status === "INTRANSIT" && (
                                 <>
-                                    <button
-                                        className="status-btn status-btn--success"
-                                        onClick={() => setConfirmStatusAction({ target: 'Completed', label: 'Marcar como Concluído' })}
+                                    <Button
+                                        variant="primary"
+                                        onClick={() =>
+                                            setConfirmStatusAction({
+                                                target: "Completed",
+                                                label: "Mark as Completed",
+                                            })
+                                        }
                                         disabled={statusUpdating}
                                     >
-                                        {statusUpdating ? 'Aguarde…' : 'Concluir'}
-                                    </button>
-                                    <button
-                                        className="status-btn status-btn--danger"
-                                        onClick={() => setConfirmStatusAction({ target: 'Canceled', label: 'Cancelar Transporte' })}
+                                        {statusUpdating ? "Please wait…" : "Complete"}
+                                    </Button>
+
+                                    <Button
+                                        variant="danger"
+                                        onClick={() =>
+                                            setConfirmStatusAction({
+                                                target: "Canceled",
+                                                label: "Cancel Transport",
+                                            })
+                                        }
                                         disabled={statusUpdating}
                                     >
-                                        {statusUpdating ? 'Aguarde…' : 'Cancelar'}
-                                    </button>
+                                        {statusUpdating ? "Please wait…" : "Cancel"}
+                                    </Button>
                                 </>
                             )}
+
                         </div>
                     </div>
-
                 )}
-
             </div>
 
             {/* MODALS */}
@@ -547,25 +589,26 @@ function RequestDetailsPage() {
                 onCancel={() => setConfirmBidId(null)}
             />
 
-            <EditTransportModal open={isEditTransportOpen} transport={transport} onClose={closeEditTransport} onSave={handleSaveTransport} saving={savingEditTransport} />
+            <EditTransportModal open={isEditTransportOpen} transport={transport} onClose={closeEditTransport}
+                                onSave={handleSaveTransport} saving={savingEditTransport}/>
 
             <ConfirmDialog
                 open={confirmCancelTransport}
-                title="Cancelar Pedido"
-                message="Tem a certeza que pretende cancelar este pedido de transporte?"
-                confirmText="Sim, cancelar"
-                cancelText="Não"
+                title="Cancel Request"
+                message="Are you sure you want to cancel this transport request?"
+                confirmText="Yes, Cancel"
+                cancelText="No"
                 loading={cancelingTransport}
                 onConfirm={async () => {
                     setCancelingTransport(true);
                     try {
                         await api.put(`/transports/canceled/${transportId}`);
-                        showToast('Pedido cancelado com sucesso!', 'success');
+                        showToast('Request canceled successfully!', 'success');
                         await refreshTransport();
                     } catch (err) {
-                        console.error('Erro ao cancelar pedido:', err);
+                        console.error('Error canceling request:', err);
                         const apiMsg = getApiErrorMessage(err);
-                        showToast(apiMsg || 'Erro ao cancelar o pedido.', 'error');
+                        showToast(apiMsg || 'Error canceling request.', 'error');
                     } finally {
                         setCancelingTransport(false);
                         setConfirmCancelTransport(false);
@@ -576,10 +619,10 @@ function RequestDetailsPage() {
 
             <ConfirmDialog
                 open={!!confirmStatusAction}
-                title={confirmStatusAction?.label ?? 'Confirmar Ação'}
-                message={`Tem certeza que pretende ${confirmStatusAction?.label ?? 'executar esta ação'}?`}
-                confirmText="Sim"
-                cancelText="Cancelar"
+                title={confirmStatusAction?.label ?? 'Confirm Action'}
+                message={`Are you sure you want to ${confirmStatusAction?.label ?? 'perform this action'}?`}
+                confirmText="Yes"
+                cancelText="Cancel"
                 loading={statusUpdating}
                 onConfirm={async () => {
                     if (!confirmStatusAction) return;
@@ -594,9 +637,7 @@ function RequestDetailsPage() {
                 onConfirm={executeAction}
                 onCancel={() => setConfirmAction(null)}
             />
-            {/* Toasts agora são geridos globalmente (nenhum container local necessário) */}
         </>
     );
 }
-
 export default RequestDetailsPage;

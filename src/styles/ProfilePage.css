@@ -59,52 +59,6 @@
     border-color: #f3c2c2;
 }
 
-/* === FORM / GRID === */
-/* Form grid/labels moved to components/profile/*FormGrid.css */
-
-/* === DRIVER UPLOADS === */
-/* Driver uploads moved to components/profile/DriverDocsSection.css */
-
-/* === BOTÕES === */
-.btn {
-    border: none;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color .15s ease, border-color .15s ease, filter .15s ease;
-}
-
-.btn.primary {
-    background: #0066cc;
-    color: #fff;
-    min-width: 120px;
-}
-
-.btn.primary:hover {
-    background: #004fa1;
-}
-
-.btn.danger {
-    background: #e74c3c;
-    color: #fff;
-    min-width: 120px;
-}
-
-.btn.danger:hover {
-    background: #c53b2d;
-}
-
-.btn.ghost {
-    background: #f5f8fc;
-    color: #294766;
-    border: 1px solid #cdd7e1;
-}
-
-.btn.ghost:hover {
-    background: #e9f0fa;
-}
 
 /* === AÇÕES === */
 .actions {

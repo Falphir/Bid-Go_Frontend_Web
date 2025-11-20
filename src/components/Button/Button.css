@@ -1,0 +1,68 @@
+/* Base do botão */
+.app-btn {
+    font-family: "Segoe UI", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 10px 22px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    user-select: none;
+}
+
+/* PRIMARY — Azul padrão */
+.app-btn.primary {
+    background: #0066cc;
+    color: #fff;
+}
+.app-btn.primary:hover:not(:disabled) {
+    background: #0057ad;
+}
+
+/* SECONDARY — Cinza */
+.app-btn.secondary {
+    background: #94a3b8;
+    color: #fff;
+}
+.app-btn.secondary:hover:not(:disabled) {
+    background: #7c8899;
+}
+
+/* GHOST — Transparente, discreto */
+.app-btn.ghost {
+    background: transparent;
+    border: 1px solid #cdd7e1;
+    color: #294766;
+}
+.app-btn.ghost:hover:not(:disabled) {
+    background: #eef3fa;
+}
+
+/* DANGER — Vermelho */
+.app-btn.danger {
+    background: #e63946;
+    color: #fff;
+}
+.app-btn.danger:hover:not(:disabled) {
+    background: #c62835;
+}
+
+/* Disabled */
+.app-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Pequeno efeito de "lift" */
+.app-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+.app-btn:active:not(:disabled) {
+    transform: scale(0.97);
+}
