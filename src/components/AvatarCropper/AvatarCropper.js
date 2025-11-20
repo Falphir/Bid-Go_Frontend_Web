@@ -3,8 +3,6 @@ import Cropper from "react-easy-crop";
 import "./AvatarCropper.css";
 import Button from "../Button/Button";
 
-
-
 function AvatarCropper({ image, onCancel, onSave }) {
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
@@ -72,7 +70,7 @@ function AvatarCropper({ image, onCancel, onSave }) {
                         variant="secondary"
                         onClick={onCancel}
                     >
-                        Cancelar
+                        Cancel
                     </Button>
 
                     <Button
@@ -82,7 +80,7 @@ function AvatarCropper({ image, onCancel, onSave }) {
                             onSave(croppedFile);
                         }}
                     >
-                        Guardar
+                        Save
                     </Button>
 
                 </div>

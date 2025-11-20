@@ -31,21 +31,21 @@ const validateTransportFields = ({
                                  }) => {
     const missing = [];
 
-    if (!origin?.trim()) missing.push("Origem");
-    if (!destination?.trim()) missing.push("Destino");
-    if (!pckg?.trim()) missing.push("Tipo de Mercadoria");
-    if (!weight?.trim()) missing.push("Peso");
-    if (!length?.trim()) missing.push("Comprimento");
-    if (!width?.trim()) missing.push("Largura");
-    if (!height?.trim()) missing.push("Altura");
-    if (!pickupDate?.trim()) missing.push("Data de Recolha");
-    if (!deliveryDate?.trim()) missing.push("Data de Entrega");
-    if (!biddingStartDate?.trim()) missing.push("Início do Leilão");
-    if (!biddingEndDate?.trim()) missing.push("Fim do Leilão");
-    if (!maxPrice?.trim()) missing.push("Preço Máximo");
+    if (!origin?.trim()) missing.push("Origin");
+    if (!destination?.trim()) missing.push("Destination");
+    if (!pckg?.trim()) missing.push("Package Type");
+    if (!weight?.trim()) missing.push("Weight");
+    if (!length?.trim()) missing.push("Length");
+    if (!width?.trim()) missing.push("Width");
+    if (!height?.trim()) missing.push("Height");
+    if (!pickupDate?.trim()) missing.push("Pickup Date");
+    if (!deliveryDate?.trim()) missing.push("Delivery Date");
+    if (!biddingStartDate?.trim()) missing.push("Auction Start");
+    if (!biddingEndDate?.trim()) missing.push("Auction End");
+    if (!maxPrice?.trim()) missing.push("Max Price");
     if (!volume?.trim()) missing.push("Volume");
 
-    if (!imageFile) missing.push("Imagem");
+    if (!imageFile) missing.push("Image");
 
     return missing;
 };
@@ -131,20 +131,20 @@ function CreateTransportPage() {
 
         if (missing.length > 0) {
             showToast(
-                `Campos em falta para criar DRAFT: ${missing.join(", ")}`,
+                `Missing required fields to create DRAFT: ${missing.join(", ")}`,
                 "error"
             );
             return;
         }
 
-        await handleSubmit(null, API_URL_DRAFT, "Rascunho criado com sucesso.");
+        await handleSubmit(null, API_URL_DRAFT, "Draft created successfully.");
     };
 
     // HANDLER: CREATE TRANSPORT
     const handleSubmit = async (
         e,
         targetUrl = API_URL,
-        successMessage = "Pedido criado com sucesso."
+        successMessage = "Request created successfully."
     ) => {
         if (e?.preventDefault) e.preventDefault();
 
@@ -155,7 +155,7 @@ function CreateTransportPage() {
         try {
             const token = localStorage.getItem("token");
             if (!token) {
-                showToast("Token não encontrado. Faz login novamente.", "error");
+                showToast("Token not found. Please log in again.", "error");
                 setLoading(false);
                 return;
             }
@@ -165,11 +165,16 @@ function CreateTransportPage() {
                 try {
                     const parts = tokenStr.split(".");
                     const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-                    const padded = b64.padEnd(b64.length + (4 - (b64.length % 4)) % 4, "=");
+                    const padded = b64.padEnd(
+                        b64.length + (4 - (b64.length % 4)) % 4,
+                        "="
+                    );
                     const json = decodeURIComponent(
                         atob(padded)
                             .split("")
-                            .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+                            .map((c) =>
+                                "%" + c.charCodeAt(0).toString(16).padStart(2, "0")
+                            )
                             .join("")
                     );
                     return JSON.parse(json);
@@ -248,7 +253,6 @@ function CreateTransportPage() {
 
             showToast(successMessage, "success");
             navigate("/myTransports"); // redirect after success
-
         } catch (err) {
             const msg = getApiErrorMessage(err);
             showToast(msg, "error");
@@ -259,7 +263,7 @@ function CreateTransportPage() {
 
     return (
         <div className="create-transport-container">
-            <h2 className="create-title">Novo Pedido de Transporte</h2>
+            <h2 className="create-title">New Transport Request</h2>
 
             {/* FORM */}
             <form
@@ -285,7 +289,7 @@ function CreateTransportPage() {
                     if (missing.length > 0) {
                         e.preventDefault();
                         showToast(
-                            `Preenche todos os campos obrigatórios: ${missing.join(", ")}`,
+                            `Fill all required fields: ${missing.join(", ")}`,
                             "error"
                         );
                         return;
@@ -298,20 +302,20 @@ function CreateTransportPage() {
 
                 <div className="row">
                     <div className="field">
-                        <label>Origem</label>
+                        <label>Origin</label>
                         <input
                             type="text"
-                            placeholder="Morada / Distrito / Código Postal"
+                            placeholder="Address / District / Postal Code"
                             value={origin}
                             onChange={(e) => setOrigin(e.target.value)}
                         />
                     </div>
 
                     <div className="field">
-                        <label>Destino</label>
+                        <label>Destination</label>
                         <input
                             type="text"
-                            placeholder="Morada / Distrito / Código Postal"
+                            placeholder="Address / District / Postal Code"
                             value={destination}
                             onChange={(e) => setDestination(e.target.value)}
                         />
@@ -319,10 +323,10 @@ function CreateTransportPage() {
                 </div>
 
                 <div className="field">
-                    <label>Tipo de Mercadoria</label>
+                    <label>Package Type</label>
                     <input
                         type="text"
-                        placeholder="Ex.: Eletrodoméstico"
+                        placeholder="Ex.: Household appliance"
                         value={pckg}
                         onChange={(e) => setPckg(e.target.value)}
                     />
@@ -330,7 +334,7 @@ function CreateTransportPage() {
 
                 <div className="row">
                     <div className="field">
-                        <label>Peso (kg)</label>
+                        <label>Weight (kg)</label>
                         <input
                             type="text"
                             placeholder="Ex.: 10"
@@ -387,23 +391,14 @@ function CreateTransportPage() {
                 />
 
                 <div className="form-actions" style={{ display: "flex", gap: "12px" }}>
-                    <Button
-                        variant="secondary"
-                        type="button"
-                        onClick={handleCreateDraft}
-                    >
-                        Criar DRAFT
+                    <Button variant="secondary" type="button" onClick={handleCreateDraft}>
+                        Create DRAFT
                     </Button>
 
-                    <Button
-                        variant="primary"
-                        type="submit"
-                    >
-                        Criar Pedido
+                    <Button variant="primary" type="submit">
+                        Create Request
                     </Button>
                 </div>
-
-
             </form>
         </div>
     );

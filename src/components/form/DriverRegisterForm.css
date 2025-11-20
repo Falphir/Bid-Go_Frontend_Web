@@ -25,26 +25,6 @@
   font-size: 14px;
   margin: -8px 0 8px;
 }
-.login-button {
-  background-color: #0066cc;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-.login-button:hover {
-  background-color: #004fa1;
-}
-.login-button.cancel {
-  background-color: #dc3545;
-}
-.login-button.cancel:hover {
-  background-color: #b52a37;
-}
 .form-actions {
   display: flex;
   justify-content: flex-end;
