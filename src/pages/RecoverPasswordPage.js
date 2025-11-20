@@ -28,7 +28,7 @@ function RecoverPasswordPage() {
     e.preventDefault();
     setError(null);
     if (!email) {
-      setError("Preencha o email para recuperar a palavra-passe.");
+      showToast("Preencha o email para recuperar a palavra-passe.", "error");
       return;
     }
     abortRef.current?.abort();
@@ -48,8 +48,8 @@ function RecoverPasswordPage() {
     } catch (err) {
       if (err.name === "CanceledError") return;
       const apiMsg = getApiErrorMessage(err);
-      setError(apiMsg);
       showToast(apiMsg, "error");
+      setError(apiMsg);
     } finally {
       setLoading(false);
     }
@@ -59,11 +59,11 @@ function RecoverPasswordPage() {
     e.preventDefault();
     setError(null);
     if (!token || !password) {
-      setError("Preencha o token e a nova palavra-passe.");
+      showToast("Preencha o token e a nova palavra-passe.", "error");
       return;
     }
     if (password !== confirm) {
-      setError("As palavras-passe não coincidem.");
+      showToast("As palavras-passe não coincidem.", "error");
       return;
     }
 
@@ -83,14 +83,12 @@ function RecoverPasswordPage() {
     } catch (err) {
       if (err.name === "CanceledError") return;
       const apiMsg = getApiErrorMessage(err);
-      setError(apiMsg);
       showToast(apiMsg, "error");
+      setError(apiMsg);
     } finally {
       setLoading(false);
     }
   };
-
-  if (loading) return <StatusMessage type="loading">A processar…</StatusMessage>;
 
   return (
     <div className="login-page">
@@ -157,8 +155,6 @@ function RecoverPasswordPage() {
               onChange={(e) => setConfirm(e.target.value)}
               required
             />
-
-            {error && <StatusMessage type="error">{error}</StatusMessage>}
 
             <button type="submit" className="login-button" disabled={loading}>
               {loading ? "A processar…" : "Redefinir Palavra-passe"}
