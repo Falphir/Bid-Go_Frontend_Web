@@ -40,13 +40,14 @@
   color: #0a43a5;
   font-size: 28px;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin: 0;
+    padding-top: 4px;
 }
 
 /* ===== Filtros no topo (embutidos) ===== */
 .filters-top-wrapper {
   position: absolute; /* não ocupa altura, não afasta o título da navbar */
-  top: 0;
+  top: 21px;
   right: 0;
   margin: 0; /* sem impacto no fluxo */
   display: flex;
@@ -135,6 +136,7 @@
   justify-content: center; /* mantém os cards centrados */
   gap: 24px;
   flex-wrap: wrap;
+    margin-top: 75px;
 }
 
 .card {
@@ -256,4 +258,65 @@
   color: #555;
   font-weight: 600;
   letter-spacing: 0.1px;
+}
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px; /* substitui a margem do botão */
+    width: 100%;
+}
+
+.create-request-btn {
+    background: #0a5ad8;
+    color: #fff;
+    font-family: inherit;
+    padding: 0.45em 1.1em;
+    padding-right: 3.2em;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    height: 2.6em;
+    box-shadow: 0 3px 10px rgba(10, 90, 216, 0.20);
+    transition: background 0.25s, box-shadow 0.25s;
+}
+
+.create-request-btn:hover {
+    background: #084fbf;
+    box-shadow: 0 4px 14px rgba(10, 90, 216, 0.30);
+}
+
+.create-request-btn .icon {
+    position: absolute;
+    right: 0.35em;
+    height: 2em;
+    width: 2em;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: width 0.25s, background 0.25s;
+}
+
+.create-request-btn:hover .icon {
+    width: calc(100% - 0.7em);
+    background: #e8f0ff;
+}
+
+.create-request-btn .icon svg {
+    width: 1.1em;
+    height: 1.1em;
+    color: #0a5ad8;
+    transition: transform 0.25s;
+}
+
+.create-request-btn:hover .icon svg {
+    transform: translateX(0.15em);
 }

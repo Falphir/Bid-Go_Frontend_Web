@@ -58,7 +58,7 @@ export default function ConfirmDialog({
             disabled={loading}
             ref={confirmBtnRef}
           >
-            {loading ? "Canceling…" : confirmText}
+            {loading ? "Changing…" : confirmText}
           </button>
         </div>
       </div>

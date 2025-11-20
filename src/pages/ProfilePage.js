@@ -23,7 +23,7 @@ import ConfirmDialog from "../components/ConfirmDialog/ConfirmDialog";
 import { getApiErrorMessage } from "../utils/httpError";
 import StatusMessage from "../components/feedback/StatusMessage";
 import { useToast } from "../components/feedback/ToastContext";
-
+import Button from "../components/Button/Button";
 function ProfilePage() {
   const { userId, isDriver, isCompany, loading: meLoading } = useMe();
 
@@ -210,12 +210,20 @@ function ProfilePage() {
         {editing ? (
           <div className="actions">
             <div className="actions-left">
-              <button onClick={handleSave} className="btn primary">
-                Guardar alterações
-              </button>
-              <button className="btn ghost" onClick={() => setEditing(false)}>
-                Cancelar
-              </button>
+                <Button
+                    variant="primary"
+                    onClick={handleSave}
+                >
+                    Guardar alterações
+                </Button>
+
+                <Button
+                    variant="secondary"
+                    onClick={() => setEditing(false)}
+                >
+                    Cancelar
+                </Button>
+
             </div>
           </div>
         ) : (

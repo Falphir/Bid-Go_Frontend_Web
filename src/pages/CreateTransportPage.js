@@ -10,6 +10,7 @@ import DateFields from "../components/form/DateFields";
 import AuctionDatesFields from "../components/form/AuctionDatesFields";
 import PriceAutoSelectionFields from "../components/form/PriceAutoSelectionFields";
 import { useNavigate } from "react-router";
+import Button from "../components/Button/Button";
 
 // 🔥 GLOBAL VALIDATION FUNCTION
 const validateTransportFields = ({
@@ -385,20 +386,24 @@ function CreateTransportPage() {
                     }}
                 />
 
-                <div className="form-actions">
-                    <button
+                <div className="form-actions" style={{ display: "flex", gap: "12px" }}>
+                    <Button
+                        variant="secondary"
                         type="button"
-                        className="draft-button"
                         onClick={handleCreateDraft}
-                        disabled={loading}
                     >
-                        {loading ? "A processar..." : "Criar DRAFT"}
-                    </button>
+                        Criar DRAFT
+                    </Button>
 
-                    <button type="submit" className="submit-button" disabled={loading}>
-                        {loading ? "Enviando..." : "Criar Pedido"}
-                    </button>
+                    <Button
+                        variant="primary"
+                        type="submit"
+                    >
+                        Criar Pedido
+                    </Button>
                 </div>
+
+
             </form>
         </div>
     );

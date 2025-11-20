@@ -18,6 +18,7 @@ import BidList from "../components/domain/BidList";
 import AcceptRejectOverlay from "../components/domain/AcceptRejectOverlay";
 import TransportDetailsCard from "../components/domain/TransportDetailsCard";
 import useSortedBids from "../hooks/useSortedBids";
+import Button from "../components/Button/Button";
 
 function RequestDetailsPage() {
     const navigate = useNavigate();
@@ -476,36 +477,51 @@ function RequestDetailsPage() {
                                 </button>
                             )}
 
-                            {/* Driver (only accepted bid owner): WaitingPickup -> InTransit */}
                             {isOwnerDriver(acceptedBid) && status === "WAITINGPICKUP" && (
-                                <button
-                                    className="status-btn status-btn--success"
-                                    onClick={() => setConfirmStatusAction({ target: 'InTransit', label: 'Iniciar Transporte' })}
+                                <Button
+                                    variant="primary"
+                                    onClick={() =>
+                                        setConfirmStatusAction({
+                                            target: "InTransit",
+                                            label: "Iniciar Transporte",
+                                        })
+                                    }
                                     disabled={statusUpdating}
                                 >
-                                    {statusUpdating ? 'Aguarde…' : 'Iniciar Transporte'}
-                                </button>
+                                    {statusUpdating ? "Aguarde…" : "Iniciar Transporte"}
+                                </Button>
                             )}
 
-                            {/* Driver (only accepted bid owner): InTransit -> Completed or Canceled */}
                             {isOwnerDriver(acceptedBid) && status === "INTRANSIT" && (
                                 <>
-                                    <button
-                                        className="status-btn status-btn--success"
-                                        onClick={() => setConfirmStatusAction({ target: 'Completed', label: 'Marcar como Concluído' })}
+                                    <Button
+                                        variant="primary"
+                                        onClick={() =>
+                                            setConfirmStatusAction({
+                                                target: "Completed",
+                                                label: "Marcar como Concluído",
+                                            })
+                                        }
                                         disabled={statusUpdating}
                                     >
-                                        {statusUpdating ? 'Aguarde…' : 'Concluir'}
-                                    </button>
-                                    <button
-                                        className="status-btn status-btn--danger"
-                                        onClick={() => setConfirmStatusAction({ target: 'Canceled', label: 'Cancelar Transporte' })}
+                                        {statusUpdating ? "Aguarde…" : "Concluir"}
+                                    </Button>
+
+                                    <Button
+                                        variant="danger"
+                                        onClick={() =>
+                                            setConfirmStatusAction({
+                                                target: "Canceled",
+                                                label: "Cancelar Transporte",
+                                            })
+                                        }
                                         disabled={statusUpdating}
                                     >
-                                        {statusUpdating ? 'Aguarde…' : 'Cancelar'}
-                                    </button>
+                                        {statusUpdating ? "Aguarde…" : "Cancelar"}
+                                    </Button>
                                 </>
                             )}
+
                         </div>
                     </div>
 

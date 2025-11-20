@@ -2,6 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import "./BidCard.css";
+import Button from "../Button/Button";
 
 function BidCard({
   bid,
@@ -63,28 +64,30 @@ function BidCard({
         )}
         {isCompany && (onAccept || onReject) && (
           <div className="bid-buttons">
-            {onAccept && (
-              <button
-                className="accept-btn"
-                onClick={() => onAccept(bid.bidId)}
-                disabled={processing === bid.bidId}
-              >
-                {processing === bid.bidId && confirmAction?.type === "accept"
-                  ? "Aceitando..."
-                  : "Aceitar"}
-              </button>
-            )}
-            {onReject && (
-              <button
-                className="reject-btn"
-                onClick={() => onReject(bid.bidId)}
-                disabled={processing === bid.bidId}
-              >
-                {processing === bid.bidId && confirmAction?.type === "reject"
-                  ? "Rejeitando..."
-                  : "Rejeitar"}
-              </button>
-            )}
+              {onAccept && (
+                  <Button
+                      variant="primary"
+                      onClick={() => onAccept(bid.bidId)}
+                      disabled={processing === bid.bidId}
+                  >
+                      {processing === bid.bidId && confirmAction?.type === "accept"
+                          ? "Aceitando..."
+                          : "Aceitar"}
+                  </Button>
+              )}
+
+              {onReject && (
+                  <Button
+                      variant="secondary"
+                      onClick={() => onReject(bid.bidId)}
+                      disabled={processing === bid.bidId}
+                  >
+                  {processing === bid.bidId && confirmAction?.type === "reject"
+                          ? "Rejeitando..."
+                          : "Rejeitar"}
+                  </Button>
+              )}
+
           </div>
         )}
       </div>

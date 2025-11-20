@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./EditBidModal.css";
+import Button from "../Button/Button";
 
 export default function EditBidModal({
   open,
@@ -169,26 +170,27 @@ export default function EditBidModal({
             )}
           </label>
 
-          <div className="ebm-actions">
-            <button
-              type="button"
-              className="ebm-btn ebm-cancel"
-              onClick={onClose}
-              disabled={saving}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="ebm-btn ebm-save"
-              disabled={saving || hasErrors}
-              title={
-                hasErrors ? "Fix the errors above to continue" : "Update bid"
-              }
-            >
-              {saving ? "Updating…" : "Update"}
-            </button>
-          </div>
+            <div className="ebm-actions">
+
+                <Button
+                    variant="secondary"
+                    onClick={onClose}
+                    disabled={saving}
+                    type="button"
+                >
+                    Cancel
+                </Button>
+
+                <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={saving || hasErrors}
+                >
+                    {saving ? "Updating…" : "Update"}
+                </Button>
+
+            </div>
+
         </form>
       </div>
     </div>

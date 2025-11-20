@@ -61,11 +61,11 @@
 }
 
 .cd-confirm {
-  background: #ef4444;
+  background: #0066cc;
   color: #fff;
 }
 .cd-confirm:hover {
-  background: #dc2626;
+  background: #0057ad;
 }
 
 @media (prefers-reduced-motion: reduce) {

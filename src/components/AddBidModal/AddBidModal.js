@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./AddBidModal.css";
-
+import Button from "../Button/Button";
 export default function AddBidModal({
   open,
   onClose,
@@ -173,26 +173,24 @@ export default function AddBidModal({
             )}
           </label>
 
-          <div className="abm-actions">
-            <button
-              type="button"
-              className="abm-btn abm-cancel"
-              onClick={onClose}
-              disabled={saving}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="abm-btn abm-save"
-              disabled={saving || hasErrors}
-              title={
-                hasErrors ? "Fix the errors above to continue" : "Update bid"
-              }
-            >
-              {saving ? "Submitting…" : "Submit Bid"}
-            </button>
-          </div>
+            <div className="abm-actions">
+                <Button
+                    variant="secondary"
+                    onClick={onClose}
+                    disabled={saving}
+                >
+                    Cancel
+                </Button>
+
+                <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={saving || hasErrors}
+                >
+                    {saving ? "Submitting…" : "Submit Bid"}
+                </Button>
+            </div>
+
         </form>
       </div>
     </div>

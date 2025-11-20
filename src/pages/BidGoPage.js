@@ -152,32 +152,39 @@ function BidGoPage() {
             )}
           </div>
         )}
+          <div className="title-row">
+              <h2 className="section-title">
+                  {isDriver
+                      ? "Transportes Disponíveis para Licitar"
+                      : "Pedidos de Transporte"}
+              </h2>
 
-        <h2 className="section-title">
-          {isDriver
-            ? "Transportes Disponíveis para Licitar"
-            : "Pedidos de Transporte"}
-        </h2>
+              {!isDriver && (
+                  <button className="create-request-btn" onClick={() => navigate("/createRequest")}>
+                      Create
+                      <span className="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </span>
+                  </button>
+              )}
+          </div>
 
-        {!isDriver && (
-          <button
-            className="new-request-btn"
-            onClick={() => navigate("/createRequest")}
-          >
-            Novo Pedido de Transporte
-          </button>
-        )}
-        <div className="cards-container">
-          {isEmpty ? (
-            <p className="no-bids">Nenhum pedido encontrado.</p>
-          ) : (
-            list.map((req) => (
-              <TransportCard
-                key={req.id}
-                data={req}
-                isCompany={isCompany}
-                isDriver={isDriver}
-                onView={(id) => navigate(`/transportRequest/${id}`)}
+
+
+          <div className="cards-container">
+              {isEmpty ? (
+                  <p className="no-bids">Nenhum pedido encontrado.</p>
+              ) : (
+                  list.map((req) => (
+                      <TransportCard
+                          key={req.id}
+                          data={req}
+                          isCompany={isCompany}
+                          isDriver={isDriver}
+                          onView={(id) => navigate(`/transportRequest/${id}`)}
               />
             ))
           )}
