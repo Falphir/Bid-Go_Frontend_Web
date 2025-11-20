@@ -5,6 +5,7 @@ import BidGoPage from "./pages/BidGoPage";
 import LoginPage from "./pages/LoginPage";
 import CreateTransportPage from "./pages/CreateTransportPage";
 import RequestDetailsPage from "./pages/RequestDetailsPage";
+import RecoverPasswordPage from "./pages/RecoverPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import HistoryPage from "./pages/HistoryPage";
 import MyBidsPage from "./pages/MyBidsPage";
@@ -33,6 +34,7 @@ export default function AppRouter() {
           </Route>
           <Route path="/Login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+          <Route path="/recover" element={<RecoverPasswordPage />} />
           <Route path="*" element={<div>NOT FOUND</div>} />
         </Routes>
       </Suspense>
