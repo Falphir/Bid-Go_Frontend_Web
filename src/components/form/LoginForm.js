@@ -1,8 +1,8 @@
 import React from "react";
-import { useNavigate } from "react-router";
 import PasswordInput from "../PasswordInput/PasswordInput";
 import StatusMessage from "../feedback/StatusMessage";
 import "./LoginForm.css";
+import { useNavigate } from "react-router";
 
 function LoginForm({
                        email,
@@ -15,6 +15,8 @@ function LoginForm({
                        onToggleRemember,
                        onSubmit,
                    }) {
+
+    const navigate = useNavigate();
     return (
         <form className="login-form" onSubmit={onSubmit}>
             <h2 className="login-title">Sign In</h2>
@@ -49,8 +51,15 @@ function LoginForm({
             <button type="submit" className="login-button" disabled={loading}>
                 {loading ? "Signing in…" : "Sign In"}
             </button>
-            
-            <a href="#forgot" className="forgot-password">
+
+            <a
+                href="/recover"
+                className="forgot-password"
+                onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/recover");
+                }}
+            >
                 Forgot your password?
             </a>
         </form>
