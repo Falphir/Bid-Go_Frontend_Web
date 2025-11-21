@@ -7,6 +7,7 @@ function CompanyFormGrid({ profile, editing, onChange }) {
             <label className="form-label span-1">
                 Name
                 <input
+                className="Name"
                     type="text"
                     disabled={!editing}
                     value={profile?.name || ""}
