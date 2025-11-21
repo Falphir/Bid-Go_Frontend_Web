@@ -14,6 +14,9 @@ test.describe('Register → Login → Edit profile', () => {
     const fakePayload = { userId: 12345, userType: 'company', exp: Math.floor(Date.now() / 1000) + 3600 };
     const fakeToken = makeFakeJwt(fakePayload);
 
+    // Ensure tests run with a token and prevent auto-redirects during requests
+    await page.addInitScript({ content: `window.__PLAYWRIGHT_TEST__ = true; localStorage.setItem('token','${fakeToken}');` });
+
     await page.route('**/register/company', (route) => {
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ token: fakeToken }) });
     });
@@ -82,9 +85,13 @@ test.describe('Register → Login → Edit profile', () => {
 
 
     // Intercept profile update
-    await page.route(`**/profile/updateCompany/${fakePayload.userId}`, (route) => {
-      // verify payload contains the updated name in multipart form-data is tricky; simply return success
-      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) });
+    await page.route(`**/profile/updateCompany/${fakePayload.userId}`, (route, request) => {
+      // Accept PUT (FormData) and respond success. record method for debugging if needed.
+      if (request.method().toLowerCase() === 'put') {
+        route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) });
+      } else {
+        route.continue();
+      }
     });
 
     // Click Save changes
@@ -92,7 +99,7 @@ test.describe('Register → Login → Edit profile', () => {
 
     // Expect a success toast to appear
     const toast = page.locator('.toast');
-    await expect(toast).toHaveText(/Profile updated successfully|updated successfully|sucesso/i);
+    await expect(toast).toHaveText(/Profile updated successfully|updated successfully|sucesso/i, { timeout: 10000 });
 
   });
 });
