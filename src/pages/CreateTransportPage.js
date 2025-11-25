@@ -304,6 +304,7 @@ function CreateTransportPage() {
                     <div className="field">
                         <label>Origin</label>
                         <input
+                            className="Origin"
                             type="text"
                             placeholder="Address / District / Postal Code"
                             value={origin}
@@ -314,6 +315,7 @@ function CreateTransportPage() {
                     <div className="field">
                         <label>Destination</label>
                         <input
+                          className="Destination"
                             type="text"
                             placeholder="Address / District / Postal Code"
                             value={destination}
@@ -325,6 +327,7 @@ function CreateTransportPage() {
                 <div className="field">
                     <label>Package Type</label>
                     <input
+                    className="PackageType"
                         type="text"
                         placeholder="Ex.: Household appliance"
                         value={pckg}
@@ -334,8 +337,10 @@ function CreateTransportPage() {
 
                 <div className="row">
                     <div className="field">
+                      
                         <label>Weight (kg)</label>
                         <input
+                        className="Weight"
                             type="text"
                             placeholder="Ex.: 10"
                             value={weight}
@@ -344,6 +349,7 @@ function CreateTransportPage() {
                     </div>
 
                     <DimensionFields
+            
                         length={length}
                         width={width}
                         height={height}
