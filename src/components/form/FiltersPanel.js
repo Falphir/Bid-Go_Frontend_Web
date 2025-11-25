@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import "./FiltersPanel.css";
 
-// Reusable filters panel (extracted from BidGoPage)
-// Keeps CSS classes: filters-top, filters-row, filters-actions, bid-btn
 export default function FiltersPanel({ initialFilters, onApply, onClear }) {
     const [filters, setFilters] = useState(initialFilters);
 

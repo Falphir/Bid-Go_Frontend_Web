@@ -3,14 +3,9 @@ import api from "../api/axiosConfig";
 import "../styles/ProfilePage.css";
 import { useMe } from "../hooks/useMe";
 import {
-    FiEdit2,
     FiLock,
     FiUserX,
-    FiCamera,
-    FiEye,
-    FiEyeOff,
 } from "react-icons/fi";
-import PasswordInput from "../components/PasswordInput/PasswordInput";
 import AvatarCropper from "../components/AvatarCropper/AvatarCropper";
 import AvatarSection from "../components/profile/AvatarSection";
 import DriverDocsSection from "../components/profile/DriverDocsSection";
@@ -18,8 +13,6 @@ import DriverFormGrid from "../components/profile/DriverFormGrid";
 import CompanyFormGrid from "../components/profile/CompanyFormGrid";
 import PasswordChangeModal from "../components/profile/PasswordChangeModal";
 import DeactivateAccountModal from "../components/profile/DeactivateAccountModal";
-import ReactDOM from "react-dom";
-import ConfirmDialog from "../components/ConfirmDialog/ConfirmDialog";
 import { getApiErrorMessage } from "../utils/httpError";
 import StatusMessage from "../components/feedback/StatusMessage";
 import { useToast } from "../components/feedback/ToastContext";
@@ -37,17 +30,14 @@ function ProfilePage() {
     const [previewInsurance, setPreviewInsurance] = useState(null);
     const [previewAvatar, setPreviewAvatar] = useState(null);
 
-    // modals and loading
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showDeactivateModal, setShowDeactivateModal] = useState(false);
     const [deactivateLoading, setDeactivateLoading] = useState(false);
 
     const [passwords, setPasswords] = useState({ old: "", new: "", confirm: "" });
 
-    const [message, setMessage] = useState(null);
     const { showToast } = useToast();
 
-    // load profile
     useEffect(() => {
         if (!userId) return;
         const fetchProfile = async () => {
@@ -69,9 +59,8 @@ function ProfilePage() {
             }
         };
         fetchProfile();
-    }, [userId]);
+    }, [userId, showToast]);
 
-    // uploads
     const handleFileChange = (e, field) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -82,7 +71,6 @@ function ProfilePage() {
         setProfile({ ...profile, [field]: file });
     };
 
-    // save profile
     const handleSave = async () => {
         const formData = new FormData();
         Object.entries(profile).forEach(([k, v]) => formData.append(k, v));
@@ -102,7 +90,6 @@ function ProfilePage() {
         }
     };
 
-    // deactivate account
     const confirmDeactivate = async () => {
         try {
             setDeactivateLoading(true);
@@ -124,25 +111,20 @@ function ProfilePage() {
         }
     };
 
-    // change password
     const handlePasswordChange = async () => {
         try {
-            // 1. Validate confirmation
             if (passwords.new !== passwords.confirm) {
                 showToast("Passwords do not match.", "error");
                 return;
             }
 
-            // 2. API call
             await api.put(`/profile/${userId}/changePassword`, {
                 currentPassword: passwords.old,
                 newPassword: passwords.new,
             });
 
-            // 3. Success
             showToast("Password updated successfully!", "success");
 
-            // 4. Close modal + reset
             setShowPasswordModal(false);
             setPasswords({ old: "", new: "", confirm: "" });
         } catch (err) {
@@ -177,7 +159,6 @@ function ProfilePage() {
                     }}
                 />
 
-                {/* DRIVER */}
                 {isDriver && (
                     <>
                         <DriverFormGrid
@@ -196,7 +177,6 @@ function ProfilePage() {
                     </>
                 )}
 
-                {/* COMPANY */}
                 {isCompany && (
                     <CompanyFormGrid
                         profile={profile}
@@ -207,7 +187,6 @@ function ProfilePage() {
                     />
                 )}
 
-                {/* actions */}
                 {editing ? (
                     <div className="actions">
                         <div className="actions-left">
@@ -241,7 +220,6 @@ function ProfilePage() {
                 )}
             </div>
 
-            {/* PASSWORD MODAL */}
             <PasswordChangeModal
                 open={showPasswordModal}
                 passwords={passwords}
@@ -255,7 +233,6 @@ function ProfilePage() {
                 }}
             />
 
-            {/* DEACTIVATE ACCOUNT MODAL */}
             <DeactivateAccountModal
                 open={showDeactivateModal}
                 loading={deactivateLoading}
@@ -263,7 +240,6 @@ function ProfilePage() {
                 onCancel={() => setShowDeactivateModal(false)}
             />
 
-            {/* avatar cropper */}
             {cropImage && (
                 <AvatarCropper
                     image={cropImage}

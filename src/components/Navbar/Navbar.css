@@ -1,5 +1,3 @@
-header {
-}
 .header {
   background-color: #eef4fb;
   border-radius: 12px;
@@ -72,7 +70,6 @@ header {
   color: #7a8fa6;
 }
 
-/* Dropdown menu */
 .dropdown-menu {
   position: absolute;
   top: 48px;
@@ -105,7 +102,7 @@ header {
   opacity: 0.5;
   pointer-events: none;
 }
-/* Mantém o tamanho, mas oculta o conteúdo */
+
 .placeholder {
   visibility: hidden;
 }
@@ -194,8 +191,8 @@ header {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* mais espaço vertical entre notificações */
-  padding: 10px 8px 12px 8px; /* espaço interno ao redor do conjunto */
+  gap: 12px;
+  padding: 10px 8px 12px 8px;
 }
 
 .notif-dropdown-list::-webkit-scrollbar {
@@ -277,12 +274,11 @@ header {
 
 .notif-line {
   display: flex;
-  align-items: center; /* vertical center between icon and text */
+  align-items: center;
   gap: 6px;
-  min-height: 26px; /* ensure consistent height when single line */
+  min-height: 26px;
 }
 
-/* Fine-tune multiline alignment: if text wraps to 2 lines, keep icon top aligned for readability */
 .notif-line.multiline {
   align-items: flex-start;
 }
@@ -388,7 +384,6 @@ header {
   color: #7a8fa6;
 }
 
-/* Dropdown menu */
 .dropdown-menu {
   position: absolute;
   top: 48px;
@@ -417,11 +412,12 @@ header {
 .dropdown-menu button:hover {
   background-color: #eef4fb;
 }
+
 .skeleton {
   opacity: 0.5;
   pointer-events: none;
 }
-/* Mantém o tamanho, mas oculta o conteúdo */
+
 .placeholder {
   visibility: hidden;
 }
@@ -510,8 +506,8 @@ header {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* mais espaço vertical entre notificações */
-  padding: 10px 8px 12px 8px; /* espaço interno ao redor do conjunto */
+  gap: 12px;
+  padding: 10px 8px 12px 8px;
 }
 
 .notif-dropdown-list::-webkit-scrollbar {
@@ -593,12 +589,11 @@ header {
 
 .notif-line {
   display: flex;
-  align-items: center; /* vertical center between icon and text */
+  align-items: center;
   gap: 6px;
-  min-height: 26px; /* ensure consistent height when single line */
+  min-height: 26px;
 }
 
-/* Fine-tune multiline alignment: if text wraps to 2 lines, keep icon top aligned for readability */
 .notif-line.multiline {
   align-items: flex-start;
 }

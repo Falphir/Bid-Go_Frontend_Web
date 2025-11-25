@@ -1,4 +1,3 @@
-/* Styles for BidList (migrated from styles/RequestDetails.css) */
 .bids-section {
   background-color: #ffffff;
   padding: 32px;
@@ -81,7 +80,6 @@
   font-size: 14px;
 }
 
-/* List of bid cards */
 .bids-list {
   display: flex;
   flex-direction: column;

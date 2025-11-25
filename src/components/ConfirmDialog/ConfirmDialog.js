@@ -42,7 +42,6 @@ export default function ConfirmDialog({
 
                 <div className="cd-actions">
 
-                    {/* Cancelar — cinzento (secondary) */}
                     <Button
                         variant="secondary"
                         onClick={onCancel}
@@ -51,7 +50,6 @@ export default function ConfirmDialog({
                         {cancelText}
                     </Button>
 
-                    {/* Confirmar — vermelho (danger) */}
                     <Button
                         variant="danger"
                         onClick={onConfirm}

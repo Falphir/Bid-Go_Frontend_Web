@@ -1,4 +1,3 @@
-/* Base */
 .countdown {
   display: inline-flex;
   align-items: center;
@@ -6,33 +5,30 @@
   font-weight: 600;
   font-size: 0.95rem;
   line-height: 1;
-  font-variant-numeric: tabular-nums; /* align digits */
+  font-variant-numeric: tabular-nums;
   -moz-font-feature-settings: "tnum"; /* Firefox */
   -webkit-font-feature-settings: "tnum"; /* Safari */
   font-feature-settings: "tnum";
 }
 
-/* Optional badge look (use alongside .countdown) */
 .countdown.badge {
   padding: 4px 8px;
   border-radius: 999px;
 }
 
-/* Color states (class-based) */
 .countdown.ok {
   color: #16a34a;
-} /* green-600 */
+}
 .countdown.soon {
   color: #e6b800;
-} /* amber-ish for <6h */
+}
 .countdown.warning {
   color: orange;
-} /* <1h */
+}
 .countdown.ended {
   color: #dc2626;
-} /* red-600 */
+}
 
-/* Color states (data-attribute-based) */
 .countdown[data-state="ok"] {
   color: #16a34a;
 }
@@ -46,7 +42,6 @@
   color: #dc2626;
 }
 
-/* Subtle tinted backgrounds when used as badge */
 .countdown.badge.ok {
   background: rgba(22, 163, 74, 0.1);
 }
@@ -60,7 +55,6 @@
   background: rgba(220, 38, 38, 0.1);
 }
 
-/* Ended state emphasis */
 .countdown.ended,
 .countdown[data-state="ended"] {
   text-transform: none;

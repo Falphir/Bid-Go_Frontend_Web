@@ -1,5 +1,3 @@
-/* Styles for PriceAutoSelectionFields (migrated shared field + switch styles) */
-/* Shared row/field layout (same as AuctionDatesFields/DateFields) */
 .row {
   display: flex;
   flex-wrap: wrap;

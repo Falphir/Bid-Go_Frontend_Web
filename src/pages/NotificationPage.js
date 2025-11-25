@@ -8,7 +8,6 @@ export default function NotificationPage() {
     const [filtered, setFiltered] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Filters
     const [typeFilter, setTypeFilter] = useState("all");
     const [readFilter, setReadFilter] = useState("all");
     const [orderFilter, setOrderFilter] = useState("desc");
@@ -49,16 +48,13 @@ export default function NotificationPage() {
         fetchNotifications();
     };
 
-    // Update filtered list when filters change
     useEffect(() => {
         let data = [...notifications];
 
-        // Filter: type
         if (typeFilter !== "all") {
             data = data.filter((n) => n.type === typeFilter);
         }
 
-        // Filter: read / unread
         if (readFilter === "unread") {
             data = data.filter((n) => !n.isRead);
         }
@@ -66,7 +62,6 @@ export default function NotificationPage() {
             data = data.filter((n) => n.isRead);
         }
 
-        // Sorting
         data.sort((a, b) => {
             const t1 = new Date(a.timeStamp);
             const t2 = new Date(b.timeStamp);

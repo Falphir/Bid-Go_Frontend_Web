@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import "../styles/RequestDetails.css";
 import { useParams, useNavigate } from "react-router";
 import api from "../api/axiosConfig";
 import { useMe } from "../hooks/useMe";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import EditBidModal from "../components/EditBidModal/EditBidModal";
 import EditTransportModal from "../components/EditTransportModal/EditTransportModal";
 import ConfirmDialog from "../components/ConfirmDialog/ConfirmDialog";
 import AddBidModal from "../components/AddBidModal/AddBidModal";
-import Countdown from "../components/Countdown/Countdown";
 import { getApiErrorMessage } from "../utils/httpError";
 import StatusMessage from "../components/feedback/StatusMessage";
 import { useToast } from "../components/feedback/ToastContext";
@@ -22,13 +21,13 @@ import Button from "../components/Button/Button";
 
 function RequestDetailsPage() {
     const navigate = useNavigate();
-    const {role, userId, isDriver, isCompany, loading: meLoading} = useMe();
+    const {userId, isDriver, isCompany, loading: meLoading} = useMe();
     const {id} = useParams();
     const transportId = id;
 
     const [transport, setTransport] = useState(null);
-    const [bids, setBids] = useState([]); // Active bids or empty
-    const [acceptedBid, setAcceptedBid] = useState(null); // For non-active states
+    const [bids, setBids] = useState([]);
+    const [acceptedBid, setAcceptedBid] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortBy, setSortBy] = useState("value");
@@ -41,8 +40,8 @@ function RequestDetailsPage() {
     const [addOpen, setAddOpen] = useState(false);
     const [savingAdd, setSavingAdd] = useState(false);
 
-    const [confirmAction, setConfirmAction] = useState(null); // { type, bidId }
-    const [processing, setProcessing] = useState(null); // bidId or 'publish'
+    const [confirmAction, setConfirmAction] = useState(null);
+    const [processing, setProcessing] = useState(null);
 
     const {showToast} = useToast();
 
@@ -51,13 +50,59 @@ function RequestDetailsPage() {
     const [confirmCancelTransport, setConfirmCancelTransport] = useState(false);
     const [cancelingTransport, setCancelingTransport] = useState(false);
     const [statusUpdating, setStatusUpdating] = useState(false);
-    const [confirmStatusAction, setConfirmStatusAction] = useState(null); // { target, label }
+    const [confirmStatusAction, setConfirmStatusAction] = useState(null);
 
-    // Toast now provided globally by ToastProvider
+    const loadActiveBids = useCallback(
+        async (signal) => {
+            if (!transportId) return;
+            try {
+                const bidsRes = await api.get(
+                    `/bids/bidsActive?transportRequestId=${transportId}`,
+                    signal ? { signal } : undefined
+                );
 
-    // ---------------------------
-    // FETCH MAIN
-    // ---------------------------
+                const updatedBids = await Promise.all(
+                    bidsRes.data.map(async (bid) => {
+                        try {
+                            const ratingRes = await api.get(
+                                `/reviewRequest/average/driver/${bid.driver.driverId}`
+                            );
+                            return {
+                                ...bid,
+                                driver: {
+                                    ...bid.driver,
+                                    averageRating: ratingRes.data.average,
+                                },
+                            };
+                        } catch {
+                            return {
+                                ...bid,
+                                driver: {
+                                    ...bid.driver,
+                                    averageRating: null,
+                                },
+                            };
+                        }
+                    })
+                );
+
+                setBids(updatedBids);
+                setAcceptedBid(null);
+            } catch (err) {
+                if (err?.response?.status === 404) {
+                    console.warn("No active bids found — returning empty list.");
+                    setBids([]);
+                    setAcceptedBid(null);
+                } else if (axios.isCancel(err)) {
+                    return;
+                } else {
+                    throw err;
+                }
+            }
+        },
+        [transportId]
+    );
+
     useEffect(() => {
         if (!transportId) return;
 
@@ -68,31 +113,25 @@ function RequestDetailsPage() {
                 setLoading(true);
                 setError(null);
 
-                // 1) transport
                 const transportRes = await api.get(`/transports/${transportId}`, {
                     signal: controller.signal,
                 });
                 const tr = transportRes.data;
                 setTransport(tr);
 
-                // Decide what to load based on transport status
                 const status = String(tr?.status ?? "").toUpperCase();
 
-                // If draft or canceled: no bids shown
                 if (status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") {
                     setBids([]);
                     setAcceptedBid(null);
                     return;
                 }
 
-                // If active: load active bids
                 if (status === "ACTIVE") {
                     await loadActiveBids(controller.signal);
                     return;
                 }
 
-                // For WaitingPickup / Pendent / InTransit / Completed: load accepted bid
-                // Accepting both "PENDENT" (backend) and "PENDING"
                 if (
                     status === "WAITINGPICKUP" ||
                     status === "PENDENT" ||
@@ -101,14 +140,20 @@ function RequestDetailsPage() {
                     status === "COMPLETED"
                 ) {
                     try {
-                        const accRes = await api.get(`/bids/manual/byrequest/${transportId}/Accepted`);
-                        // API may return array or object
-                        const bid = Array.isArray(accRes.data) ? accRes.data[0] : accRes.data;
+                        const accRes = await api.get(
+                            `/bids/manual/byrequest/${transportId}/Accepted`
+                        );
+                        const bid = Array.isArray(accRes.data)
+                            ? accRes.data[0]
+                            : accRes.data;
                         setAcceptedBid(bid || null);
                         setBids([]);
                     } catch (err) {
                         if (err?.response?.status === 404) {
-                            console.warn("No accepted bid found for transport", transportId);
+                            console.warn(
+                                "No accepted bid found for transport",
+                                transportId
+                            );
                             setAcceptedBid(null);
                             setBids([]);
                         } else {
@@ -118,7 +163,6 @@ function RequestDetailsPage() {
                     return;
                 }
 
-                // Default: clear
                 setBids([]);
                 setAcceptedBid(null);
             } catch (err) {
@@ -132,12 +176,11 @@ function RequestDetailsPage() {
 
         fetchData();
         return () => controller.abort();
-    }, [transportId]);
+    }, [transportId, loadActiveBids])
 
-    // sorted bids
+
     const sortedBids = useSortedBids(bids, sortBy, ascending);
 
-    // Helpers from original code: transport draft/canceled detection
     const isTransportDraft = !!transport && (
         (transport?.status && String(transport.status).toUpperCase() === "DRAFT") ||
         transport?.draft === true ||
@@ -156,7 +199,6 @@ function RequestDetailsPage() {
     const isOwnerDriver = (bid) =>
         isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
 
-    // Refresh transport (used by publish/cancel)
     const refreshTransport = async () => {
         if (!transportId) return;
         try {
@@ -167,46 +209,6 @@ function RequestDetailsPage() {
         }
     };
 
-    // Load active bids (extracted for reuse after adding a bid)
-    const loadActiveBids = async (signal) => {
-        if (!transportId) return;
-        try {
-            const bidsRes = await api.get(
-                `/bids/bidsActive?transportRequestId=${transportId}`,
-                signal ? {signal} : undefined
-            );
-
-            const updatedBids = await Promise.all(
-                bidsRes.data.map(async (bid) => {
-                    try {
-                        const ratingRes = await api.get(
-                            `/reviewRequest/average/driver/${bid.driver.driverId}`
-                        );
-                        return {...bid, driver: {...bid.driver, averageRating: ratingRes.data.average}};
-                    } catch {
-                        return {...bid, driver: {...bid.driver, averageRating: null}};
-                    }
-                })
-            );
-
-            setBids(updatedBids);
-            setAcceptedBid(null);
-        } catch (err) {
-            if (err?.response?.status === 404) {
-                console.warn("No active bids found — returning empty list.");
-                setBids([]);
-                setAcceptedBid(null);
-            } else if (axios.isCancel(err)) {
-                return;
-            } else {
-                throw err;
-            }
-        }
-    };
-
-    // ---------------------------
-    // ACTIONS: Add / Edit / Cancel / Accept-Reject
-    // ---------------------------
     const handleOpenAdd = () => setAddOpen(true);
     const handleCloseAdd = () => {
         if (!savingAdd) setAddOpen(false);
@@ -265,7 +267,6 @@ function RequestDetailsPage() {
         }
     };
 
-    // Confirm overlay actions (accept/reject)
     const confirmBidAction = (type, bidId) => {
         setConfirmAction({type, bidId});
     };
@@ -292,7 +293,6 @@ function RequestDetailsPage() {
         }
     };
 
-// Transport edit/save/publish handlers (copied from original)
     const openEditTransport = () => {
         if (!transport) return;
         setIsEditTransportOpen(true);
@@ -317,7 +317,6 @@ function RequestDetailsPage() {
                 }
             } catch (err) {
                 if (err?.response?.status === 415) {
-                    // Retry as multipart/form-data
                     const formData = new FormData();
                     Object.keys(payload).forEach((k) => {
                         const v = payload[k];
@@ -366,7 +365,6 @@ function RequestDetailsPage() {
         }
     };
 
-// Update transport status via endpoint
     const updateTransportStatus = async (target) => {
         if (!transportId) return;
         setStatusUpdating(true);
@@ -384,7 +382,6 @@ function RequestDetailsPage() {
         }
     };
 
-// RENDER guards
     if (meLoading) return <StatusMessage type="loading">Validating Session…</StatusMessage>;
     if (loading) return <StatusMessage type="loading">Loading…</StatusMessage>;
     if (error) return <StatusMessage type="error">Error: {error}</StatusMessage>;
@@ -441,11 +438,8 @@ function RequestDetailsPage() {
                     </>
                 )}
 
-                {/* BIDS SECTION */}
-                {/* Draft/Canceled -> show nothing */}
                 {(status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") && null}
 
-                {/* ACTIVE -> all active bids */}
                 {status === "ACTIVE" && (
                     <BidList
                         bids={sortedBids}
@@ -465,7 +459,6 @@ function RequestDetailsPage() {
                     />
                 )}
 
-                {/* ACCEPTED: WaitingPickup / Pending / InTransit / Completed */}
                 {(status !== "ACTIVE" &&
                     status !== "CANCELED" &&
                     status !== "DRAFT" &&
@@ -491,7 +484,6 @@ function RequestDetailsPage() {
                         </div>
 
                         <div className="status-actions">
-                            {/* Company: Pending -> WaitingPickup */}
                             {isCompany && (status === "PENDING" || status === "PENDENT") && (
                                 <button
                                     className="status-btn status-btn--primary"
@@ -549,13 +541,11 @@ function RequestDetailsPage() {
                                     </Button>
                                 </>
                             )}
-
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* MODALS */}
             <AddBidModal
                 open={addOpen}
                 onClose={handleCloseAdd}

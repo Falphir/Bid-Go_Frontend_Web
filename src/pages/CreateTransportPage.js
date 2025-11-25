@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import "../styles/CreateTransportPage.css";
-import axios from "axios";
 import api from "../api/axiosConfig";
 import { getApiErrorMessage } from "../utils/httpError";
 import { useToast } from "../components/feedback/ToastContext";
@@ -12,7 +11,6 @@ import PriceAutoSelectionFields from "../components/form/PriceAutoSelectionField
 import { useNavigate } from "react-router";
 import Button from "../components/Button/Button";
 
-// 🔥 GLOBAL VALIDATION FUNCTION
 const validateTransportFields = ({
                                      origin,
                                      destination,
@@ -76,18 +74,15 @@ function CreateTransportPage() {
     const API_URL = "/transports/createTransport";
     const API_URL_DRAFT = "/transports/createDRAFTTransport";
 
-    // IMAGE SELECT
     const handleImageChange = (e) => {
         const file = e.target.files && e.target.files[0];
         if (file) setImageFile(file);
     };
 
-    // UPDATE DIMENSIONS STRING
     const updateDimensionsString = (l, w, h) => {
         setDimensions(`${l || ""}/${w || ""}/${h || ""}`);
     };
 
-    // AUTO-COMPUTE VOLUME
     useEffect(() => {
         const parse = (v) => {
             if (!v) return NaN;
@@ -105,12 +100,10 @@ function CreateTransportPage() {
         else setVolume("");
     }, [length, width, height]);
 
-    // CLEANUP
     useEffect(() => {
         return () => abortRef.current?.abort();
     }, []);
 
-    // HANDLER: CREATE DRAFT
     const handleCreateDraft = async () => {
         const missing = validateTransportFields({
             origin,
@@ -140,7 +133,6 @@ function CreateTransportPage() {
         await handleSubmit(null, API_URL_DRAFT, "Draft created successfully.");
     };
 
-    // HANDLER: CREATE TRANSPORT
     const handleSubmit = async (
         e,
         targetUrl = API_URL,
@@ -160,7 +152,6 @@ function CreateTransportPage() {
                 return;
             }
 
-            // Decode JWT
             const parseJwt = (tokenStr) => {
                 try {
                     const parts = tokenStr.split(".");
@@ -186,7 +177,6 @@ function CreateTransportPage() {
             const tokenPayload = parseJwt(token);
             const userId = tokenPayload?.userId || tokenPayload?.sub || null;
 
-            // number converter
             const toNumber = (v) => {
                 if (!v) return null;
                 const n = parseFloat(String(v).replace(",", "."));
@@ -200,7 +190,6 @@ function CreateTransportPage() {
             const maxPriceNum = toNumber(maxPrice);
             const volumeNum = toNumber(volume);
 
-            // FORM DATA OR JSON
             if (imageFile) {
                 const formData = new FormData();
                 formData.append("image", imageFile);
@@ -252,7 +241,7 @@ function CreateTransportPage() {
             }
 
             showToast(successMessage, "success");
-            navigate("/myTransports"); // redirect after success
+            navigate("/myTransports");
         } catch (err) {
             const msg = getApiErrorMessage(err);
             showToast(msg, "error");
@@ -265,7 +254,6 @@ function CreateTransportPage() {
         <div className="create-transport-container">
             <h2 className="create-title">New Transport Request</h2>
 
-            {/* FORM */}
             <form
                 className="transport-form"
                 onSubmit={(e) => {
@@ -398,11 +386,11 @@ function CreateTransportPage() {
 
                 <div className="form-actions" style={{ display: "flex", gap: "12px" }}>
                     <Button variant="secondary" type="button" onClick={handleCreateDraft}>
-                        Create DRAFT
+                        {loading ? "Please wait…" : "Create DRAFT"}
                     </Button>
 
                     <Button variant="primary" type="submit">
-                        Create Request
+                        {loading ? "Creating…" : "Create Request"}
                     </Button>
                 </div>
             </form>

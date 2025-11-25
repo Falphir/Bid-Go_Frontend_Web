@@ -8,8 +8,6 @@ import {
 } from "react-icons/fa";
 import "./NotificationCard.css";
 
-// Reusable component for a notification.
-// Keeps the same CSS classes used in the original page.
 export default function NotificationCard({ notification, onMarkRead }) {
     if (!notification) return null;
     const { notificationId, type, timeStamp, context, isRead } = notification;

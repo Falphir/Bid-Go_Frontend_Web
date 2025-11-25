@@ -1,5 +1,3 @@
-// Common data normalization functions extracted from pages
-
 export function normalizeTransportList(data) {
   const arr = Array.isArray(data)
     ? data

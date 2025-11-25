@@ -1,15 +1,7 @@
 /*
  * Styling for the CreateTransportPage component.
- *
- * The layout closely follows the provided mockup: a centered form with
- * generous whitespace, a dashed border drop zone for image upload (using
- * an invisible input and styled label) as suggested by MDN【350331217813325†L195-L206】,
- * input fields arranged in rows, and a custom switch for toggling the
- * automatic selection algorithm.  Colours and typography are consistent
- * with the rest of the BidGo design.
  */
 
-/* Overall container */
 .create-transport-container {
   max-width: 840px;
   margin: 0 auto;
@@ -27,7 +19,6 @@
   margin-bottom: 32px;
 }
 
-/* Form wrapper */
 .transport-form {
   background-color: #ffffff;
   padding: 32px;
@@ -38,7 +29,6 @@
   gap: 20px;
 }
 
-/* Drop zone styling */
 .drop-zone-wrapper {
   display: flex;
   flex-direction: column;
@@ -46,7 +36,6 @@
   margin-bottom: 16px;
 }
 
-/* Hide the native file input */
 .drop-zone-wrapper input[type="file"] {
   display: none;
 }
@@ -94,7 +83,6 @@
   color: #294766;
 }
 
-/* Row layout for paired fields */
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -115,7 +103,6 @@
   font-size: 14px;
 }
 
-/* Header for the dimensions field: label on left, volume text on right */
 .dimensions-header {
   display: flex;
   align-items: center;
@@ -123,7 +110,7 @@
 }
 
 .dimensions-header label {
-  margin-bottom: 6px; /* keep same spacing as other labels */
+  margin-bottom: 6px;
 }
 
 .volume-inline {
@@ -162,9 +149,6 @@
   min-height: 100px;
 }
 
-/* Dimensions group styled as a single rounded "balloon" containing
-   three small inputs separated by slashes. Inputs are visually
-   segments inside the pill; the group receives focus styling. */
 .dimensions-group {
   display: inline-flex;
   align-items: center;
@@ -172,13 +156,12 @@
   border: 1px solid #cdd7e1;
   background-color: #ffffff;
   padding: 4.3px 10px;
-  border-radius: 8px; /* pill / balloon shape */
+  border-radius: 8px;
   box-sizing: border-box;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
   justify-content: space-between;
 }
 
-/* Focus the whole balloon when any inner input is focused */
 .dimensions-group:focus-within {
   border-color: #0066cc;
   box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.06);
@@ -187,7 +170,7 @@
 .dimensions-group .dimensions-input {
   width: 68px;
   padding: 6px 8px;
-  border: none; /* no individual borders so the group looks unified */
+  border: none;
   background: transparent;
   color: #294766;
   font-size: 14px;
@@ -195,7 +178,6 @@
   outline: none;
 }
 
-/* When focused, keep the input visually simple; the group shows the focus ring */
 .dimensions-group .dimensions-input:focus {
   outline: none;
 }
@@ -207,7 +189,6 @@
   font-weight: 600;
 }
 
-/* Bottom row containing attachment and algorithm toggle */
 .bottom-row {
   align-items: center;
   justify-content: space-between;
@@ -258,7 +239,6 @@
   color: #062e5c;
 }
 
-/* Toggle switch */
 .switch {
   position: relative;
   display: inline-block;
@@ -302,7 +282,6 @@
   transform: translateX(24px);
 }
 
-/* Submit button */
 .submit-button {
   margin-top: 24px;
   align-self: flex-end;
@@ -321,7 +300,6 @@
   background-color: #004fa1;
 }
 
-/* Actions area with draft + submit buttons */
 .form-actions {
   display: flex;
   gap: 12px;
@@ -352,8 +330,6 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
-
-/* Toast styles moved to components/feedback/ToastContext.css */
 
 @keyframes fadeIn {
   from {

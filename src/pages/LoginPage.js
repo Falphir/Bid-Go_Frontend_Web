@@ -3,8 +3,6 @@ import "../styles/LoginPage.css";
 import { useNavigate, useLocation } from "react-router";
 import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
-import PasswordInput from "../components/PasswordInput/PasswordInput";
-import StatusMessage from "../components/feedback/StatusMessage";
 import LoginForm from "../components/form/LoginForm";
 import { useToast } from "../components/feedback/ToastContext";
 
@@ -17,22 +15,19 @@ function LoginPage() {
     const abortRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
-    const { showToast, toasts } = useToast();
+    const { showToast } = useToast();
 
     useEffect(() => {
-        // cleanup on unmount
         return () => abortRef.current?.abort();
     }, []);
 
-    // show toast passed via navigation state (e.g. after successful register)
     useEffect(() => {
         if (location?.state?.toast) {
             const t = location.state.toast;
             showToast(t.msg, t.type);
         }
-    }, [location]);
+    }, [location, showToast]);
 
-    // Prevent body scrolling while login page is visible
     useEffect(() => {
         const prevOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
@@ -50,7 +45,6 @@ function LoginPage() {
             return;
         }
 
-        // cancel previous request (if exists)
         abortRef.current?.abort();
 
         const controller = new AbortController();
@@ -64,7 +58,7 @@ function LoginPage() {
                 { signal: controller.signal }
             );
 
-            const { token, user } = res.data || {};
+            const { token} = res.data || {};
             if (remember && token) localStorage.setItem("token", token);
             navigate("/");
         } catch (err) {
@@ -107,7 +101,6 @@ function LoginPage() {
                         onSubmit={handleSubmit}
                     />
 
-                    {/* block below the 'forgot password' */}
                     <div className="login-register">
                         <span className="login-register-text">Don’t have an account?</span>
                         <button

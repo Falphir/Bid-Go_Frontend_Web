@@ -3,16 +3,14 @@ import "../styles/RegisterPage.css";
 import { useNavigate } from "react-router";
 import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
-import PasswordInput from "../components/PasswordInput/PasswordInput"; // legacy kept for compatibility if needed
 import DriverRegisterForm from "../components/form/DriverRegisterForm";
 import CompanyRegisterForm from "../components/form/CompanyRegisterForm";
 import { getApiErrorMessage } from "../utils/httpError";
 import { useToast } from "../components/feedback/ToastContext";
 
 function RegisterPage() {
-    const [mode, setMode] = useState(null); // 'driver' | 'company' | null
+    const [mode, setMode] = useState(null);
 
-    // driver form state
     const [dName, setDName] = useState("");
     const [dEmail, setDEmail] = useState("");
     const [dPassword, setDPassword] = useState("");
@@ -21,7 +19,6 @@ function RegisterPage() {
     const [dDriverLicense, setDDriverLicense] = useState(null);
     const [dInsurance, setDInsurance] = useState(null);
 
-    // company form state
     const [cName, setCName] = useState("");
     const [companyName, setCompanyName] = useState("");
     const [address, setAddress] = useState("");
@@ -40,7 +37,6 @@ function RegisterPage() {
         return () => abortRef.current?.abort();
     }, []);
 
-    // Prevent body scroll while register page is visible and hide global navbar
     useEffect(() => {
         const prevOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
@@ -279,7 +275,6 @@ function RegisterPage() {
 
                 </div>
             </div>
-            {/* Toasts handled globally by ToastProvider */}
         </div>
     );
 }

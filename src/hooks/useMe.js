@@ -1,4 +1,3 @@
-// src/hooks/useMe.js
 import { useEffect, useState } from "react";
 import api from "../api/axiosConfig";
 import axios from "axios";
@@ -20,9 +19,6 @@ function claimsArrayToObject(claims = []) {
 }
 
 export function useMe() {
-  // Fast-path: synchronously derive initial `me` from token so userId is
-  // available on first render (avoids components racing with the background
-  // auth/me request).
   const parseJwtSync = (tokenStr) => {
     try {
       const parts = tokenStr.split(".");
@@ -79,7 +75,6 @@ export function useMe() {
     let cancelled = false;
     const controller = new AbortController();
 
-    // Try to synchronously derive claims from the token (fast path)
     const token =
       localStorage.getItem("token") || sessionStorage.getItem("token");
     const parseJwt = (tokenStr) => {
@@ -107,7 +102,6 @@ export function useMe() {
     if (token) {
       const payload = parseJwt(token);
       if (payload) {
-        // Map common claim names into the same object shape
         const quick = {
           nameId:
             payload[
@@ -128,11 +122,9 @@ export function useMe() {
       }
     }
 
-    // Background: refresh authoritative user claims from API
     (async () => {
       try {
-        // Only call if component still mounted
-        const res = await api.get("auth/me", { signal: controller.signal }); // ajusta rota se preciso
+        const res = await api.get("auth/me", { signal: controller.signal });
         if (!cancelled) setMe(claimsArrayToObject(res.data?.claims || []));
       } catch (e) {
         if (!axios.isCancel(e) && !cancelled) setError(e);

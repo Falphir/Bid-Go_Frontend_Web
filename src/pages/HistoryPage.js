@@ -27,7 +27,7 @@ function HistoryPage() {
                 { key: "rating", label: "Rating" },
             ];
         }
-        // Company
+
         return [
             { key: "requestId", label: "Request ID" },
             { key: "package", label: "Package" },
@@ -82,7 +82,6 @@ function HistoryPage() {
         return <StatusMessage type="loading">Loading history…</StatusMessage>;
     if (error) return <StatusMessage type="error">{error}</StatusMessage>;
 
-    const isEmpty = !items || items.length === 0;
     const title = isDriver
         ? "Bidding History"
         : isCompany

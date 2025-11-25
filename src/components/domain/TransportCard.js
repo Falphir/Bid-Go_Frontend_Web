@@ -2,7 +2,6 @@ import React from "react";
 import Countdown from "../../components/Countdown/Countdown";
 import "./TransportCard.css";
 
-// Reusable transport card. Keeps existing CSS classes.
 export default function TransportCard({ data, isCompany, isDriver, onView }) {
     if (!data) return null;
     const {
@@ -17,7 +16,6 @@ export default function TransportCard({ data, isCompany, isDriver, onView }) {
         status,
     } = data;
 
-    // Determine status text (replicates original logic)
     const statusText = (() => {
         if (status == null) return null;
         if (typeof status === "number") {

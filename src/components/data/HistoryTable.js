@@ -1,8 +1,6 @@
 import React from "react";
 import "./HistoryTable.css";
 
-// Componente de tabela reutilizável para histórico
-// Mantém classes existentes para não alterar estilos.
 export default function HistoryTable({
   columns = [],
   rows = [],
