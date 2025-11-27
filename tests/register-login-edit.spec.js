@@ -51,8 +51,8 @@ test.describe('Register → Login → Edit profile', () => {
     // Click Register button
     await page.click('button:has-text("Register")');
 
-    // After register, navigate explicitly to the Login page (route is /Login)
-    await page.goto('http://localhost:3000/Login');
+    // After register, navigate explicitly to the Login page (route is /login)
+    await page.goto('http://localhost:3000/login');
 
     // Now intercept login to return token as well (simulate login flow)
     await page.route('**/auth/login', (route) => {
