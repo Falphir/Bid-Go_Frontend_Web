@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import "../styles/LoginPage.css";
-import api from "../api/axiosConfig";
 import { getApiErrorMessage } from "../utils/httpError";
 import { useToast } from "../components/feedback/ToastContext";
 import StatusMessage from "../components/feedback/StatusMessage";
 import { useNavigate } from "react-router";
 import PasswordInput from "../components/PasswordInput/PasswordInput";
+import useRecoverPassword from "../hooks/useRecoverPassword";
 
 function RecoverPasswordPage() {
     const [mode, setMode] = useState("request");
@@ -13,51 +13,29 @@ function RecoverPasswordPage() {
     const [token, setToken] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [sent, setSent] = useState(false);
-    const abortRef = useRef(null);
+    const { request, reset, loading, error, sent } = useRecoverPassword();
     const { showToast } = useToast();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        return () => abortRef.current?.abort();
-    }, []);
-
     const handleRequest = async (e) => {
         e.preventDefault();
-        setError(null);
         if (!email) {
             showToast("Enter your email to recover your password.", "error");
             return;
         }
-        abortRef.current?.abort();
-        const controller = new AbortController();
-        abortRef.current = controller;
-        setLoading(true);
         try {
-
-            await api.post(
-                "/auth/recover-password",
-                { email },
-                { signal: controller.signal }
-            );
-            setSent(true);
+            await request(email);
             showToast("If the email exists, instructions have been sent.", "success");
             setMode("reset");
         } catch (err) {
-            if (err.name === "CanceledError") return;
+            if (err?.name === "CanceledError") return;
             const apiMsg = getApiErrorMessage(err);
             showToast(apiMsg, "error");
-            setError(apiMsg);
-        } finally {
-            setLoading(false);
         }
     };
 
     const handleReset = async (e) => {
         e.preventDefault();
-        setError(null);
         if (!token || !password) {
             showToast("Fill out the token and the new password.", "error");
             return;
@@ -66,30 +44,14 @@ function RecoverPasswordPage() {
             showToast("Passwords do not match.", "error");
             return;
         }
-
-        abortRef.current?.abort();
-        const controller = new AbortController();
-        abortRef.current = controller;
-        setLoading(true);
         try {
-            const res = await api.post(
-                "/auth/reset-password",
-                { token, newPassword: password },
-                { signal: controller.signal }
-            );
-
-            showToast(
-                res?.data?.message || "Password updated successfully.",
-                "success"
-            );
+            const res = await reset(token, password);
+            showToast(res?.message || "Password updated successfully.", "success");
             setTimeout(() => navigate("/Login"), 800);
         } catch (err) {
-            if (err.name === "CanceledError") return;
+            if (err?.name === "CanceledError") return;
             const apiMsg = getApiErrorMessage(err);
             showToast(apiMsg, "error");
-            setError(apiMsg);
-        } finally {
-            setLoading(false);
         }
     };
 

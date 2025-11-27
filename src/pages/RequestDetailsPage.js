@@ -1,8 +1,6 @@
-import React, {useCallback, useEffect, useState} from "react";
-import axios from "axios";
+import React, {useState} from "react";
 import "../styles/RequestDetails.css";
 import { useParams, useNavigate } from "react-router";
-import api from "../api/axiosConfig";
 import { useMe } from "../hooks/useMe";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
@@ -18,6 +16,7 @@ import AcceptRejectOverlay from "../components/domain/AcceptRejectOverlay";
 import TransportDetailsCard from "../components/domain/TransportDetailsCard";
 import useSortedBids from "../hooks/useSortedBids";
 import Button from "../components/Button/Button";
+import useRequestDetails from "../hooks/useRequestDetails";
 
 function RequestDetailsPage() {
     const navigate = useNavigate();
@@ -25,11 +24,6 @@ function RequestDetailsPage() {
     const {id} = useParams();
     const transportId = id;
 
-    const [transport, setTransport] = useState(null);
-    const [bids, setBids] = useState([]);
-    const [acceptedBid, setAcceptedBid] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [sortBy, setSortBy] = useState("value");
     const [ascending, setAscending] = useState(true);
 
@@ -52,131 +46,24 @@ function RequestDetailsPage() {
     const [statusUpdating, setStatusUpdating] = useState(false);
     const [confirmStatusAction, setConfirmStatusAction] = useState(null);
 
-    const loadActiveBids = useCallback(
-        async (signal) => {
-            if (!transportId) return;
-            try {
-                const bidsRes = await api.get(
-                    `/bids/bidsActive?transportRequestId=${transportId}`,
-                    signal ? { signal } : undefined
-                );
+    const {
+        transport,
+        bids,
+        acceptedBid,
+        loading,
+        error,
+        refreshTransport,
+        createBidForTransport,
+        updateExistingBid,
+        cancelExistingBid,
+        manualAction,
+        saveTransport,
+        publishTransport: publishTransportAction,
+        cancelExistingTransport,
+        setStatus,
+    } = useRequestDetails({ transportId });
 
-                const updatedBids = await Promise.all(
-                    bidsRes.data.map(async (bid) => {
-                        try {
-                            const ratingRes = await api.get(
-                                `/reviewRequest/average/driver/${bid.driver.driverId}`
-                            );
-                            return {
-                                ...bid,
-                                driver: {
-                                    ...bid.driver,
-                                    averageRating: ratingRes.data.average,
-                                },
-                            };
-                        } catch {
-                            return {
-                                ...bid,
-                                driver: {
-                                    ...bid.driver,
-                                    averageRating: null,
-                                },
-                            };
-                        }
-                    })
-                );
-
-                setBids(updatedBids);
-                setAcceptedBid(null);
-            } catch (err) {
-                if (err?.response?.status === 404) {
-                    console.warn("No active bids found — returning empty list.");
-                    setBids([]);
-                    setAcceptedBid(null);
-                } else if (axios.isCancel(err)) {
-                    return;
-                } else {
-                    throw err;
-                }
-            }
-        },
-        [transportId]
-    );
-
-    useEffect(() => {
-        if (!transportId) return;
-
-        const controller = new AbortController();
-
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                const transportRes = await api.get(`/transports/${transportId}`, {
-                    signal: controller.signal,
-                });
-                const tr = transportRes.data;
-                setTransport(tr);
-
-                const status = String(tr?.status ?? "").toUpperCase();
-
-                if (status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") {
-                    setBids([]);
-                    setAcceptedBid(null);
-                    return;
-                }
-
-                if (status === "ACTIVE") {
-                    await loadActiveBids(controller.signal);
-                    return;
-                }
-
-                if (
-                    status === "WAITINGPICKUP" ||
-                    status === "PENDENT" ||
-                    status === "PENDING" ||
-                    status === "INTRANSIT" ||
-                    status === "COMPLETED"
-                ) {
-                    try {
-                        const accRes = await api.get(
-                            `/bids/manual/byrequest/${transportId}/Accepted`
-                        );
-                        const bid = Array.isArray(accRes.data)
-                            ? accRes.data[0]
-                            : accRes.data;
-                        setAcceptedBid(bid || null);
-                        setBids([]);
-                    } catch (err) {
-                        if (err?.response?.status === 404) {
-                            console.warn(
-                                "No accepted bid found for transport",
-                                transportId
-                            );
-                            setAcceptedBid(null);
-                            setBids([]);
-                        } else {
-                            throw err;
-                        }
-                    }
-                    return;
-                }
-
-                setBids([]);
-                setAcceptedBid(null);
-            } catch (err) {
-                if (axios.isCancel(err)) return;
-                console.error("Failed to load data:", err);
-                setError("Failed to load Data.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-        return () => controller.abort();
-    }, [transportId, loadActiveBids])
+    // Data fetching and bid loading are handled inside `useRequestDetails`.
 
 
     const sortedBids = useSortedBids(bids, sortBy, ascending);
@@ -199,15 +86,7 @@ function RequestDetailsPage() {
     const isOwnerDriver = (bid) =>
         isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
 
-    const refreshTransport = async () => {
-        if (!transportId) return;
-        try {
-            const res = await api.get(`/transports/${transportId}`);
-            setTransport(res.data);
-        } catch (err) {
-            console.error("Failed to refresh transport", err);
-        }
-    };
+    // refreshTransport provided by hook
 
     const handleOpenAdd = () => setAddOpen(true);
     const handleCloseAdd = () => {
@@ -217,9 +96,7 @@ function RequestDetailsPage() {
     const handleSaveAdd = async (payload) => {
         try {
             setSavingAdd(true);
-            await api.post(`/bids/createBid`, payload);
-
-            await loadActiveBids();
+            await createBidForTransport(payload);
             showToast("Bid created successfully.", "success");
             setAddOpen(false);
         } catch (err) {
@@ -237,10 +114,7 @@ function RequestDetailsPage() {
     const handleSaveEdit = async (payload) => {
         try {
             setSavingEdit(true);
-            await api.put(`/bids/updatebid/${editingBid.bidId}`, payload);
-            setBids((prev) =>
-                prev.map((b) => (b.bidId === editingBid.bidId ? {...b, ...payload} : b))
-            );
+            await updateExistingBid(editingBid.bidId, payload);
             showToast("Bid updated successfully.", "success");
             setEditingBid(null);
         } catch (err) {
@@ -256,8 +130,7 @@ function RequestDetailsPage() {
         if (!confirmBidId) return;
         try {
             setCancelLoading(true);
-            await api.patch(`/bids/cancel/${confirmBidId}`);
-            setBids((prev) => prev.filter((b) => b.bidId !== confirmBidId));
+            await cancelExistingBid(confirmBidId);
             showToast("Bid canceled successfully.", "success");
         } catch (err) {
             showToast(getApiErrorMessage(err), "error");
@@ -274,15 +147,8 @@ function RequestDetailsPage() {
     const executeAction = async (bidId, type) => {
         setProcessing(bidId);
         try {
-            await api.post(`/bids/manual/${bidId}/${type}`);
-            showToast(
-                type === "accept"
-                    ? "Bid accepted successfully!"
-                    : "Bid rejected successfully!",
-                "success"
-            );
-
-            setBids((prev) => prev.filter((b) => b.bidId !== bidId));
+            await manualAction(bidId, type);
+            showToast(type === "accept" ? "Bid accepted successfully!" : "Bid rejected successfully!", "success");
             navigate(0);
         } catch (err) {
             console.error(err);
@@ -307,37 +173,7 @@ function RequestDetailsPage() {
         if (!transportId) return;
         setSavingEditTransport(true);
         try {
-            try {
-                try {
-                    await api.post(`/transports/updateTransport/${transportId}`, payload);
-                } catch (err) {
-                    if (err?.response?.status === 405) {
-                        await api.put(`/transports/updateTransport/${transportId}`, payload);
-                    } else throw err;
-                }
-            } catch (err) {
-                if (err?.response?.status === 415) {
-                    const formData = new FormData();
-                    Object.keys(payload).forEach((k) => {
-                        const v = payload[k];
-                        if (v !== undefined && v !== null) formData.append(k, v);
-                    });
-                    try {
-                        try {
-                            await api.post(`/transports/updateTransport/${transportId}`, formData);
-                        } catch (err2) {
-                            if (err2?.response?.status === 405) {
-                                await api.put(`/transports/updateTransport/${transportId}`, formData);
-                            } else throw err2;
-                        }
-                    } catch (finalErr) {
-                        throw finalErr;
-                    }
-                } else {
-                    throw err;
-                }
-            }
-
+            await saveTransport(payload);
             showToast('Request updated successfully!', 'success');
             setIsEditTransportOpen(false);
             await refreshTransport();
@@ -354,7 +190,7 @@ function RequestDetailsPage() {
         if (!transportId) return;
         setProcessing('publish');
         try {
-            await api.put(`/transports/company/publish/${transportId}`);
+            await publishTransportAction();
             showToast('Request published successfully!', 'success');
             await refreshTransport();
         } catch (err) {
@@ -369,7 +205,7 @@ function RequestDetailsPage() {
         if (!transportId) return;
         setStatusUpdating(true);
         try {
-            await api.put(`/transports/updateStatus/${transportId}`, {status: target});
+            await setStatus(target);
             showToast('Request status updated successfully!', 'success');
             await refreshTransport();
         } catch (err) {
@@ -592,9 +428,8 @@ function RequestDetailsPage() {
                 onConfirm={async () => {
                     setCancelingTransport(true);
                     try {
-                        await api.put(`/transports/canceled/${transportId}`);
+                        await cancelExistingTransport();
                         showToast('Request canceled successfully!', 'success');
-                        await refreshTransport();
                     } catch (err) {
                         console.error('Error canceling request:', err);
                         const apiMsg = getApiErrorMessage(err);

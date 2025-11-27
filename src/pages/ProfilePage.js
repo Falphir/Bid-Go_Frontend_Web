@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import api from "../api/axiosConfig";
+import React, { useState } from "react";
 import "../styles/ProfilePage.css";
 import { useMe } from "../hooks/useMe";
 import {
@@ -17,12 +16,13 @@ import { getApiErrorMessage } from "../utils/httpError";
 import StatusMessage from "../components/feedback/StatusMessage";
 import { useToast } from "../components/feedback/ToastContext";
 import Button from "../components/Button/Button";
+import useProfile from "../hooks/useProfile";
 
 function ProfilePage() {
     const { userId, isDriver, isCompany, loading: meLoading } = useMe();
 
-    const [profile, setProfile] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { profile, loading, error, setProfile, saveProfile, deactivate, changePwd } = useProfile({ userId, isDriver, isCompany });
+
     const [editing, setEditing] = useState(false);
     const [cropImage, setCropImage] = useState(null);
 
@@ -38,28 +38,7 @@ function ProfilePage() {
 
     const { showToast } = useToast();
 
-    useEffect(() => {
-        if (!userId) return;
-        const fetchProfile = async () => {
-            try {
-                const res = await api.get(`/profile/${userId}`);
-                setProfile(res.data);
-                setPreviewLicense(
-                    res.data.driverLicense || res.data.driverLicenseUrl || null
-                );
-                setPreviewInsurance(
-                    res.data.insurance || res.data.insuranceUrl || null
-                );
-                setPreviewAvatar(res.data.profileImage || null);
-            } catch (err) {
-                const msg = getApiErrorMessage(err);
-                showToast(msg, "error");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProfile();
-    }, [userId, showToast]);
+    // profile hook handles fetching
 
     const handleFileChange = (e, field) => {
         const file = e.target.files[0];
@@ -75,25 +54,19 @@ function ProfilePage() {
         const formData = new FormData();
         Object.entries(profile).forEach(([k, v]) => formData.append(k, v));
         try {
-            const endpoint = isDriver
-                ? `profile/updateDriver/${userId}`
-                : `profile/updateCompany/${userId}`;
-            await api.put(endpoint, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            await saveProfile(formData);
             showToast("Profile updated successfully!", "success");
             setEditing(false);
         } catch (err) {
             const msg = getApiErrorMessage(err);
             showToast(msg, "error");
-        } finally {
         }
     };
 
     const confirmDeactivate = async () => {
         try {
             setDeactivateLoading(true);
-            await api.put(`/profile/${userId}/deactivateAccount`);
+            await deactivate();
             showToast("Account successfully deactivated", "success");
 
             localStorage.removeItem("token");
@@ -118,10 +91,7 @@ function ProfilePage() {
                 return;
             }
 
-            await api.put(`/profile/${userId}/changePassword`, {
-                currentPassword: passwords.old,
-                newPassword: passwords.new,
-            });
+            await changePwd(passwords.old, passwords.new);
 
             showToast("Password updated successfully!", "success");
 
@@ -138,6 +108,16 @@ function ProfilePage() {
             <div className="profile-page">
                 <div className="profile-card">
                     <StatusMessage type="loading">Loading…</StatusMessage>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="profile-page">
+                <div className="profile-card">
+                    <StatusMessage type="error">{String(error)}</StatusMessage>
                 </div>
             </div>
         );

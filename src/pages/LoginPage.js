@@ -1,25 +1,22 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/LoginPage.css";
 import { useNavigate, useLocation } from "react-router";
-import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
 import LoginForm from "../components/form/LoginForm";
 import { useToast } from "../components/feedback/ToastContext";
+import useLogin from "../hooks/useLogin";
 
 function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [errorLocal, setErrorLocal] = useState(null);
     const [remember, setRemember] = useState(true);
-    const abortRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
     const { showToast } = useToast();
+    const { login, loading, error } = useLogin();
 
-    useEffect(() => {
-        return () => abortRef.current?.abort();
-    }, []);
+    // login hook handles abort cleanup
 
     useEffect(() => {
         if (location?.state?.toast) {
@@ -38,48 +35,22 @@ function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
+        setErrorLocal(null);
 
         if (!email || !password) {
-            setError("Fill in email and password.");
+            setErrorLocal("Fill in email and password.");
             return;
         }
-
-        abortRef.current?.abort();
-
-        const controller = new AbortController();
-        abortRef.current = controller;
-
-        setLoading(true);
         try {
-            const res = await api.post(
-                "/auth/login",
-                { email, password },
-                { signal: controller.signal }
-            );
-
-            const { token} = res.data || {};
+            const res = await login(email, password);
+            const { token } = res || {};
             if (remember && token) localStorage.setItem("token", token);
             navigate("/");
         } catch (err) {
-            if (err.name === "CanceledError") return;
-            if (err.response) {
-                const msg =
-                    err.response.data?.message ||
-                    `Error ${err.response.status}: ${err.response.statusText}`;
-                setError(msg);
-                showToast(msg, "error");
-            } else if (err.request) {
-                const msg = "Network failure: no response from server.";
-                setError(msg);
-                showToast(msg, "error");
-            } else {
-                const msg = `Error: ${err.message}`;
-                setError(msg);
-                showToast(msg, "error");
-            }
-        } finally {
-            setLoading(false);
+            if (err?.name === "CanceledError") return;
+            const msg = err?.response?.data?.message || err?.message || "Login failed";
+            setErrorLocal(msg);
+            showToast(msg, "error");
         }
     };
 
@@ -94,7 +65,7 @@ function LoginPage() {
                         password={password}
                         remember={remember}
                         loading={loading}
-                        error={error}
+                        error={error || errorLocal}
                         onChangeEmail={setEmail}
                         onChangePassword={setPassword}
                         onToggleRemember={setRemember}
