@@ -17,7 +17,8 @@ export function useTransports({ userId, isDriver, isCompany, initialFilters = {}
       setIsRequestsEmpty(false);
       try {
         const normalized = await getCompanyTransports(userId, signal);
-        setRequests(normalized);
+        const sorted = sortByNewest(normalized);
+        setRequests(sorted);
         if (normalized.length === 0) setIsRequestsEmpty(true);
       } catch (err) {
         if (err.name === "CanceledError") return;
@@ -36,7 +37,8 @@ export function useTransports({ userId, isDriver, isCompany, initialFilters = {}
       setIsRequestsEmpty(false);
       try {
         const normalized = await getDriverTransports(currentFilters || filters, signal);
-        setRequests(normalized);
+        const sorted = sortByNewest(normalized);
+        setRequests(sorted);
         if (normalized.length === 0) setIsRequestsEmpty(true);
       } catch (err) {
         if (err.name === "CanceledError") return;
@@ -93,6 +95,16 @@ function formatError(err) {
   if (err.response) return `Server error: ${err.response.status} ${err.response.statusText}`;
   if (err.request) return "Network error: no response from server";
   return `Request error: ${err.message}`;
+}
+
+function sortByNewest(list) {
+  if (!Array.isArray(list)) return [];
+  const getTime = (t) => {
+    const d = new Date(t.createdAt || t.biddingEndDate || 0);
+    const time = d.getTime();
+    return isNaN(time) ? 0 : time;
+  };
+  return [...list].sort((a, b) => getTime(b) - getTime(a));
 }
 
 export default useTransports;

@@ -18,6 +18,13 @@ export function normalizeTransportList(data) {
     biddingEndDate:
       t.biddingEndDate ?? t.biddingEnd ?? t.bidding_end_date ?? null,
     status: t.status ?? null,
+    createdAt:
+      t.createdAt ??
+      t.creationDate ??
+      t.created_at ??
+      t.date ??
+      t.updatedAt ??
+      null,
   }));
 }
 
@@ -50,10 +57,16 @@ export function normalizeHistoryDriver(data) {
       t.biddingEndDate ??
       t.deliveryDate ??
       null;
+    const time = (() => {
+      const d = new Date(dateRaw);
+      const ms = d.getTime();
+      return isNaN(ms) ? 0 : ms;
+    })();
     return {
       companyName,
       package: pkg,
       date: fmtDate(dateRaw),
+      dateTime: time,
       destination,
       price,
       status,
@@ -88,11 +101,17 @@ export function normalizeHistoryCompany(data) {
       t.biddingEndDate ??
       t.deliveryDate ??
       null;
+    const time = (() => {
+      const d = new Date(dateRaw);
+      const ms = d.getTime();
+      return isNaN(ms) ? 0 : ms;
+    })();
     return {
       requestId,
       package: pkg,
       driverName,
       date: fmtDate(dateRaw),
+      dateTime: time,
       destination,
       price,
       status,

@@ -5,6 +5,9 @@ export function useHistory({ userId, isDriver, isCompany } = {}) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const sortByNewest = (arr) => {
+    return [...arr].sort((a, b) => (b?.dateTime ?? 0) - (a?.dateTime ?? 0));
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -15,10 +18,10 @@ export function useHistory({ userId, isDriver, isCompany } = {}) {
       try {
         if (isDriver) {
           const data = await getDriverHistory(userId, controller.signal);
-          setItems(data);
+          setItems(sortByNewest(data));
         } else if (isCompany) {
           const data = await getCompanyHistory(userId, controller.signal);
-          setItems(data);
+          setItems(sortByNewest(data));
         } else {
           setItems([]);
         }
