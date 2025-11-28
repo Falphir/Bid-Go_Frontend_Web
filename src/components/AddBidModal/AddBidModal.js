@@ -13,6 +13,7 @@ export default function AddBidModal({
 }) {
   const [value, setValue] = useState("");
   const [deadline, setDeadline] = useState("");
+  const [nowTs, setNowTs] = useState(Date.now());
 
   const [errors, setErrors] = useState({ value: "", deadline: "" });
 
@@ -37,6 +38,11 @@ export default function AddBidModal({
     [deliveryDate]
   );
 
+  const biddingStartDate = transport?.biddingStartDate ? new Date(transport.biddingStartDate) : null;
+  const biddingEndDate = transport?.biddingEndDate ? new Date(transport.biddingEndDate) : null;
+  const auctionNotStarted = !!(biddingStartDate && !isNaN(biddingStartDate) && nowTs < biddingStartDate.getTime());
+  const auctionEnded = !!(biddingEndDate && !isNaN(biddingEndDate) && nowTs > biddingEndDate.getTime());
+
   useEffect(() => {
     if (!open) return;
     setValue("");
@@ -46,6 +52,23 @@ export default function AddBidModal({
       .slice(0, 10);
     setDeadline(local);
   }, [open]);
+
+  useEffect(() => {
+    const timers = [];
+    if (biddingStartDate && !isNaN(biddingStartDate)) {
+      const diffStart = biddingStartDate.getTime() - Date.now();
+      if (diffStart > 0) {
+        timers.push(setTimeout(() => setNowTs(Date.now()), diffStart + 50));
+      }
+    }
+    if (biddingEndDate && !isNaN(biddingEndDate)) {
+      const diffEnd = biddingEndDate.getTime() - Date.now();
+      if (diffEnd > 0) {
+        timers.push(setTimeout(() => setNowTs(Date.now()), diffEnd + 50));
+      }
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [biddingStartDate, biddingEndDate]);
 
   if (!open) return null;
 
@@ -88,6 +111,7 @@ export default function AddBidModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (auctionNotStarted || auctionEnded) return; // guard
     const vErr = validateValue(value);
     const dErr = validateDeadline(deadline);
     setErrors({ value: vErr, deadline: dErr });
@@ -116,6 +140,17 @@ export default function AddBidModal({
           </p>
         )}
 
+        {auctionNotStarted && (
+          <div className="ebm-error" role="alert" style={{ marginBottom: 12 }}>
+            Auction hasn't started yet. You can't create bids for this request.
+          </div>
+        )}
+        {auctionEnded && (
+          <div className="ebm-error" role="alert" style={{ marginBottom: 12 }}>
+            Auction ended. You can't create new bids for this request.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="abm-form">
           <label className="abm-label">
             Price (€)
@@ -130,6 +165,7 @@ export default function AddBidModal({
               aria-invalid={!!errors.value}
               aria-describedby={errors.value ? "err-price" : undefined}
               required
+              disabled={auctionNotStarted || auctionEnded}
             />
             {errors.value ? (
               <span id="err-price" className="ebm-error">
@@ -155,6 +191,7 @@ export default function AddBidModal({
               aria-invalid={!!errors.deadline}
               aria-describedby={errors.deadline ? "err-deadline" : undefined}
               required
+              disabled={auctionNotStarted || auctionEnded}
             />
             {errors.deadline ? (
               <span id="err-deadline" className="ebm-error">
@@ -185,7 +222,7 @@ export default function AddBidModal({
                 <Button
                     variant="primary"
                     type="submit"
-                    disabled={saving || hasErrors}
+                    disabled={saving || hasErrors || auctionNotStarted || auctionEnded}
                 >
                     {saving ? "Submitting…" : "Submit Bid"}
                 </Button>

@@ -1,4 +1,3 @@
-// craco.config.js
 process.env.SWC = "false";
 process.env.REACT_APP_SWC = "false";
 

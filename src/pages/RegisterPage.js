@@ -1,18 +1,16 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/RegisterPage.css";
 import { useNavigate } from "react-router";
-import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
-import PasswordInput from "../components/PasswordInput/PasswordInput"; // legacy kept for compatibility if needed
 import DriverRegisterForm from "../components/form/DriverRegisterForm";
 import CompanyRegisterForm from "../components/form/CompanyRegisterForm";
 import { getApiErrorMessage } from "../utils/httpError";
 import { useToast } from "../components/feedback/ToastContext";
+import useRegister from "../hooks/useRegister";
 
 function RegisterPage() {
-    const [mode, setMode] = useState(null); // 'driver' | 'company' | null
+    const [mode, setMode] = useState(null);
 
-    // driver form state
     const [dName, setDName] = useState("");
     const [dEmail, setDEmail] = useState("");
     const [dPassword, setDPassword] = useState("");
@@ -21,7 +19,6 @@ function RegisterPage() {
     const [dDriverLicense, setDDriverLicense] = useState(null);
     const [dInsurance, setDInsurance] = useState(null);
 
-    // company form state
     const [cName, setCName] = useState("");
     const [companyName, setCompanyName] = useState("");
     const [address, setAddress] = useState("");
@@ -30,17 +27,12 @@ function RegisterPage() {
     const [cPhone, setCPhone] = useState("");
     const [cNif, setCNif] = useState("");
 
-    const [loading, setLoading] = useState(false);
+    
     const [error, setError] = useState(null);
-    const abortRef = useRef(null);
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const { submitDriver: registerDriver, submitCompany: registerCompany, loading } = useRegister();
 
-    useEffect(() => {
-        return () => abortRef.current?.abort();
-    }, []);
-
-    // Prevent body scroll while register page is visible and hide global navbar
     useEffect(() => {
         const prevOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
@@ -65,10 +57,6 @@ function RegisterPage() {
             return;
         }
 
-        abortRef.current?.abort();
-        const controller = new AbortController();
-        abortRef.current = controller;
-
         const form = new FormData();
         form.append("Name", dName);
         form.append("Email", dEmail);
@@ -78,17 +66,14 @@ function RegisterPage() {
         form.append("DriverLicense", dDriverLicense);
         form.append("Insurance", dInsurance);
 
-        setLoading(true);
         try {
-            const res = await api.post("/register/driver", form, {
-                signal: controller.signal,
-            });
+            const res = await registerDriver(form);
             const { token } = res.data || {};
             if (token) localStorage.setItem("token", token);
             showToast("Account successfully registered", "success");
             navigate("/login");
         } catch (err) {
-            if (err.name === "CanceledError") return;
+            if (err?.name === "CanceledError") return;
             let msg = getApiErrorMessage(err);
             if (!msg) {
                 if (err.response)
@@ -97,29 +82,17 @@ function RegisterPage() {
                 else msg = `Error: ${err.message}`;
             }
             showToast(msg, "error");
-        } finally {
-            setLoading(false);
         }
     };
 
     const submitCompany = async () => {
         resetErrors();
         if (
-            !cName ||
-            !companyName ||
-            !address ||
-            !cEmail ||
-            !cPassword ||
-            !cPhone ||
-            !cNif
+            !cName || !companyName || !address || !cEmail || !cPassword || !cPhone || !cNif
         ) {
             setError("Fill in all required fields.");
             return;
         }
-
-        abortRef.current?.abort();
-        const controller = new AbortController();
-        abortRef.current = controller;
 
         const payload = {
             name: cName,
@@ -131,17 +104,14 @@ function RegisterPage() {
             nif: cNif,
         };
 
-        setLoading(true);
         try {
-            const res = await api.post("/register/company", payload, {
-                signal: controller.signal,
-            });
+            const res = await registerCompany(payload);
             const { token } = res.data || {};
             if (token) localStorage.setItem("token", token);
             showToast("Account successfully registered", "success");
             navigate("/login");
         } catch (err) {
-            if (err.name === "CanceledError") return;
+            if (err?.name === "CanceledError") return;
             let msg = getApiErrorMessage(err);
             if (!msg) {
                 if (err.response)
@@ -150,8 +120,6 @@ function RegisterPage() {
                 else msg = `Error: ${err.message}`;
             }
             showToast(msg, "error");
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -279,7 +247,6 @@ function RegisterPage() {
 
                 </div>
             </div>
-            {/* Toasts handled globally by ToastProvider */}
         </div>
     );
 }

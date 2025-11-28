@@ -53,7 +53,6 @@
   display: contents;
 }
 
-/* Clean header */
 .bid-header {
   display: flex;
   align-items: center;
@@ -90,7 +89,6 @@
   margin: 8px 0;
 }
 
-/* Status badges */
 .status-badge {
   display: inline-block;
   vertical-align: baseline;
@@ -101,7 +99,6 @@
   line-height: 1.2;
 }
 
-/* Softer status colors for a clean look */
 .status-pending {
   background: #fff7e6;
   color: #b45309;
@@ -141,7 +138,6 @@
   color: #334155;
 }
 
-/* Compact label above badges */
 .label-small {
   font-size: 12px;
   color: #556b88;
@@ -149,7 +145,6 @@
   letter-spacing: 0.1px;
 }
 
-/* Badges row */
 .badges-row {
   display: flex;
   align-items: baseline;
@@ -158,9 +153,6 @@
   justify-content: flex-start;
 }
 
-/* (reverted) badges now contain their own labels */
-
-/* Meta info row */
 .bid-meta {
   display: flex;
   align-items: center;
@@ -183,7 +175,6 @@
   color: #233449;
 }
 
-/* Primary action button */
 .bid-btn {
   background: transparent;
   color: #0b63c9;

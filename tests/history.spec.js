@@ -28,7 +28,7 @@ test.describe('History page E2E', () => {
     await page.goto('http://localhost:3000/history');
 
     await expect(page.locator('text=Bidding History')).toBeVisible();
-    // table exists and shows our company name
+
     const table = page.locator('.history-table');
     await expect(table).toBeVisible();
     await expect(table.locator('text=ACME')).toBeVisible();

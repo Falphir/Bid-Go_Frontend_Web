@@ -1,4 +1,3 @@
-/* Overlay e modal */
 .ebm-overlay {
   position: fixed;
   inset: 0;
@@ -61,7 +60,6 @@
   margin-top: 6px;
 }
 
-/* Botões */
 .ebm-btn {
   border: none;
   border-radius: 8px;

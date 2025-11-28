@@ -1,11 +1,8 @@
-// src/utils/httpError.js
 export function getApiErrorMessage(err) {
-  // Request was cancelled
   if (err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
     return "Request canceled.";
   }
 
-  // No response (network/DNS/CORS)
   if (!err?.response) {
     return err?.message
       ? `Network error: ${err.message}`
@@ -24,7 +21,6 @@ export function getApiErrorMessage(err) {
     if (lines.length) return lines.join("\n");
   }
 
-  // Common shapes
   if (typeof data === "string" && data.trim()) return data;
   if (data?.message) return data.message;
   if (data?.error?.message) return data.error.message;
@@ -38,6 +34,5 @@ export function getApiErrorMessage(err) {
   if (data?.title) return data.title;
   if (data?.detail) return data.detail;
 
-  // Fallback including status
   return `Request failed (${status}).`;
 }

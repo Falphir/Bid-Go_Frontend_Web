@@ -1,6 +1,7 @@
 import React from "react";
 import Countdown from "../Countdown/Countdown";
 import "./TransportDetailsCard.css";
+import defaultTransportImage from "../../assets/Image-not-found.png";
 
 function TransportDetailsCard({
                                   transport,
@@ -16,6 +17,10 @@ function TransportDetailsCard({
                 src={transport.image || "https://via.placeholder.com/400x250"}
                 alt={transport.package || "Item"}
                 className="transport-image"
+                onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = defaultTransportImage;
+                }}
             />
             <div className="transport-details">
                 {actions}

@@ -1,19 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
-import api from "../api/axiosConfig";
+import React, { useMemo } from "react";
 import { useMe } from "../hooks/useMe";
 import "../styles/HistoryPage.css";
 import StatusMessage from "../components/feedback/StatusMessage";
-import {
-    normalizeHistoryDriver,
-    normalizeHistoryCompany,
-} from "../utils/normalizers";
 import HistoryTable from "../components/data/HistoryTable";
+import useHistory from "../hooks/useHistory";
 
 function HistoryPage() {
     const { userId, isDriver, isCompany, loading: meLoading } = useMe();
-    const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const { items, loading, error } = useHistory({ userId, isDriver, isCompany });
 
     const columns = useMemo(() => {
         if (isDriver) {
@@ -27,7 +21,7 @@ function HistoryPage() {
                 { key: "rating", label: "Rating" },
             ];
         }
-        // Company
+
         return [
             { key: "requestId", label: "Request ID" },
             { key: "package", label: "Package" },
@@ -39,42 +33,6 @@ function HistoryPage() {
         ];
     }, [isDriver]);
 
-    useEffect(() => {
-        const controller = new AbortController();
-        const load = async () => {
-            if (!userId) return;
-            setLoading(true);
-            setError(null);
-            try {
-                let res;
-                if (isDriver) {
-                    res = await api.get(`/history/driver/${userId}`, {
-                        signal: controller.signal,
-                    });
-                    setItems(normalizeHistoryDriver(res.data));
-                } else if (isCompany) {
-                    res = await api.get(`/history/company/${userId}`, {
-                        signal: controller.signal,
-                    });
-                    setItems(normalizeHistoryCompany(res.data));
-                } else {
-                    setItems([]);
-                }
-            } catch (err) {
-                if (err?.name === "CanceledError") return;
-                setError(
-                    err?.response?.data?.message ||
-                    err?.message ||
-                    "Unable to load history."
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        load();
-        return () => controller.abort();
-    }, [isDriver, isCompany, userId]);
 
     if (meLoading)
         return <StatusMessage type="loading">Validating session…</StatusMessage>;
@@ -82,7 +40,6 @@ function HistoryPage() {
         return <StatusMessage type="loading">Loading history…</StatusMessage>;
     if (error) return <StatusMessage type="error">{error}</StatusMessage>;
 
-    const isEmpty = !items || items.length === 0;
     const title = isDriver
         ? "Bidding History"
         : isCompany

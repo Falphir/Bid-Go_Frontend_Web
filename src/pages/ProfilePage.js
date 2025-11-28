@@ -1,16 +1,10 @@
-import React, { useEffect, useState } from "react";
-import api from "../api/axiosConfig";
+import React, { useState } from "react";
 import "../styles/ProfilePage.css";
 import { useMe } from "../hooks/useMe";
 import {
-    FiEdit2,
     FiLock,
     FiUserX,
-    FiCamera,
-    FiEye,
-    FiEyeOff,
 } from "react-icons/fi";
-import PasswordInput from "../components/PasswordInput/PasswordInput";
 import AvatarCropper from "../components/AvatarCropper/AvatarCropper";
 import AvatarSection from "../components/profile/AvatarSection";
 import DriverDocsSection from "../components/profile/DriverDocsSection";
@@ -18,18 +12,17 @@ import DriverFormGrid from "../components/profile/DriverFormGrid";
 import CompanyFormGrid from "../components/profile/CompanyFormGrid";
 import PasswordChangeModal from "../components/profile/PasswordChangeModal";
 import DeactivateAccountModal from "../components/profile/DeactivateAccountModal";
-import ReactDOM from "react-dom";
-import ConfirmDialog from "../components/ConfirmDialog/ConfirmDialog";
 import { getApiErrorMessage } from "../utils/httpError";
 import StatusMessage from "../components/feedback/StatusMessage";
 import { useToast } from "../components/feedback/ToastContext";
 import Button from "../components/Button/Button";
+import useProfile from "../hooks/useProfile";
 
 function ProfilePage() {
     const { userId, isDriver, isCompany, loading: meLoading } = useMe();
 
-    const [profile, setProfile] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { profile, loading, error, setProfile, saveProfile, deactivate, changePwd } = useProfile({ userId, isDriver, isCompany });
+
     const [editing, setEditing] = useState(false);
     const [cropImage, setCropImage] = useState(null);
 
@@ -37,41 +30,15 @@ function ProfilePage() {
     const [previewInsurance, setPreviewInsurance] = useState(null);
     const [previewAvatar, setPreviewAvatar] = useState(null);
 
-    // modals and loading
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showDeactivateModal, setShowDeactivateModal] = useState(false);
     const [deactivateLoading, setDeactivateLoading] = useState(false);
 
     const [passwords, setPasswords] = useState({ old: "", new: "", confirm: "" });
 
-    const [message, setMessage] = useState(null);
     const { showToast } = useToast();
 
-    // load profile
-    useEffect(() => {
-        if (!userId) return;
-        const fetchProfile = async () => {
-            try {
-                const res = await api.get(`/profile/${userId}`);
-                setProfile(res.data);
-                setPreviewLicense(
-                    res.data.driverLicense || res.data.driverLicenseUrl || null
-                );
-                setPreviewInsurance(
-                    res.data.insurance || res.data.insuranceUrl || null
-                );
-                setPreviewAvatar(res.data.profileImage || null);
-            } catch (err) {
-                const msg = getApiErrorMessage(err);
-                showToast(msg, "error");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProfile();
-    }, [userId]);
 
-    // uploads
     const handleFileChange = (e, field) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -82,31 +49,23 @@ function ProfilePage() {
         setProfile({ ...profile, [field]: file });
     };
 
-    // save profile
     const handleSave = async () => {
         const formData = new FormData();
         Object.entries(profile).forEach(([k, v]) => formData.append(k, v));
         try {
-            const endpoint = isDriver
-                ? `profile/updateDriver/${userId}`
-                : `profile/updateCompany/${userId}`;
-            await api.put(endpoint, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            await saveProfile(formData);
             showToast("Profile updated successfully!", "success");
             setEditing(false);
         } catch (err) {
             const msg = getApiErrorMessage(err);
             showToast(msg, "error");
-        } finally {
         }
     };
 
-    // deactivate account
     const confirmDeactivate = async () => {
         try {
             setDeactivateLoading(true);
-            await api.put(`/profile/${userId}/deactivateAccount`);
+            await deactivate();
             showToast("Account successfully deactivated", "success");
 
             localStorage.removeItem("token");
@@ -124,29 +83,36 @@ function ProfilePage() {
         }
     };
 
-    // change password
     const handlePasswordChange = async () => {
+        const oldPwd = (passwords.old || "").trim();
+        const newPwd = (passwords.new || "").trim();
+        const confirmPwd = (passwords.confirm || "").trim();
+
+
+        if (!oldPwd || !newPwd || !confirmPwd) {
+            showToast("Please fill all password fields.", "error");
+            return;
+        }
+        if (newPwd !== confirmPwd) {
+            showToast("Passwords do not match.", "error");
+            return;
+        }
+        if (oldPwd === newPwd) {
+            showToast("New password must be different from current password.", "error");
+            return;
+        }
+        if (newPwd.length < 6) {
+            showToast("New password must be at least 6 characters.", "error");
+            return;
+        }
+
         try {
-            // 1. Validate confirmation
-            if (passwords.new !== passwords.confirm) {
-                showToast("Passwords do not match.", "error");
-                return;
-            }
-
-            // 2. API call
-            await api.put(`/profile/${userId}/changePassword`, {
-                currentPassword: passwords.old,
-                newPassword: passwords.new,
-            });
-
-            // 3. Success
+            await changePwd(oldPwd, newPwd);
             showToast("Password updated successfully!", "success");
-
-            // 4. Close modal + reset
             setShowPasswordModal(false);
             setPasswords({ old: "", new: "", confirm: "" });
         } catch (err) {
-            const msg = err.response?.data || "Error changing password.";
+            const msg = getApiErrorMessage(err);
             showToast(msg, "error");
         }
     };
@@ -156,6 +122,16 @@ function ProfilePage() {
             <div className="profile-page">
                 <div className="profile-card">
                     <StatusMessage type="loading">Loading…</StatusMessage>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="profile-page">
+                <div className="profile-card">
+                    <StatusMessage type="error">{String(error)}</StatusMessage>
                 </div>
             </div>
         );
@@ -177,7 +153,6 @@ function ProfilePage() {
                     }}
                 />
 
-                {/* DRIVER */}
                 {isDriver && (
                     <>
                         <DriverFormGrid
@@ -196,7 +171,6 @@ function ProfilePage() {
                     </>
                 )}
 
-                {/* COMPANY */}
                 {isCompany && (
                     <CompanyFormGrid
                         profile={profile}
@@ -207,7 +181,6 @@ function ProfilePage() {
                     />
                 )}
 
-                {/* actions */}
                 {editing ? (
                     <div className="actions">
                         <div className="actions-left">
@@ -241,7 +214,6 @@ function ProfilePage() {
                 )}
             </div>
 
-            {/* PASSWORD MODAL */}
             <PasswordChangeModal
                 open={showPasswordModal}
                 passwords={passwords}
@@ -255,7 +227,6 @@ function ProfilePage() {
                 }}
             />
 
-            {/* DEACTIVATE ACCOUNT MODAL */}
             <DeactivateAccountModal
                 open={showDeactivateModal}
                 loading={deactivateLoading}
@@ -263,7 +234,6 @@ function ProfilePage() {
                 onCancel={() => setShowDeactivateModal(false)}
             />
 
-            {/* avatar cropper */}
             {cropImage && (
                 <AvatarCropper
                     image={cropImage}

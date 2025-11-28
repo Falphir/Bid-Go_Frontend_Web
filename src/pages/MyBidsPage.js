@@ -1,55 +1,26 @@
-import React, { useRef, useState, useEffect } from "react";
-import api from "../api/axiosConfig";
+import React from "react";
 import "../styles/MyBidsPage.css";
 import { useMe } from "../hooks/useMe";
 import { useNavigate } from "react-router";
 import StatusMessage from "../components/feedback/StatusMessage";
 import StatusBadge from "../components/feedback/StatusBadge";
+import useMyBids from "../hooks/useMyBids";
 
 export default function MyBidsPage() {
-    const [bids, setBids] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const abortRef = useRef(null);
     const { userId, loading: meLoading } = useMe();
+    const { bids, loading, error } = useMyBids({ userId });
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!userId) return;
+    const pickDate = (bid) => {
+        const d = bid?.updatedAt || bid?.createdAt || bid?.deliveryDeadline || bid?.deadline || bid?.transportRequest?.biddingEndDate || bid?.transportRequest?.biddingStartDate;
+        const dt = d ? new Date(d) : null;
+        return dt && !isNaN(dt) ? dt.getTime() : 0;
+    };
+    const sortedBids = Array.isArray(bids)
+        ? [...bids].sort((a, b) => pickDate(b) - pickDate(a))
+        : [];
 
-        const controller = new AbortController();
-        abortRef.current = controller;
-
-        const fetchBids = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const res = await api.get(`/bids/bidsByDriver/${userId}`, {
-                    signal: controller.signal,
-                });
-                setBids(res.data || []);
-            } catch (err) {
-                if (err.name === "CanceledError") return;
-                if (err.response)
-                    setError(
-                        err.response.data?.message ||
-                        `Error ${err.response.status}`
-                    );
-                else if (err.request)
-                    setError("Network failure: no response from server.");
-                else setError(`Error: ${err.message}`);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBids();
-
-        return () => controller.abort();
-    }, [userId]);
-
-    if (meLoading)
-        return <StatusMessage type="loading">Validating session…</StatusMessage>;
+    if (meLoading) return <StatusMessage type="loading">Validating session…</StatusMessage>;
 
     return (
         <div className="my-bids-page-root">
@@ -62,18 +33,15 @@ export default function MyBidsPage() {
 
                     {!loading && !error && (
                         <div className="bids-list">
-                            {bids.length === 0 && (
+                            {sortedBids.length === 0 && (
                                 <p className="info-text">No bids found.</p>
                             )}
 
-                            {bids.map((bid) => (
+                            {sortedBids.map((bid) => (
                                 <article
                                     className="bid-card"
                                     key={
-                                        bid.id ||
-                                        bid.bidId ||
-                                        bid.transportRequestId ||
-                                        JSON.stringify(bid)
+                                        bid.id || bid.bidId || bid.transportRequestId || JSON.stringify(bid)
                                     }
                                 >
                                     <div className="bid-header">
@@ -92,9 +60,7 @@ export default function MyBidsPage() {
 
                                         <button
                                             className="bid-btn"
-                                            onClick={() =>
-                                                navigate(`/transportRequest/${bid.transportRequestId}`)
-                                            }
+                                            onClick={() => navigate(`/transportRequest/${bid.transportRequestId}`)}
                                         >
                                             View Request
                                         </button>
@@ -103,17 +69,13 @@ export default function MyBidsPage() {
                                     <div className="bid-meta">
                                         <div className="meta-item">
                                             <span className="meta-label">Value:</span>
-                                            <span className="meta-value">
-                        {bid.value != null ? bid.value : "—"}
-                      </span>
+                                            <span className="meta-value">{bid.value != null ? bid.value : "—"}</span>
                                         </div>
 
                                         <div className="meta-item">
                                             <span className="meta-label">Delivery:</span>
                                             <span className="meta-value">
-                        {bid.deliveryDeadline
-                            ? new Date(bid.deliveryDeadline).toLocaleDateString()
-                            : "—"}
+                        {bid.deliveryDeadline ? new Date(bid.deliveryDeadline).toLocaleDateString() : "—"}
                       </span>
                                         </div>
                                     </div>

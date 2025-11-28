@@ -1,9 +1,5 @@
 /*
- * Styling for the RegisterPage component.
- *
- * Copied and adapted from LoginPage.css so the register page keeps
- * the same look-and-feel but can evolve separately. Also hides the
- * global header/navbar when `body.no-header` is present.
+ * Styling for the RegisterPage.
  */
 
 .register-page,
@@ -46,7 +42,6 @@
   flex-direction: column;
 }
 
-/* Form actions alinhadas em baixo à direita */
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -156,14 +151,10 @@
   text-decoration: underline;
 }
 
-/* Hide global header/navbar when this page requests it */
 body.no-header .header {
   display: none !important;
 }
 
-/* --------------------------------------------- */
-/* Cartões de seleção do tipo de conta           */
-/* --------------------------------------------- */
 .account-mode-selector {
   display: flex;
   gap: 20px;
@@ -233,9 +224,6 @@ body.no-header .header {
     flex: 1 1 auto;
   }
 }
-/* --------------------------------------------- */
-/* Link: Already have an account? Login here     */
-/* --------------------------------------------- */
 
 .register-login {
     margin-top: 16px;

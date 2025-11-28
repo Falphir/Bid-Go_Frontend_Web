@@ -1,16 +1,13 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, {useState} from "react";
 import "../styles/RequestDetails.css";
 import { useParams, useNavigate } from "react-router";
-import api from "../api/axiosConfig";
 import { useMe } from "../hooks/useMe";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import EditBidModal from "../components/EditBidModal/EditBidModal";
 import EditTransportModal from "../components/EditTransportModal/EditTransportModal";
 import ConfirmDialog from "../components/ConfirmDialog/ConfirmDialog";
 import AddBidModal from "../components/AddBidModal/AddBidModal";
-import Countdown from "../components/Countdown/Countdown";
 import { getApiErrorMessage } from "../utils/httpError";
 import StatusMessage from "../components/feedback/StatusMessage";
 import { useToast } from "../components/feedback/ToastContext";
@@ -19,18 +16,14 @@ import AcceptRejectOverlay from "../components/domain/AcceptRejectOverlay";
 import TransportDetailsCard from "../components/domain/TransportDetailsCard";
 import useSortedBids from "../hooks/useSortedBids";
 import Button from "../components/Button/Button";
+import useRequestDetails from "../hooks/useRequestDetails";
 
 function RequestDetailsPage() {
     const navigate = useNavigate();
-    const {role, userId, isDriver, isCompany, loading: meLoading} = useMe();
+    const {userId, isDriver, isCompany, loading: meLoading} = useMe();
     const {id} = useParams();
     const transportId = id;
 
-    const [transport, setTransport] = useState(null);
-    const [bids, setBids] = useState([]); // Active bids or empty
-    const [acceptedBid, setAcceptedBid] = useState(null); // For non-active states
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [sortBy, setSortBy] = useState("value");
     const [ascending, setAscending] = useState(true);
 
@@ -41,8 +34,8 @@ function RequestDetailsPage() {
     const [addOpen, setAddOpen] = useState(false);
     const [savingAdd, setSavingAdd] = useState(false);
 
-    const [confirmAction, setConfirmAction] = useState(null); // { type, bidId }
-    const [processing, setProcessing] = useState(null); // bidId or 'publish'
+    const [confirmAction, setConfirmAction] = useState(null);
+    const [processing, setProcessing] = useState(null);
 
     const {showToast} = useToast();
 
@@ -51,93 +44,27 @@ function RequestDetailsPage() {
     const [confirmCancelTransport, setConfirmCancelTransport] = useState(false);
     const [cancelingTransport, setCancelingTransport] = useState(false);
     const [statusUpdating, setStatusUpdating] = useState(false);
-    const [confirmStatusAction, setConfirmStatusAction] = useState(null); // { target, label }
+    const [confirmStatusAction, setConfirmStatusAction] = useState(null);
 
-    // Toast now provided globally by ToastProvider
+    const {
+        transport,
+        bids,
+        acceptedBid,
+        loading,
+        error,
+        refreshTransport,
+        createBidForTransport,
+        updateExistingBid,
+        cancelExistingBid,
+        manualAction,
+        saveTransport,
+        publishTransport: publishTransportAction,
+        cancelExistingTransport,
+        setStatus,
+    } = useRequestDetails({ transportId });
 
-    // ---------------------------
-    // FETCH MAIN
-    // ---------------------------
-    useEffect(() => {
-        if (!transportId) return;
-
-        const controller = new AbortController();
-
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                // 1) transport
-                const transportRes = await api.get(`/transports/${transportId}`, {
-                    signal: controller.signal,
-                });
-                const tr = transportRes.data;
-                setTransport(tr);
-
-                // Decide what to load based on transport status
-                const status = String(tr?.status ?? "").toUpperCase();
-
-                // If draft or canceled: no bids shown
-                if (status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") {
-                    setBids([]);
-                    setAcceptedBid(null);
-                    return;
-                }
-
-                // If active: load active bids
-                if (status === "ACTIVE") {
-                    await loadActiveBids(controller.signal);
-                    return;
-                }
-
-                // For WaitingPickup / Pendent / InTransit / Completed: load accepted bid
-                // Accepting both "PENDENT" (backend) and "PENDING"
-                if (
-                    status === "WAITINGPICKUP" ||
-                    status === "PENDENT" ||
-                    status === "PENDING" ||
-                    status === "INTRANSIT" ||
-                    status === "COMPLETED"
-                ) {
-                    try {
-                        const accRes = await api.get(`/bids/manual/byrequest/${transportId}/Accepted`);
-                        // API may return array or object
-                        const bid = Array.isArray(accRes.data) ? accRes.data[0] : accRes.data;
-                        setAcceptedBid(bid || null);
-                        setBids([]);
-                    } catch (err) {
-                        if (err?.response?.status === 404) {
-                            console.warn("No accepted bid found for transport", transportId);
-                            setAcceptedBid(null);
-                            setBids([]);
-                        } else {
-                            throw err;
-                        }
-                    }
-                    return;
-                }
-
-                // Default: clear
-                setBids([]);
-                setAcceptedBid(null);
-            } catch (err) {
-                if (axios.isCancel(err)) return;
-                console.error("Failed to load data:", err);
-                setError("Failed to load Data.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-        return () => controller.abort();
-    }, [transportId]);
-
-    // sorted bids
     const sortedBids = useSortedBids(bids, sortBy, ascending);
 
-    // Helpers from original code: transport draft/canceled detection
     const isTransportDraft = !!transport && (
         (transport?.status && String(transport.status).toUpperCase() === "DRAFT") ||
         transport?.draft === true ||
@@ -153,71 +80,44 @@ function RequestDetailsPage() {
         transport?.companyId === userId
     );
 
-    const isOwnerDriver = (bid) =>
-        isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
-
-    // Refresh transport (used by publish/cancel)
-    const refreshTransport = async () => {
-        if (!transportId) return;
-        try {
-            const res = await api.get(`/transports/${transportId}`);
-            setTransport(res.data);
-        } catch (err) {
-            console.error("Failed to refresh transport", err);
-        }
+    const isOwnerDriver = (bid) => {
+        const bidDriverId = bid?.driverId ?? bid?.driver?.driverId;
+        return isDriver && String(bidDriverId) === String(userId);
     };
 
-    // Load active bids (extracted for reuse after adding a bid)
-    const loadActiveBids = async (signal) => {
-        if (!transportId) return;
-        try {
-            const bidsRes = await api.get(
-                `/bids/bidsActive?transportRequestId=${transportId}`,
-                signal ? {signal} : undefined
-            );
+    const now = new Date();
+    const biddingStart = transport?.biddingStartDate ? new Date(transport.biddingStartDate) : null;
+    const biddingEnd = transport?.biddingEndDate ? new Date(transport.biddingEndDate) : null;
+    const auctionNotStarted = !!(biddingStart && !isNaN(biddingStart) && now < biddingStart);
+    const auctionEnded = !!(biddingEnd && !isNaN(biddingEnd) && now > biddingEnd);
 
-            const updatedBids = await Promise.all(
-                bidsRes.data.map(async (bid) => {
-                    try {
-                        const ratingRes = await api.get(
-                            `/reviewRequest/average/driver/${bid.driver.driverId}`
-                        );
-                        return {...bid, driver: {...bid.driver, averageRating: ratingRes.data.average}};
-                    } catch {
-                        return {...bid, driver: {...bid.driver, averageRating: null}};
-                    }
-                })
-            );
-
-            setBids(updatedBids);
-            setAcceptedBid(null);
-        } catch (err) {
-            if (err?.response?.status === 404) {
-                console.warn("No active bids found — returning empty list.");
-                setBids([]);
-                setAcceptedBid(null);
-            } else if (axios.isCancel(err)) {
-                return;
-            } else {
-                throw err;
-            }
+    const handleOpenAdd = () => {
+        if (auctionNotStarted) {
+            showToast("Auction hasn't started yet. You can't create bids.", "error");
+            return;
         }
+        if (auctionEnded) {
+            showToast("Auction ended. You can't create new bids.", "error");
+            return;
+        }
+        setAddOpen(true);
     };
-
-    // ---------------------------
-    // ACTIONS: Add / Edit / Cancel / Accept-Reject
-    // ---------------------------
-    const handleOpenAdd = () => setAddOpen(true);
     const handleCloseAdd = () => {
         if (!savingAdd) setAddOpen(false);
     };
 
     const handleSaveAdd = async (payload) => {
         try {
+            if (auctionNotStarted) {
+                showToast("Auction hasn't started yet. You can't create bids.", "error");
+                return;
+            }
+            if (auctionEnded) {
+                showToast("Auction ended. You can't create new bids.", "error");
+                return;
+            }
             setSavingAdd(true);
-            await api.post(`/bids/createBid`, payload);
-
-            await loadActiveBids();
+            await createBidForTransport(payload);
             showToast("Bid created successfully.", "success");
             setAddOpen(false);
         } catch (err) {
@@ -235,10 +135,7 @@ function RequestDetailsPage() {
     const handleSaveEdit = async (payload) => {
         try {
             setSavingEdit(true);
-            await api.put(`/bids/updatebid/${editingBid.bidId}`, payload);
-            setBids((prev) =>
-                prev.map((b) => (b.bidId === editingBid.bidId ? {...b, ...payload} : b))
-            );
+            await updateExistingBid(editingBid.bidId, payload);
             showToast("Bid updated successfully.", "success");
             setEditingBid(null);
         } catch (err) {
@@ -254,8 +151,7 @@ function RequestDetailsPage() {
         if (!confirmBidId) return;
         try {
             setCancelLoading(true);
-            await api.patch(`/bids/cancel/${confirmBidId}`);
-            setBids((prev) => prev.filter((b) => b.bidId !== confirmBidId));
+            await cancelExistingBid(confirmBidId);
             showToast("Bid canceled successfully.", "success");
         } catch (err) {
             showToast(getApiErrorMessage(err), "error");
@@ -265,7 +161,6 @@ function RequestDetailsPage() {
         }
     };
 
-    // Confirm overlay actions (accept/reject)
     const confirmBidAction = (type, bidId) => {
         setConfirmAction({type, bidId});
     };
@@ -273,15 +168,8 @@ function RequestDetailsPage() {
     const executeAction = async (bidId, type) => {
         setProcessing(bidId);
         try {
-            await api.post(`/bids/manual/${bidId}/${type}`);
-            showToast(
-                type === "accept"
-                    ? "Bid accepted successfully!"
-                    : "Bid rejected successfully!",
-                "success"
-            );
-
-            setBids((prev) => prev.filter((b) => b.bidId !== bidId));
+            await manualAction(bidId, type);
+            showToast(type === "accept" ? "Bid accepted successfully!" : "Bid rejected successfully!", "success");
             navigate(0);
         } catch (err) {
             console.error(err);
@@ -292,7 +180,6 @@ function RequestDetailsPage() {
         }
     };
 
-// Transport edit/save/publish handlers (copied from original)
     const openEditTransport = () => {
         if (!transport) return;
         setIsEditTransportOpen(true);
@@ -307,38 +194,7 @@ function RequestDetailsPage() {
         if (!transportId) return;
         setSavingEditTransport(true);
         try {
-            try {
-                try {
-                    await api.post(`/transports/updateTransport/${transportId}`, payload);
-                } catch (err) {
-                    if (err?.response?.status === 405) {
-                        await api.put(`/transports/updateTransport/${transportId}`, payload);
-                    } else throw err;
-                }
-            } catch (err) {
-                if (err?.response?.status === 415) {
-                    // Retry as multipart/form-data
-                    const formData = new FormData();
-                    Object.keys(payload).forEach((k) => {
-                        const v = payload[k];
-                        if (v !== undefined && v !== null) formData.append(k, v);
-                    });
-                    try {
-                        try {
-                            await api.post(`/transports/updateTransport/${transportId}`, formData);
-                        } catch (err2) {
-                            if (err2?.response?.status === 405) {
-                                await api.put(`/transports/updateTransport/${transportId}`, formData);
-                            } else throw err2;
-                        }
-                    } catch (finalErr) {
-                        throw finalErr;
-                    }
-                } else {
-                    throw err;
-                }
-            }
-
+            await saveTransport(payload);
             showToast('Request updated successfully!', 'success');
             setIsEditTransportOpen(false);
             await refreshTransport();
@@ -355,7 +211,7 @@ function RequestDetailsPage() {
         if (!transportId) return;
         setProcessing('publish');
         try {
-            await api.put(`/transports/company/publish/${transportId}`);
+            await publishTransportAction();
             showToast('Request published successfully!', 'success');
             await refreshTransport();
         } catch (err) {
@@ -366,12 +222,11 @@ function RequestDetailsPage() {
         }
     };
 
-// Update transport status via endpoint
     const updateTransportStatus = async (target) => {
         if (!transportId) return;
         setStatusUpdating(true);
         try {
-            await api.put(`/transports/updateStatus/${transportId}`, {status: target});
+            await setStatus(target);
             showToast('Request status updated successfully!', 'success');
             await refreshTransport();
         } catch (err) {
@@ -384,10 +239,21 @@ function RequestDetailsPage() {
         }
     };
 
-// RENDER guards
     if (meLoading) return <StatusMessage type="loading">Validating Session…</StatusMessage>;
     if (loading) return <StatusMessage type="loading">Loading…</StatusMessage>;
     if (error) return <StatusMessage type="error">Error: {error}</StatusMessage>;
+
+    // Company users that are not the request owner should not have access to actions
+    if (isCompany && transport && !isTransportOwner) {
+        return (
+            <div className="acceptbids-container">
+                <StatusMessage type="error">You don't have permission to view this request.</StatusMessage>
+                <div style={{ marginTop: 12 }}>
+                    <Button variant="secondary" onClick={() => navigate("/")}>Go Home</Button>
+                </div>
+            </div>
+        );
+    }
 
     const status = String(transport?.status ?? "").toUpperCase();
 
@@ -403,7 +269,7 @@ function RequestDetailsPage() {
 
                         <TransportDetailsCard
                             transport={transport}
-                            actions={isCompany && (
+                            actions={(isCompany && isTransportOwner) && (
                                 <div className="transport-actions">
                                     {isTransportDraft && (
                                         <>
@@ -417,7 +283,7 @@ function RequestDetailsPage() {
                                             </button>
                                         </>
                                     )}
-                                    {isTransportOwner && !isTransportCanceled && (
+                                    {!isTransportCanceled && (
                                         <button
                                             type="button"
                                             className="btn-cancel"
@@ -441,11 +307,8 @@ function RequestDetailsPage() {
                     </>
                 )}
 
-                {/* BIDS SECTION */}
-                {/* Draft/Canceled -> show nothing */}
                 {(status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") && null}
 
-                {/* ACTIVE -> all active bids */}
                 {status === "ACTIVE" && (
                     <BidList
                         bids={sortedBids}
@@ -454,7 +317,7 @@ function RequestDetailsPage() {
                         onChangeSort={setSortBy}
                         onToggleOrder={() => setAscending(!ascending)}
                         isDriver={isDriver}
-                        isCompany={isCompany}
+                        isCompany={isCompany && isTransportOwner}
                         currentUserId={userId}
                         onAddBid={handleOpenAdd}
                         onEditBid={handleEditBid}
@@ -462,10 +325,12 @@ function RequestDetailsPage() {
                         onConfirmAction={confirmBidAction}
                         processing={processing}
                         confirmAction={confirmAction}
+                        canAddBid={!auctionEnded && !auctionNotStarted}
+                        auctionNotStarted={auctionNotStarted}
+                        auctionEnded={auctionEnded}
                     />
                 )}
 
-                {/* ACCEPTED: WaitingPickup / Pending / InTransit / Completed */}
                 {(status !== "ACTIVE" &&
                     status !== "CANCELED" &&
                     status !== "DRAFT" &&
@@ -491,7 +356,6 @@ function RequestDetailsPage() {
                         </div>
 
                         <div className="status-actions">
-                            {/* Company: Pending -> WaitingPickup */}
                             {isCompany && (status === "PENDING" || status === "PENDENT") && (
                                 <button
                                     className="status-btn status-btn--primary"
@@ -549,13 +413,11 @@ function RequestDetailsPage() {
                                     </Button>
                                 </>
                             )}
-
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* MODALS */}
             <AddBidModal
                 open={addOpen}
                 onClose={handleCloseAdd}
@@ -602,9 +464,8 @@ function RequestDetailsPage() {
                 onConfirm={async () => {
                     setCancelingTransport(true);
                     try {
-                        await api.put(`/transports/canceled/${transportId}`);
+                        await cancelExistingTransport();
                         showToast('Request canceled successfully!', 'success');
-                        await refreshTransport();
                     } catch (err) {
                         console.error('Error canceling request:', err);
                         const apiMsg = getApiErrorMessage(err);

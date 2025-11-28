@@ -1,7 +1,5 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/CreateTransportPage.css";
-import axios from "axios";
-import api from "../api/axiosConfig";
 import { getApiErrorMessage } from "../utils/httpError";
 import { useToast } from "../components/feedback/ToastContext";
 import ImageUpload from "../components/form/ImageUpload";
@@ -11,8 +9,8 @@ import AuctionDatesFields from "../components/form/AuctionDatesFields";
 import PriceAutoSelectionFields from "../components/form/PriceAutoSelectionFields";
 import { useNavigate } from "react-router";
 import Button from "../components/Button/Button";
+import useCreateTransport from "../hooks/useCreateTransport";
 
-// 🔥 GLOBAL VALIDATION FUNCTION
 const validateTransportFields = ({
                                      origin,
                                      destination,
@@ -68,26 +66,21 @@ function CreateTransportPage() {
     const [isAutomaticSelectionEnabled, setIsAutomaticSelectionEnabled] =
         useState(false);
     const [volume, setVolume] = useState("");
-    const [loading, setLoading] = useState(false);
-    const abortRef = useRef(null);
     const { showToast } = useToast();
     const navigate = useNavigate();
+    const { createTransport, createDraft, loading } = useCreateTransport();
 
-    const API_URL = "/transports/createTransport";
-    const API_URL_DRAFT = "/transports/createDRAFTTransport";
+    
 
-    // IMAGE SELECT
     const handleImageChange = (e) => {
         const file = e.target.files && e.target.files[0];
         if (file) setImageFile(file);
     };
 
-    // UPDATE DIMENSIONS STRING
     const updateDimensionsString = (l, w, h) => {
         setDimensions(`${l || ""}/${w || ""}/${h || ""}`);
     };
 
-    // AUTO-COMPUTE VOLUME
     useEffect(() => {
         const parse = (v) => {
             if (!v) return NaN;
@@ -105,12 +98,6 @@ function CreateTransportPage() {
         else setVolume("");
     }, [length, width, height]);
 
-    // CLEANUP
-    useEffect(() => {
-        return () => abortRef.current?.abort();
-    }, []);
-
-    // HANDLER: CREATE DRAFT
     const handleCreateDraft = async () => {
         const missing = validateTransportFields({
             origin,
@@ -137,70 +124,7 @@ function CreateTransportPage() {
             return;
         }
 
-        await handleSubmit(null, API_URL_DRAFT, "Draft created successfully.");
-    };
-
-    // HANDLER: CREATE TRANSPORT
-    const handleSubmit = async (
-        e,
-        targetUrl = API_URL,
-        successMessage = "Request created successfully."
-    ) => {
-        if (e?.preventDefault) e.preventDefault();
-
-        setLoading(true);
-        const controller = new AbortController();
-        abortRef.current = controller;
-
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                showToast("Token not found. Please log in again.", "error");
-                setLoading(false);
-                return;
-            }
-
-            // Decode JWT
-            const parseJwt = (tokenStr) => {
-                try {
-                    const parts = tokenStr.split(".");
-                    const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-                    const padded = b64.padEnd(
-                        b64.length + (4 - (b64.length % 4)) % 4,
-                        "="
-                    );
-                    const json = decodeURIComponent(
-                        atob(padded)
-                            .split("")
-                            .map((c) =>
-                                "%" + c.charCodeAt(0).toString(16).padStart(2, "0")
-                            )
-                            .join("")
-                    );
-                    return JSON.parse(json);
-                } catch {
-                    return null;
-                }
-            };
-
-            const tokenPayload = parseJwt(token);
-            const userId = tokenPayload?.userId || tokenPayload?.sub || null;
-
-            // number converter
-            const toNumber = (v) => {
-                if (!v) return null;
-                const n = parseFloat(String(v).replace(",", "."));
-                return Number.isFinite(n) ? n : null;
-            };
-
-            const weightNum = toNumber(weight);
-            const lengthNum = toNumber(length);
-            const widthNum = toNumber(width);
-            const heightNum = toNumber(height);
-            const maxPriceNum = toNumber(maxPrice);
-            const volumeNum = toNumber(volume);
-
-            // FORM DATA OR JSON
             if (imageFile) {
                 const formData = new FormData();
                 formData.append("image", imageFile);
@@ -208,56 +132,149 @@ function CreateTransportPage() {
                 formData.append("origin", origin);
                 formData.append("destination", destination);
                 formData.append("package", pckg);
-                formData.append("weight", weightNum);
-                formData.append("length", lengthNum);
-                formData.append("width", widthNum);
-                formData.append("height", heightNum);
+                formData.append("weight", Number(weight) || null);
+                formData.append("length", Number(length) || null);
+                formData.append("width", Number(width) || null);
+                formData.append("height", Number(height) || null);
                 formData.append("dimensions", dimensions);
                 formData.append("pickupDate", pickupDate);
                 formData.append("deliveryDate", deliveryDate);
-                formData.append("maxPrice", maxPriceNum);
+                formData.append("maxPrice", Number(maxPrice) || null);
                 formData.append("biddingStartDate", biddingStartDate);
                 formData.append("biddingEndDate", biddingEndDate);
-                formData.append("volume", volumeNum);
+                formData.append("volume", Number(volume) || null);
+                const token = localStorage.getItem("token");
+                const tokenPayload = parseJwt(token);
+                const userId = tokenPayload?.userId || tokenPayload?.sub || null;
                 formData.append("companyId", String(userId));
                 formData.append(
                     "isAutomaticSelectionEnabled",
                     isAutomaticSelectionEnabled ? "true" : "false"
                 );
 
-                await api.post(targetUrl, formData, { signal: controller.signal });
+                await createDraft({ isForm: true, payload: formData });
             } else {
-                await api.post(
-                    targetUrl,
-                    {
-                        origin,
-                        destination,
-                        pckg,
-                        weight: weightNum,
-                        length: lengthNum,
-                        width: widthNum,
-                        height: heightNum,
-                        dimensions,
-                        pickupDate,
-                        deliveryDate,
-                        maxPrice: maxPriceNum,
-                        biddingStartDate,
-                        biddingEndDate,
-                        volume: volumeNum,
-                        companyId: userId,
-                        isAutomaticSelectionEnabled,
-                    },
-                    { signal: controller.signal }
-                );
+                const token = localStorage.getItem("token");
+                const tokenPayload = parseJwt(token);
+                const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+
+                const payload = {
+                    origin,
+                    destination,
+                    pckg,
+                    weight: Number(weight) || null,
+                    length: Number(length) || null,
+                    width: Number(width) || null,
+                    height: Number(height) || null,
+                    dimensions,
+                    pickupDate,
+                    deliveryDate,
+                    maxPrice: Number(maxPrice) || null,
+                    biddingStartDate,
+                    biddingEndDate,
+                    volume: Number(volume) || null,
+                    companyId: userId,
+                    isAutomaticSelectionEnabled,
+                };
+
+                await createDraft({ isForm: false, payload });
             }
 
-            showToast(successMessage, "success");
-            navigate("/myTransports"); // redirect after success
+            showToast("Draft created successfully.", "success");
+            navigate("/myTransports");
         } catch (err) {
             const msg = getApiErrorMessage(err);
             showToast(msg, "error");
-        } finally {
-            setLoading(false);
+        }
+    };
+
+    const parseJwt = (tokenStr) => {
+        try {
+            const parts = tokenStr.split(".");
+            const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+            const padded = b64.padEnd(
+                b64.length + (4 - (b64.length % 4)) % 4,
+                "="
+            );
+            const json = decodeURIComponent(
+                atob(padded)
+                    .split("")
+                    .map((c) =>
+                        "%" + c.charCodeAt(0).toString(16).padStart(2, "0")
+                    )
+                    .join("")
+            );
+            return JSON.parse(json);
+        } catch {
+            return null;
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        if (e?.preventDefault) e.preventDefault();
+
+        const successMessage = "Request created successfully.";
+        try {
+            if (imageFile) {
+                const formData = new FormData();
+                formData.append("image", imageFile);
+
+                formData.append("origin", origin);
+                formData.append("destination", destination);
+                formData.append("package", pckg);
+                formData.append("weight", Number(weight) || null);
+                formData.append("length", Number(length) || null);
+                formData.append("width", Number(width) || null);
+                formData.append("height", Number(height) || null);
+                formData.append("dimensions", dimensions);
+                formData.append("pickupDate", pickupDate);
+                formData.append("deliveryDate", deliveryDate);
+                formData.append("maxPrice", Number(maxPrice) || null);
+                formData.append("biddingStartDate", biddingStartDate);
+                formData.append("biddingEndDate", biddingEndDate);
+                formData.append("volume", Number(volume) || null);
+                const token = localStorage.getItem("token");
+                const tokenPayload = parseJwt(token);
+                const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+                formData.append("companyId", String(userId));
+                formData.append(
+                    "isAutomaticSelectionEnabled",
+                    isAutomaticSelectionEnabled ? "true" : "false"
+                );
+
+                await createTransport({ isForm: true, payload: formData });
+            } else {
+                const token = localStorage.getItem("token");
+                const tokenPayload = parseJwt(token);
+                const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+
+                const payload = {
+                    origin,
+                    destination,
+                    pckg,
+                    weight: Number(weight) || null,
+                    length: Number(length) || null,
+                    width: Number(width) || null,
+                    height: Number(height) || null,
+                    dimensions,
+                    pickupDate,
+                    deliveryDate,
+                    maxPrice: Number(maxPrice) || null,
+                    biddingStartDate,
+                    biddingEndDate,
+                    volume: Number(volume) || null,
+                    companyId: userId,
+                    isAutomaticSelectionEnabled,
+                };
+
+                await createTransport({ isForm: false, payload });
+            }
+
+            showToast(successMessage, "success");
+            navigate("/myTransports");
+        } catch (err) {
+            const msg = getApiErrorMessage(err);
+            showToast(msg, "error");
         }
     };
 
@@ -265,7 +282,6 @@ function CreateTransportPage() {
         <div className="create-transport-container">
             <h2 className="create-title">New Transport Request</h2>
 
-            {/* FORM */}
             <form
                 className="transport-form"
                 onSubmit={(e) => {
@@ -398,11 +414,11 @@ function CreateTransportPage() {
 
                 <div className="form-actions" style={{ display: "flex", gap: "12px" }}>
                     <Button variant="secondary" type="button" onClick={handleCreateDraft}>
-                        Create DRAFT
+                        {loading ? "Please wait…" : "Create DRAFT"}
                     </Button>
 
                     <Button variant="primary" type="submit">
-                        Create Request
+                        {loading ? "Creating…" : "Create Request"}
                     </Button>
                 </div>
             </form>

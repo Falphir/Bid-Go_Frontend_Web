@@ -1,38 +1,27 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/LoginPage.css";
 import { useNavigate, useLocation } from "react-router";
-import api from "../api/axiosConfig";
 import logo from "../assets/logo.png";
-import PasswordInput from "../components/PasswordInput/PasswordInput";
-import StatusMessage from "../components/feedback/StatusMessage";
 import LoginForm from "../components/form/LoginForm";
 import { useToast } from "../components/feedback/ToastContext";
+import useLogin from "../hooks/useLogin";
 
 function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [remember, setRemember] = useState(true);
-    const abortRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
-    const { showToast, toasts } = useToast();
+    const { showToast } = useToast();
+    const { login, loading } = useLogin();
 
-    useEffect(() => {
-        // cleanup on unmount
-        return () => abortRef.current?.abort();
-    }, []);
-
-    // show toast passed via navigation state (e.g. after successful register)
     useEffect(() => {
         if (location?.state?.toast) {
             const t = location.state.toast;
             showToast(t.msg, t.type);
         }
-    }, [location]);
+    }, [location, showToast]);
 
-    // Prevent body scrolling while login page is visible
     useEffect(() => {
         const prevOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
@@ -43,49 +32,20 @@ function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
-
         if (!email || !password) {
-            setError("Fill in email and password.");
+            showToast("Preencha email e password.", "error");
             return;
         }
-
-        // cancel previous request (if exists)
-        abortRef.current?.abort();
-
-        const controller = new AbortController();
-        abortRef.current = controller;
-
-        setLoading(true);
         try {
-            const res = await api.post(
-                "/auth/login",
-                { email, password },
-                { signal: controller.signal }
-            );
-
-            const { token, user } = res.data || {};
+            const res = await login(email, password);
+            const { token } = res || {};
             if (remember && token) localStorage.setItem("token", token);
             navigate("/");
         } catch (err) {
-            if (err.name === "CanceledError") return;
-            if (err.response) {
-                const msg =
-                    err.response.data?.message ||
-                    `Error ${err.response.status}: ${err.response.statusText}`;
-                setError(msg);
-                showToast(msg, "error");
-            } else if (err.request) {
-                const msg = "Network failure: no response from server.";
-                setError(msg);
-                showToast(msg, "error");
-            } else {
-                const msg = `Error: ${err.message}`;
-                setError(msg);
-                showToast(msg, "error");
-            }
-        } finally {
-            setLoading(false);
+            if (err?.name === "CanceledError") return;
+            const msg = err?.response?.data?.message || err?.message || "Login failed";
+
+            showToast(msg, "error");
         }
     };
 
@@ -100,14 +60,12 @@ function LoginPage() {
                         password={password}
                         remember={remember}
                         loading={loading}
-                        error={error}
                         onChangeEmail={setEmail}
                         onChangePassword={setPassword}
                         onToggleRemember={setRemember}
                         onSubmit={handleSubmit}
                     />
 
-                    {/* block below the 'forgot password' */}
                     <div className="login-register">
                         <span className="login-register-text">Don’t have an account?</span>
                         <button

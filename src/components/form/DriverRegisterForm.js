@@ -1,6 +1,6 @@
 import React from "react";
 import PasswordInput from "../PasswordInput/PasswordInput";
-import Button from "../Button/Button";   // <── ADICIONADO
+import Button from "../Button/Button";
 import "./DriverRegisterForm.css";
 
 function DriverRegisterForm({

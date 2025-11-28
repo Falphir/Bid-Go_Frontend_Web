@@ -19,7 +19,7 @@ function AvatarSection({
                             ? profile.profileImage
                             : "/Images/default-avatar.png")
                     }
-                    alt="Profile photo"
+                    alt="Profile Avatar"
                     className="avatar-img"
                 />
                 {editing && (

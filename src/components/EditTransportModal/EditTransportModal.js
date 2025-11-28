@@ -15,7 +15,7 @@ export default function EditTransportModal({
         setForm({
             origin: transport.origin ?? "",
             destination: transport.destination ?? "",
-            package: transport.package ?? transport.pckg ?? "",
+            package: transport.package ?? "",
             weight: transport.weight ?? "",
             length: transport.length ?? "",
             width: transport.width ?? "",
@@ -26,7 +26,7 @@ export default function EditTransportModal({
             deliveryDate: transport.deliveryDate
                 ? transport.deliveryDate.split("T")[0]
                 : "",
-            maxPrice: transport.maxPrice ?? transport.price ?? "",
+            maxPrice: transport.maxPrice ?? "",
             biddingStartDate: transport.biddingStartDate
                 ? transport.biddingStartDate.split("T")[0]
                 : "",

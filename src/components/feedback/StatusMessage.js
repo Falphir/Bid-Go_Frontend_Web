@@ -1,8 +1,6 @@
 import React from "react";
 import "./StatusMessage.css";
 
-// Reusable status message preserving existing CSS classes
-// type: 'info' | 'error' | 'success' | 'loading'
 export default function StatusMessage({
   type = "info",
   children,

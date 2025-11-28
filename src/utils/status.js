@@ -1,4 +1,3 @@
-// Status normalization helpers extracted for reuse
 
 const aliases = {
   intransit: 'intransit',

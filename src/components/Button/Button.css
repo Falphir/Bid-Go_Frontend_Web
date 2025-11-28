@@ -1,4 +1,3 @@
-/* Base do botão */
 .app-btn {
     font-family: "Segoe UI", sans-serif;
     font-weight: 600;
@@ -15,7 +14,6 @@
     user-select: none;
 }
 
-/* PRIMARY — Azul padrão */
 .app-btn.primary {
     background: #0066cc;
     color: #fff;
@@ -24,7 +22,6 @@
     background: #0057ad;
 }
 
-/* SECONDARY — Cinza */
 .app-btn.secondary {
     background: #94a3b8;
     color: #fff;
@@ -33,7 +30,6 @@
     background: #7c8899;
 }
 
-/* GHOST — Transparente, discreto */
 .app-btn.ghost {
     background: transparent;
     border: 1px solid #cdd7e1;
@@ -43,7 +39,6 @@
     background: #eef3fa;
 }
 
-/* DANGER — Vermelho */
 .app-btn.danger {
     background: #e63946;
     color: #fff;
@@ -52,14 +47,12 @@
     background: #c62835;
 }
 
-/* Disabled */
 .app-btn:disabled {
     opacity: 0.55;
     cursor: not-allowed;
     transform: none !important;
 }
 
-/* Pequeno efeito de "lift" */
 .app-btn:hover:not(:disabled) {
     transform: translateY(-1px);
 }

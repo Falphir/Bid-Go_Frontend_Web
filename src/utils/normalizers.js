@@ -1,4 +1,4 @@
-// Common data normalization functions extracted from pages
+import placeholderImage from "../assets/Image-not-found.png";
 
 export function normalizeTransportList(data) {
   const arr = Array.isArray(data)
@@ -8,18 +8,25 @@ export function normalizeTransportList(data) {
     : Array.isArray(data?.results)
     ? data.results
     : [];
+
   return arr.map((t) => ({
-    id: t.id ?? t.transportRequestId ?? t.transportId,
-    image: t.image ?? "https://via.placeholder.com/400x250",
-    package: t.package ?? t.title ?? "Pedido",
+    id: t.id ?? t.transportRequestId ?? null,
+    image: t.image ?? placeholderImage,
+    package: t.package ?? "Pedido",
     route: t.route ?? "",
-    origin: t.origin ?? t.from ?? "—",
-    destination: t.destination ?? t.to ?? "—",
-    maxPrice: t.maxPrice ?? t.maxBudget ?? "—",
+    origin: t.origin ?? "—",
+    destination: t.destination ?? "—",
+    maxPrice: t.maxPrice ?? "—",
     timeRemaining: t.timeRemaining ?? "",
-    biddingEndDate:
-      t.biddingEndDate ?? t.biddingEnd ?? t.bidding_end_date ?? null,
+    biddingEndDate: t.biddingEndDate ?? null,
     status: t.status ?? null,
+    createdAt:
+      t.createdAt ??
+      t.creationDate ??
+      t.created_at ??
+      t.date ??
+      t.updatedAt ??
+      null,
   }));
 }
 
@@ -31,39 +38,37 @@ function fmtDate(value) {
 }
 
 export function normalizeHistoryDriver(data) {
-  const arr = Array.isArray(data)
-    ? data
-    : Array.isArray(data?.items)
-    ? data.items
-    : Array.isArray(data?.results)
-    ? data.results
-    : [];
-  return arr.map((t) => {
-    const companyName = t.companyName ?? t.company?.name ?? t.company ?? "—";
-    const pkg = t.package ?? t.cargo ?? t.goods ?? t.title ?? "—";
-    const destination = t.destination ?? t.to ?? t.route?.to ?? "—";
-    const price = t.price ?? t.value ?? t.amount ?? t.maxPrice ?? "—";
-    const status = t.status ?? t.state ?? "—";
-    const rating = t.rating ?? t.evaluation ?? t.score ?? "—";
-    const dateRaw =
-      t.date ??
-      t.createdAt ??
-      t.updatedAt ??
-      t.biddingEndDate ??
-      t.deliveryDate ??
-      null;
-    return {
-      companyName,
-      package: pkg,
-      date: fmtDate(dateRaw),
-      destination,
-      price,
-      status,
-      rating,
-      requestId:
-        t.id ?? t.requestId ?? t.transportRequestId ?? t.transportId ?? null,
-    };
-  });
+    const arr = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.items)
+            ? data.items
+            : Array.isArray(data?.results)
+                ? data.results
+                : [];
+    return arr.map((t) => {
+        const companyName = t.companyName ?? "—";
+        const pkg = t.package ?? "—";
+        const destination = t.destination ?? "—";
+        const price = t.value ?? "—";
+        const status = t.status ?? "—";
+        const rating = t.rating ?? "—";
+        const dateRaw = t.date ?? null;
+        const time = (() => {
+            const d = new Date(dateRaw);
+            const ms = d.getTime();
+            return isNaN(ms) ? 0 : ms;
+        })();
+        return {
+            companyName,
+            package: pkg,
+            date: fmtDate(dateRaw),
+            dateTime: time,
+            destination,
+            price,
+            status,
+            rating,
+        };
+    });
 }
 
 export function normalizeHistoryCompany(data) {
@@ -76,25 +81,24 @@ export function normalizeHistoryCompany(data) {
     : [];
   return arr.map((t) => {
     const requestId =
-      t.id ?? t.requestId ?? t.transportRequestId ?? t.transportId ?? null;
-    const pkg = t.package ?? t.cargo ?? t.goods ?? t.title ?? "—";
-    const driverName =
-      t.driverName ?? t.name ?? t.driver?.name ?? t.driver ?? "—";
-    const destination = t.destination ?? t.to ?? t.route?.to ?? "—";
-    const price = t.price ?? t.value ?? t.amount ?? t.maxPrice ?? "—";
-    const status = t.status ?? t.state ?? "—";
-    const dateRaw =
-      t.date ??
-      t.createdAt ??
-      t.updatedAt ??
-      t.biddingEndDate ??
-      t.deliveryDate ??
-      null;
+      t.transportRequestId ?? null;
+    const pkg = t.package ?? "—";
+    const driverName = t.name ?? "—";
+    const destination = t.destination ?? "—";
+    const price = t.price ?? "—";
+    const status = t.status ?? "—";
+    const dateRaw = t.date ?? null;
+      const time = (() => {
+          const d = new Date(dateRaw);
+          const ms = d.getTime();
+          return isNaN(ms) ? 0 : ms;
+      })();
     return {
       requestId,
       package: pkg,
       driverName,
       date: fmtDate(dateRaw),
+      dateTime: time,
       destination,
       price,
       status,
