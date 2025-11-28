@@ -11,6 +11,15 @@ export default function MyBidsPage() {
     const { bids, loading, error } = useMyBids({ userId });
     const navigate = useNavigate();
 
+    const pickDate = (bid) => {
+        const d = bid?.updatedAt || bid?.createdAt || bid?.deliveryDeadline || bid?.deadline || bid?.transportRequest?.biddingEndDate || bid?.transportRequest?.biddingStartDate;
+        const dt = d ? new Date(d) : null;
+        return dt && !isNaN(dt) ? dt.getTime() : 0;
+    };
+    const sortedBids = Array.isArray(bids)
+        ? [...bids].sort((a, b) => pickDate(b) - pickDate(a))
+        : [];
+
     if (meLoading) return <StatusMessage type="loading">Validating session…</StatusMessage>;
 
     return (
@@ -24,11 +33,11 @@ export default function MyBidsPage() {
 
                     {!loading && !error && (
                         <div className="bids-list">
-                            {bids.length === 0 && (
+                            {sortedBids.length === 0 && (
                                 <p className="info-text">No bids found.</p>
                             )}
 
-                            {bids.map((bid) => (
+                            {sortedBids.map((bid) => (
                                 <article
                                     className="bid-card"
                                     key={

@@ -243,6 +243,18 @@ function RequestDetailsPage() {
     if (loading) return <StatusMessage type="loading">Loading…</StatusMessage>;
     if (error) return <StatusMessage type="error">Error: {error}</StatusMessage>;
 
+    // Company users that are not the request owner should not have access to actions
+    if (isCompany && transport && !isTransportOwner) {
+        return (
+            <div className="acceptbids-container">
+                <StatusMessage type="error">You don't have permission to view this request.</StatusMessage>
+                <div style={{ marginTop: 12 }}>
+                    <Button variant="secondary" onClick={() => navigate("/")}>Go Home</Button>
+                </div>
+            </div>
+        );
+    }
+
     const status = String(transport?.status ?? "").toUpperCase();
 
     return (
@@ -257,7 +269,7 @@ function RequestDetailsPage() {
 
                         <TransportDetailsCard
                             transport={transport}
-                            actions={isCompany && (
+                            actions={(isCompany && isTransportOwner) && (
                                 <div className="transport-actions">
                                     {isTransportDraft && (
                                         <>
@@ -271,7 +283,7 @@ function RequestDetailsPage() {
                                             </button>
                                         </>
                                     )}
-                                    {isTransportOwner && !isTransportCanceled && (
+                                    {!isTransportCanceled && (
                                         <button
                                             type="button"
                                             className="btn-cancel"
@@ -305,7 +317,7 @@ function RequestDetailsPage() {
                         onChangeSort={setSortBy}
                         onToggleOrder={() => setAscending(!ascending)}
                         isDriver={isDriver}
-                        isCompany={isCompany}
+                        isCompany={isCompany && isTransportOwner}
                         currentUserId={userId}
                         onAddBid={handleOpenAdd}
                         onEditBid={handleEditBid}
