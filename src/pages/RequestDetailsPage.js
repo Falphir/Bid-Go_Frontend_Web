@@ -86,15 +86,30 @@ function RequestDetailsPage() {
     const isOwnerDriver = (bid) =>
         isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
 
+    // Compute whether auction has ended
+    const now = new Date();
+    const biddingEnd = transport?.biddingEndDate ? new Date(transport.biddingEndDate) : null;
+    const auctionEnded = !!(biddingEnd && !isNaN(biddingEnd) && now > biddingEnd);
+
     // refreshTransport provided by hook
 
-    const handleOpenAdd = () => setAddOpen(true);
+    const handleOpenAdd = () => {
+        if (auctionEnded) {
+            showToast("Auction ended. You can't create new bids.", "error");
+            return;
+        }
+        setAddOpen(true);
+    };
     const handleCloseAdd = () => {
         if (!savingAdd) setAddOpen(false);
     };
 
     const handleSaveAdd = async (payload) => {
         try {
+            if (auctionEnded) {
+                showToast("Auction ended. You can't create new bids.", "error");
+                return;
+            }
             setSavingAdd(true);
             await createBidForTransport(payload);
             showToast("Bid created successfully.", "success");
@@ -292,6 +307,7 @@ function RequestDetailsPage() {
                         onConfirmAction={confirmBidAction}
                         processing={processing}
                         confirmAction={confirmAction}
+                        canAddBid={!auctionEnded}
                     />
                 )}
 

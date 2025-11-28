@@ -80,6 +80,29 @@
   font-size: 14px;
 }
 
+.add-bid-btn--ended {
+  background: #94a3b8; /* gray */
+  cursor: pointer; /* keep pointer to allow click for toast */
+  position: relative;
+}
+.add-bid-btn--ended:hover {
+  background: #94a3b8;
+  transform: none;
+  box-shadow: none;
+}
+.add-bid-btn--ended:after {
+  content: "Ended";
+  font-size: 10px;
+  font-weight: 600;
+  background: #1e293b;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
 .bids-list {
   display: flex;
   flex-direction: column;

@@ -19,6 +19,7 @@ function BidList({
   onConfirmAction,
   processing,
   confirmAction,
+  canAddBid = true, // New optional prop (default true) to disable add when auction closed
 }) {
   return (
     <div className="bids-section">
@@ -38,7 +39,12 @@ function BidList({
             {ascending ? "⬆" : "⬇"}
           </button>
           {isDriver && (
-            <button type="button" className="add-bid-btn" onClick={onAddBid}>
+            <button
+              type="button"
+              className={`add-bid-btn ${!canAddBid ? "add-bid-btn--ended" : ""}`}
+              onClick={onAddBid}
+              title={canAddBid ? undefined : "Auction ended."}
+            >
               <FontAwesomeIcon icon={faPlus} />
               <span>New Bid</span>
             </button>
