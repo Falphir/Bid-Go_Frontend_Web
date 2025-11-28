@@ -61,7 +61,7 @@ export function useMe() {
         : payload.sub
         ? Number(payload.sub)
         : null,
-      userType: payload.userType ?? payload.role ?? null,
+      userType: payload.role ?? null,
       exp: payload.exp ? Number(payload.exp) : null,
       iss: payload.iss ?? null,
       aud: payload.aud ?? null,
@@ -112,7 +112,7 @@ export function useMe() {
             : payload.sub
             ? Number(payload.sub)
             : null,
-          userType: payload.userType ?? payload.role ?? null,
+          userType: payload.role ?? null,
           exp: payload.exp ? Number(payload.exp) : null,
           iss: payload.iss ?? null,
           aud: payload.aud ?? null,

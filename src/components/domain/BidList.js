@@ -56,11 +56,12 @@ function BidList({
           <p className="no-bids">No active bids found.</p>
         ) : (
           bids.map((bid) => (
+
             <BidCard
               key={bid.bidId}
               bid={bid}
               isOwnerDriver={
-                isDriver && (bid?.driverId ?? bid?.driver?.driverId) === currentUserId
+                isDriver && (bid?.driver?.driverId) === currentUserId
               }
               isCompany={isCompany}
               onEdit={onEditBid}

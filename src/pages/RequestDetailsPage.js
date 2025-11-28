@@ -63,9 +63,6 @@ function RequestDetailsPage() {
         setStatus,
     } = useRequestDetails({ transportId });
 
-    // Data fetching and bid loading are handled inside `useRequestDetails`.
-
-
     const sortedBids = useSortedBids(bids, sortBy, ascending);
 
     const isTransportDraft = !!transport && (
@@ -84,14 +81,12 @@ function RequestDetailsPage() {
     );
 
     const isOwnerDriver = (bid) =>
-        isDriver && ((bid?.driverId ?? bid?.driver?.driverId) === userId);
+        isDriver && ((bid?.driver?.driverId) === userId);
 
     // Compute whether auction has ended
     const now = new Date();
     const biddingEnd = transport?.biddingEndDate ? new Date(transport.biddingEndDate) : null;
     const auctionEnded = !!(biddingEnd && !isNaN(biddingEnd) && now > biddingEnd);
-
-    // refreshTransport provided by hook
 
     const handleOpenAdd = () => {
         if (auctionEnded) {
@@ -292,6 +287,7 @@ function RequestDetailsPage() {
                 {(status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") && null}
 
                 {status === "ACTIVE" && (
+                    console.log("Rendering BidList with bids:", sortedBids),
                     <BidList
                         bids={sortedBids}
                         sortBy={sortBy}
