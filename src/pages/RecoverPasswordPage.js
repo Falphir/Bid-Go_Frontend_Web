@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "../styles/LoginPage.css";
 import { getApiErrorMessage } from "../utils/httpError";
 import { useToast } from "../components/feedback/ToastContext";
-import StatusMessage from "../components/feedback/StatusMessage";
 import { useNavigate } from "react-router";
 import PasswordInput from "../components/PasswordInput/PasswordInput";
 import useRecoverPassword from "../hooks/useRecoverPassword";
@@ -13,7 +12,7 @@ function RecoverPasswordPage() {
     const [token, setToken] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
-    const { request, reset, loading, error, sent } = useRecoverPassword();
+    const { request, reset, loading } = useRecoverPassword();
     const { showToast } = useToast();
     const navigate = useNavigate();
 
@@ -72,25 +71,17 @@ function RecoverPasswordPage() {
                                 required
                             />
                         </label>
-                        {error && <StatusMessage type="error">{error}</StatusMessage>}
-                        {sent && (
-                            <StatusMessage type="success">
-                                Instructions sent to your email.
-                            </StatusMessage>
-                        )}
                         <button type="submit" className="login-button" disabled={loading}>
                             {loading ? "Processing…" : "Send Instructions"}
                         </button>
                         <div style={{ marginTop: 12 }}>
-                            <a
-                                href="#reset"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setMode("reset");
-                                }}
+                            <button
+                                type="button"
+                                style={{ background: 'none', border: 'none', color: '#1d4ed8', cursor: 'pointer', padding: 0 }}
+                                onClick={() => setMode("reset")}
                             >
                                 Already have a token? Reset now
-                            </a>
+                            </button>
                         </div>
                     </form>
                 )}
@@ -128,15 +119,13 @@ function RecoverPasswordPage() {
                         </button>
 
                         <div style={{ marginTop: 12 }}>
-                            <a
-                                href="#request"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setMode("request");
-                                }}
+                            <button
+                                type="button"
+                                style={{ background: 'none', border: 'none', color: '#1d4ed8', cursor: 'pointer', padding: 0 }}
+                                onClick={() => setMode("request")}
                             >
                                 Send recovery email again
-                            </a>
+                            </button>
                         </div>
                     </form>
                 )}
