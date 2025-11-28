@@ -8,7 +8,9 @@
     "@fortawesome/react-fontawesome": "^3.1.0",
     "@testing-library/dom": "^10.4.1",
     "axios": "^1.13.2",
+    "bcryptjs": "^3.0.3",
     "canvas-to-blob": "^1.0.0",
+    "mysql2": "^3.15.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-easy-crop": "^5.5.3",
@@ -51,15 +53,15 @@
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
+    "@craco/craco": "^7.1.0",
     "@playwright/test": "^1.56.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "babel-plugin-istanbul": "^7.0.1",
-    "istanbul-lib-coverage": "^3.2.2",
-    "nyc": "^17.1.0",
-    "@craco/craco": "^7.1.0",
     "cross-env": "^10.1.0",
-    "lcov-result-merger": "^5.0.1"
+    "istanbul-lib-coverage": "^3.2.2",
+    "lcov-result-merger": "^5.0.1",
+    "nyc": "^17.1.0"
   }
 }

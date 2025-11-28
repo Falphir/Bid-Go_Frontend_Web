@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL:
-    "https://bidgowebapi-a3dtg5f7bzfdc4br.westeurope-01.azurewebsites.net/api",
+     process.env.REACT_APP_API_URL,
 });
 
 api.interceptors.request.use(
