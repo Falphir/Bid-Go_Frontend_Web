@@ -103,6 +103,29 @@
   right: -8px;
 }
 
+.add-bid-btn--notstarted {
+  background: #f59e0b; /* amber */
+  cursor: pointer;
+  position: relative;
+}
+.add-bid-btn--notstarted:hover {
+  background: #f59e0b;
+  transform: none;
+  box-shadow: none;
+}
+.add-bid-btn--notstarted:after {
+  content: "Not started";
+  font-size: 10px;
+  font-weight: 600;
+  background: #1e293b;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
 .bids-list {
   display: flex;
   flex-direction: column;

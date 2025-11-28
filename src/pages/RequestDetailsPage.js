@@ -80,14 +80,22 @@ function RequestDetailsPage() {
         transport?.companyId === userId
     );
 
-    const isOwnerDriver = (bid) =>
-        isDriver && ((bid?.driver?.driverId) === userId);
+    const isOwnerDriver = (bid) => {
+        const bidDriverId = bid?.driverId ?? bid?.driver?.driverId;
+        return isDriver && String(bidDriverId) === String(userId);
+    };
 
     const now = new Date();
+    const biddingStart = transport?.biddingStartDate ? new Date(transport.biddingStartDate) : null;
     const biddingEnd = transport?.biddingEndDate ? new Date(transport.biddingEndDate) : null;
+    const auctionNotStarted = !!(biddingStart && !isNaN(biddingStart) && now < biddingStart);
     const auctionEnded = !!(biddingEnd && !isNaN(biddingEnd) && now > biddingEnd);
 
     const handleOpenAdd = () => {
+        if (auctionNotStarted) {
+            showToast("Auction hasn't started yet. You can't create bids.", "error");
+            return;
+        }
         if (auctionEnded) {
             showToast("Auction ended. You can't create new bids.", "error");
             return;
@@ -100,6 +108,10 @@ function RequestDetailsPage() {
 
     const handleSaveAdd = async (payload) => {
         try {
+            if (auctionNotStarted) {
+                showToast("Auction hasn't started yet. You can't create bids.", "error");
+                return;
+            }
             if (auctionEnded) {
                 showToast("Auction ended. You can't create new bids.", "error");
                 return;
@@ -301,7 +313,9 @@ function RequestDetailsPage() {
                         onConfirmAction={confirmBidAction}
                         processing={processing}
                         confirmAction={confirmAction}
-                        canAddBid={!auctionEnded}
+                        canAddBid={!auctionEnded && !auctionNotStarted}
+                        auctionNotStarted={auctionNotStarted}
+                        auctionEnded={auctionEnded}
                     />
                 )}
 
