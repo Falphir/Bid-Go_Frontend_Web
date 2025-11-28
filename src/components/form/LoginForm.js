@@ -1,6 +1,5 @@
 import React from "react";
 import PasswordInput from "../PasswordInput/PasswordInput";
-import StatusMessage from "../feedback/StatusMessage";
 import "./LoginForm.css";
 import { useNavigate } from "react-router";
 
@@ -9,7 +8,6 @@ function LoginForm({
                        password,
                        remember,
                        loading,
-                       error,
                        onChangeEmail,
                        onChangePassword,
                        onToggleRemember,
@@ -47,7 +45,6 @@ function LoginForm({
                 />
                 <span className="remember-text">Keep me signed in</span>
             </label>
-            {error && <StatusMessage type="error">{error}</StatusMessage>}
             <button type="submit" className="login-button" disabled={loading}>
                 {loading ? "Signing in…" : "Sign In"}
             </button>

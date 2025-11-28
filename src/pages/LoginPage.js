@@ -9,12 +9,11 @@ import useLogin from "../hooks/useLogin";
 function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errorLocal, setErrorLocal] = useState(null);
     const [remember, setRemember] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
     const { showToast } = useToast();
-    const { login, loading, error } = useLogin();
+    const { login, loading } = useLogin();
 
     // login hook handles abort cleanup
 
@@ -35,10 +34,8 @@ function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorLocal(null);
-
         if (!email || !password) {
-            setErrorLocal("Fill in email and password.");
+            showToast("Preencha email e password.", "error");
             return;
         }
         try {
@@ -49,7 +46,7 @@ function LoginPage() {
         } catch (err) {
             if (err?.name === "CanceledError") return;
             const msg = err?.response?.data?.message || err?.message || "Login failed";
-            setErrorLocal(msg);
+            // Only toast
             showToast(msg, "error");
         }
     };
@@ -65,7 +62,6 @@ function LoginPage() {
                         password={password}
                         remember={remember}
                         loading={loading}
-                        error={error || errorLocal}
                         onChangeEmail={setEmail}
                         onChangePassword={setPassword}
                         onToggleRemember={setRemember}
