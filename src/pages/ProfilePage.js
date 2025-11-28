@@ -84,20 +84,35 @@ function ProfilePage() {
     };
 
     const handlePasswordChange = async () => {
+        const oldPwd = (passwords.old || "").trim();
+        const newPwd = (passwords.new || "").trim();
+        const confirmPwd = (passwords.confirm || "").trim();
+
+
+        if (!oldPwd || !newPwd || !confirmPwd) {
+            showToast("Please fill all password fields.", "error");
+            return;
+        }
+        if (newPwd !== confirmPwd) {
+            showToast("Passwords do not match.", "error");
+            return;
+        }
+        if (oldPwd === newPwd) {
+            showToast("New password must be different from current password.", "error");
+            return;
+        }
+        if (newPwd.length < 6) {
+            showToast("New password must be at least 6 characters.", "error");
+            return;
+        }
+
         try {
-            if (passwords.new !== passwords.confirm) {
-                showToast("Passwords do not match.", "error");
-                return;
-            }
-
-            await changePwd(passwords.old, passwords.new);
-
+            await changePwd(oldPwd, newPwd);
             showToast("Password updated successfully!", "success");
-
             setShowPasswordModal(false);
             setPasswords({ old: "", new: "", confirm: "" });
         } catch (err) {
-            const msg = err.response?.data || "Error changing password.";
+            const msg = getApiErrorMessage(err);
             showToast(msg, "error");
         }
     };
