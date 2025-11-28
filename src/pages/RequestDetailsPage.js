@@ -83,7 +83,6 @@ function RequestDetailsPage() {
     const isOwnerDriver = (bid) =>
         isDriver && ((bid?.driver?.driverId) === userId);
 
-    // Compute whether auction has ended
     const now = new Date();
     const biddingEnd = transport?.biddingEndDate ? new Date(transport.biddingEndDate) : null;
     const auctionEnded = !!(biddingEnd && !isNaN(biddingEnd) && now > biddingEnd);
@@ -287,7 +286,6 @@ function RequestDetailsPage() {
                 {(status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") && null}
 
                 {status === "ACTIVE" && (
-                    console.log("Rendering BidList with bids:", sortedBids),
                     <BidList
                         bids={sortedBids}
                         sortBy={sortBy}

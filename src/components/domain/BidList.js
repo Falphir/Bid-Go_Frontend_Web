@@ -19,7 +19,7 @@ function BidList({
   onConfirmAction,
   processing,
   confirmAction,
-  canAddBid = true, // New optional prop (default true) to disable add when auction closed
+  canAddBid = true,
 }) {
   return (
     <div className="bids-section">

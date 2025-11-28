@@ -1,6 +1,7 @@
 import React from "react";
 import Countdown from "../../components/Countdown/Countdown";
 import "./TransportCard.css";
+import defaultTransportImage from "../../assets/Image-not-found.png";
 
 export default function TransportCard({ data, isCompany, isDriver, onView }) {
     if (!data) return null;
@@ -48,7 +49,10 @@ export default function TransportCard({ data, isCompany, isDriver, onView }) {
     return (
         <div className="card" key={id}>
             <div className="card-image">
-                <img src={image} alt={pkg} />
+                <img src={image} alt={pkg} onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = defaultTransportImage;
+                }}/>
             </div>
             <div className="card-body">
                 <div className="title-with-badge">

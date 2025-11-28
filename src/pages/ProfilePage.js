@@ -38,7 +38,6 @@ function ProfilePage() {
 
     const { showToast } = useToast();
 
-    // profile hook handles fetching
 
     const handleFileChange = (e, field) => {
         const file = e.target.files[0];

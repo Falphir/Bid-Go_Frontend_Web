@@ -1,3 +1,5 @@
+import placeholderImage from "../assets/Image-not-found.png";
+
 export function normalizeTransportList(data) {
   const arr = Array.isArray(data)
     ? data
@@ -8,8 +10,8 @@ export function normalizeTransportList(data) {
     : [];
 
   return arr.map((t) => ({
-    id: t.transportRequestId ?? null,
-    image: t.image ?? "https://via.placeholder.com/400x250",
+    id: t.id ?? t.transportRequestId ?? null,
+    image: t.image ?? placeholderImage,
     package: t.package ?? "Pedido",
     route: t.route ?? "",
     origin: t.origin ?? "—",
@@ -44,7 +46,6 @@ export function normalizeHistoryDriver(data) {
                 ? data.results
                 : [];
     return arr.map((t) => {
-        console.log(t);
         const companyName = t.companyName ?? "—";
         const pkg = t.package ?? "—";
         const destination = t.destination ?? "—";

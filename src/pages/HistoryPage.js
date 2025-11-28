@@ -33,7 +33,6 @@ function HistoryPage() {
         ];
     }, [isDriver]);
 
-    // useHistory hook handles loading, error and fetching
 
     if (meLoading)
         return <StatusMessage type="loading">Validating session…</StatusMessage>;

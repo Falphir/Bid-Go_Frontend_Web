@@ -14,6 +14,7 @@ function buildQueryString(filters) {
 export async function getCompanyTransports(userId, signal) {
   if (!userId) return [];
   const res = await api.get(`/transports/company/${userId}`, { signal });
+  console.log("Company Transports Response:", res);
   return normalizeTransportList(res?.data);
 }
 
@@ -56,7 +57,6 @@ export async function getTransportById(transportId, signal) {
 }
 
 export async function updateTransport(transportId, payload, signal) {
-  // Try POST first then fallback to PUT if server expects PUT
   try {
     const res = await api.post(`/transports/updateTransport/${transportId}`, payload, { signal });
     return res.data;

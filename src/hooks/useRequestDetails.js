@@ -125,7 +125,6 @@ export function useRequestDetails({ transportId } = {}) {
 
   const updateExistingBid = async (bidId, payload) => {
     const res = await updateBid(bidId, payload);
-    // local update
     setBids((prev) => prev.map((b) => (b.bidId === bidId ? { ...b, ...payload } : b)));
     return res;
   };
@@ -138,7 +137,6 @@ export function useRequestDetails({ transportId } = {}) {
 
   const manualAction = async (bidId, type) => {
     const res = await manualBidAction(bidId, type);
-    // After action refresh page data
     await refreshTransport();
     return res;
   };

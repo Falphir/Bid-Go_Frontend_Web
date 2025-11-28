@@ -124,7 +124,6 @@ function CreateTransportPage() {
             return;
         }
 
-        // build payload/form and use createDraft from hook
         try {
             if (imageFile) {
                 const formData = new FormData();

@@ -15,8 +15,6 @@ function LoginPage() {
     const { showToast } = useToast();
     const { login, loading } = useLogin();
 
-    // login hook handles abort cleanup
-
     useEffect(() => {
         if (location?.state?.toast) {
             const t = location.state.toast;
@@ -46,7 +44,7 @@ function LoginPage() {
         } catch (err) {
             if (err?.name === "CanceledError") return;
             const msg = err?.response?.data?.message || err?.message || "Login failed";
-            // Only toast
+
             showToast(msg, "error");
         }
     };

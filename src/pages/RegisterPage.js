@@ -33,8 +33,6 @@ function RegisterPage() {
     const { showToast } = useToast();
     const { submitDriver: registerDriver, submitCompany: registerCompany, loading } = useRegister();
 
-    // no abort controller needed here; services handle cancellation in hooks
-
     useEffect(() => {
         const prevOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";

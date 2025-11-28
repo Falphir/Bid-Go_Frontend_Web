@@ -38,7 +38,6 @@ export default function AddBidModal({
     [deliveryDate]
   );
 
-  // Auction end validation
   const biddingEndDate = transport?.biddingEndDate ? new Date(transport.biddingEndDate) : null;
   const auctionEnded = !!(biddingEndDate && !isNaN(biddingEndDate) && nowTs > biddingEndDate.getTime());
 
@@ -59,7 +58,7 @@ export default function AddBidModal({
       setNowTs(Date.now());
       return;
     }
-    const t = setTimeout(() => setNowTs(Date.now()), diff + 50); // small buffer
+    const t = setTimeout(() => setNowTs(Date.now()), diff + 50);
     return () => clearTimeout(t);
   }, [biddingEndDate, auctionEnded]);
 
@@ -104,7 +103,7 @@ export default function AddBidModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (auctionEnded) return; // extra guard
+    if (auctionEnded) return;
     const vErr = validateValue(value);
     const dErr = validateDeadline(deadline);
     setErrors({ value: vErr, deadline: dErr });

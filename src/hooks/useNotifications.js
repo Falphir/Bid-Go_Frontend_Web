@@ -45,7 +45,6 @@ export function useNotifications({ userId } = {}) {
 
   async function markRead(id) {
     await markAsRead(id);
-    // refresh
     const data = await fetchNotifications(userId);
     setNotifications(data || []);
   }
