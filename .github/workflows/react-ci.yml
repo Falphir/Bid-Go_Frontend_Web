@@ -59,11 +59,6 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Load DB schema
-        run: |
-          sudo apt-get update && sudo apt-get install -y mysql-client
-          mysql -h 127.0.0.1 -P 3306 -u root -proot bidgo < tests/sql/schema.sql
-
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -76,6 +71,11 @@ jobs:
           ls tests || echo "tests/ não existe"
           echo "--- tests/sql ---"
           ls tests/sql || echo "tests/sql/ não existe"
+
+      - name: Load DB schema
+        run: |
+          sudo apt-get update && sudo apt-get install -y mysql-client
+          mysql -h 127.0.0.1 -P 3306 -u root -proot bidgo < tests/sql/schema.sql
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
