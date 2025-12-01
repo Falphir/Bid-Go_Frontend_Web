@@ -61,16 +61,9 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Debug paths
-        run: |
-          pwd
-          echo "--- ROOT ---"
-          ls
-          echo "--- tests ---"
-          ls tests || echo "tests/ não existe"
-          echo "--- tests/sql ---"
-          ls tests/sql || echo "tests/sql/ não existe"
+        with:
+          repository: LDSGrupo04/Bid-Go_Backend
+          path: backend
 
       - name: Load DB schema
         run: |
@@ -79,6 +72,17 @@ jobs:
           -P ${{ job.services.mysql.ports['3306'] }} \
           -uroot -proot \
           bidgo < tests/sql/schema.sql
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run API
+        working-directory: backend
+        run: |
+          export ConnectionStrings__DefaultConnection="Server=127.0.0.1;Port=${{ job.services.mysql.ports['3306'] }};Database=bidgo;User Id=root;Password=root;"
+          dotnet run --project src/BidGo.Api/BidGo.Api.csproj --urls http://localhost:5000 &
 
 
       - name: Setup Node.js
