@@ -1,3 +1,10 @@
+const path = require('path');
+try {
+  require('dotenv').config({ path: path.resolve(__dirname, '.env.development') });
+} catch (e) {
+  console.warn('dotenv não pôde ser carregado em playwright.config.js:', e && e.message ? e.message : e);
+}
+
 const { devices } = require('@playwright/test');
 
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
@@ -17,7 +24,8 @@ module.exports = {
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'npm start',
+    // Usar env-cmd para garantir que o process spawned carrega .env.development
+    command: 'env-cmd -f .env.development npm start',
     port: 3000,
     timeout: 120_000,
     reuseExistingServer: !process.env.CI,
@@ -36,7 +44,8 @@ module.exports = defineConfig({
         headless: true,
     },
     webServer: {
-        command: 'npm start',
+        // Também aqui: garantir variáveis ao iniciar o servidor para os testes do defineConfig
+        command: 'env-cmd -f .env.development npm start',
         port: 3000,
         reuseExistingServer: !process.env.CI,
         timeout: 120000,
