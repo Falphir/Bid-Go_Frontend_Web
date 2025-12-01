@@ -75,7 +75,10 @@ jobs:
       - name: Load DB schema
         run: |
           sudo apt-get update && sudo apt-get install -y mysql-client
-          mysql -h 127.0.0.1 -P 3306 -uroot -proot bidgo < tests/sql/schema.sql
+          mysql -h 127.0.0.1 \
+          -P ${{ job.services.mysql.ports['3306'] }} \
+          -uroot -proot \
+          bidgo < tests/sql/schema.sql
 
 
       - name: Setup Node.js
@@ -92,7 +95,7 @@ jobs:
 
       - name: Set DB env vars
         run: echo "DB_HOST=127.0.0.1" >> $GITHUB_ENV
-          echo "DB_PORT=3306" >> $GITHUB_ENV
+          echo "DB_PORT=${{ job.services.mysql.ports['3306'] }}" >> $GITHUB_ENV
           echo "DB_USER=root" >> $GITHUB_ENV
           echo "DB_PASSWORD=root" >> $GITHUB_ENV
           echo "DB_NAME=bidgo" >> $GITHUB_ENV
