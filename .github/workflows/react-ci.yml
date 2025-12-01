@@ -82,6 +82,14 @@ jobs:
           -uroot -proot \
           bidgo < tests/sql/schema.sql
 
+      - name: Debug paths depois dos checkouts
+        run: |
+          pwd
+          echo "--- ROOT ---"
+          ls
+          echo "--- backend ---"
+          ls backend || echo "backend NAO EXISTE"
+          
       - name: Run API
         working-directory: backend
         run: |
