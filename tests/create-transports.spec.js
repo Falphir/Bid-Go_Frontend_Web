@@ -1,3 +1,5 @@
+require('./coverage-helper');
+
 const { test, expect } = require('@playwright/test');
 const db = require('./utilis/db'); // Confirma se a pasta é 'utilis' ou 'utils'
 const path = require('path');
@@ -130,7 +132,7 @@ test.describe('System Test: Create Transport Request', () => {
         const pickupDate = formatDate(new Date(today.getTime() + 48*60*60*1000));
         const deliveryDate = formatDate(new Date(today.getTime() + 72*60*60*1000));
         const auctionStart = formatDate(today);
-        const auctionEnd = formatDate(new Date(today.getTime() + 22*60*60*1000));
+        const auctionEnd = formatDate(new Date(today.getTime() + 24*60*60*1000));
 
         const dateInputs = page.locator('form.transport-form input[type="date"]');
         await dateInputs.nth(0).fill(pickupDate);

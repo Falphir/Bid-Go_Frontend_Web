@@ -3,6 +3,8 @@
 .idea
 .idea/
 
+.nyc_output/
+
 # dependencies
 /node_modules
 /.pnp
