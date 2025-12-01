@@ -59,11 +59,19 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Checkout repo
+      - name: Checkout backend
         uses: actions/checkout@v4
         with:
           repository: LDSGrupo04/Bid-Go_Backend
           path: backend
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Load DB schema
         run: |
@@ -73,17 +81,11 @@ jobs:
           -uroot -proot \
           bidgo < tests/sql/schema.sql
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
       - name: Run API
         working-directory: backend
         run: |
           export ConnectionStrings__DefaultConnection="Server=127.0.0.1;Port=${{ job.services.mysql.ports['3306'] }};Database=bidgo;User Id=root;Password=root;"
           dotnet run --project src/BidGo.Api/BidGo.Api.csproj --urls http://localhost:5000 &
-
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
