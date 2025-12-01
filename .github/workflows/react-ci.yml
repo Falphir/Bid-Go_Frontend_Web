@@ -82,12 +82,12 @@ jobs:
           -uroot -proot \
           bidgo < tests/sql/schema.sql
 
-      - name: Run API (ajusta o caminho do .csproj)
+      - name: Run API
         working-directory: backend
         run: |
           export ConnectionStrings__DefaultConnection="Server=127.0.0.1;Port=${{ job.services.mysql.ports['3306'] }};Database=bidgo;User Id=root;Password=root;"
           dotnet restore
-          dotnet run --project src/BidGo.Api/BidGo.Api.csproj --urls http://localhost:5000 &
+          dotnet run --project Bid-Go/Bid-Go.csproj --urls http://localhost:5000 &
           sleep 15
 
       - name: Setup Node.js
