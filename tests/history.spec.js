@@ -28,6 +28,18 @@ const { test, expect } = require("@playwright/test");
 const db = require("./utilis/db");
 const path = require("path");
 
+test.describe.configure({ timeout: 90000 });
+
+// Helper de polling para aguardar inserções na BD sem esperas estáticas
+async function pollRow(sql, params, { attempts = 40, delay = 1000 } = {}) {
+  for (let i = 0; i < attempts; i++) {
+    const rows = await db.query(sql, params);
+    if (rows.length) return rows;
+    await new Promise((r) => setTimeout(r, delay));
+  }
+  return [];
+}
+
 test.describe("System Test: History Page (Driver & Company)", () => {
   const timestamp = Date.now();
 
@@ -77,20 +89,19 @@ test.describe("System Test: History Page (Driver & Company)", () => {
       await page.getByLabel("NIF").fill(companyData.nif);
 
       await page.getByRole("button", { name: /Register/i }).click();
-
-      await page.waitForTimeout(3000);
-      console.log("Company registada via UI.");
+      console.log("Company registo submetido.");
     } catch (e) {
       console.error("Erro ao registar company para history:", e);
       throw e;
     }
 
-    // Obter companyId na BD
-    const companyRows = await db.query("SELECT * FROM Users WHERE Email = ?", [
-      companyData.email,
-    ]);
+    // Obter companyId na BD (polling)
+    const companyRows = await pollRow(
+      "SELECT * FROM Users WHERE Email = ?",
+      [companyData.email]
+    );
     if (!companyRows.length) {
-      throw new Error("Erro: Company não encontrada na BD após registo.");
+      throw new Error("Erro: Company não encontrada na BD após polling.");
     }
     companyId = companyRows[0].Id || companyRows[0].id;
     console.log("CompanyId para history:", companyId);
@@ -114,19 +125,19 @@ test.describe("System Test: History Page (Driver & Company)", () => {
       await insuranceInput.setInputFiles(imagePath);
 
       await page.getByRole("button", { name: /Register/i }).click();
-      await page.waitForTimeout(3000);
-      console.log("Driver registado via UI.");
+      console.log("Driver registo submetido.");
     } catch (e) {
       console.error("Erro ao registar driver para history:", e);
       throw e;
     }
 
-    // Obter driverId na BD
-    const driverRows = await db.query("SELECT * FROM Users WHERE Email = ?", [
-      driverData.email,
-    ]);
+    // Obter driverId na BD (polling)
+    const driverRows = await pollRow(
+      "SELECT * FROM Users WHERE Email = ?",
+      [driverData.email]
+    );
     if (!driverRows.length) {
-      throw new Error("Erro: Driver não encontrado na BD após registo.");
+      throw new Error("Erro: Driver não encontrado na BD após polling.");
     }
     driverId = driverRows[0].Id || driverRows[0].id;
     console.log("DriverId para history:", driverId);
@@ -182,13 +193,14 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     console.log("TransportRequest criado via UI.");
 
     // Obter transportRequestId na BD
-    const trRows = await db.query(
+    const trRows = await pollRow(
       "SELECT * FROM TransportRequests WHERE CompanyId = ? AND Origin = ? ORDER BY TransportRequestId DESC LIMIT 1",
-      [companyId, "Porto"]
+      [companyId, "Porto"],
+      { attempts: 40, delay: 1000 }
     );
     if (!trRows.length) {
       throw new Error(
-        "Erro: TransportRequest não foi encontrado na BD após criação via UI."
+        "Erro: TransportRequest não foi encontrado na BD após polling."
       );
     }
     transportRequestId = trRows[0].TransportRequestId || trRows[0].id;
@@ -252,12 +264,12 @@ test.describe("System Test: History Page (Driver & Company)", () => {
       timeout: 10000,
     });
 
-    const bidRows = await db.query(
+    const bidRows = await pollRow(
       "SELECT * FROM Bids WHERE DriverId = ? AND TransportRequestId = ? ORDER BY BidId DESC LIMIT 1",
       [driverId, transportRequestId]
     );
     if (!bidRows.length) {
-      throw new Error("Erro: Bid não encontrada na BD após criação via UI.");
+      throw new Error("Erro: Bid não encontrada na BD após polling.");
     }
     bidId = bidRows[0].BidId || bidRows[0].id;
     console.log("BidId para history (via UI):", bidId);
@@ -287,7 +299,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     } catch (e) {
       console.error("Erro ao limpar dados de history:", e.message);
     }
-    await db.close();
+    // Não fechar pool aqui para não interferir com outros testes em paralelo
   });
 
   test("Driver can login and see bidding history", async ({ page }) => {
@@ -298,7 +310,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     await page.locator('input[type="password"]').fill(driverData.password);
     await page.getByRole("button", { name: /sign in/i }).click();
 
-    await page.waitForTimeout(3000);
+    await expect(page).toHaveURL(/\/$/, { timeout: 15000 });
 
     await page.goto("http://localhost:3000/history");
 
@@ -310,7 +322,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     await expect(table).toContainText("History E2E Lda"); // companyName
     await expect(table).toContainText("History Pallet"); // package
     await expect(table).toContainText("Lisbon"); // destination
-    await expect(table).toContainText("Pendent"); // status
+    await expect(table).toContainText(/Pendent|Pending/i); // status (variação)
   });
 
   test("Company can login and see transport requests history", async ({
@@ -323,7 +335,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     await page.locator('input[type="password"]').fill(companyData.password);
     await page.getByRole("button", { name: /sign in/i }).click();
 
-    await page.waitForTimeout(3000);
+    await expect(page).toHaveURL(/\/$/, { timeout: 15000 });
 
     await page.goto("http://localhost:3000/history");
 

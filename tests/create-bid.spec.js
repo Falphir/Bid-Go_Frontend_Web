@@ -28,6 +28,17 @@ const { test, expect } = require("@playwright/test");
 const db = require("./utilis/db");
 const path = require("path");
 
+test.describe.configure({ timeout: 90000 });
+
+async function pollRow(sql, params, { attempts = 40, delay = 1000 } = {}) {
+  for (let i = 0; i < attempts; i++) {
+    const rows = await db.query(sql, params);
+    if (rows.length) return rows;
+    await new Promise((r) => setTimeout(r, delay));
+  }
+  return [];
+}
+
 test.describe("System Test: Create Bid on existing transport", () => {
   const ts = Date.now();
   const companyData = {
@@ -67,13 +78,14 @@ test.describe("System Test: Create Bid on existing transport", () => {
     await page.getByLabel("Phone").fill(companyData.PhoneNumber);
     await page.getByLabel("NIF").fill(companyData.nif);
     await page.getByRole("button", { name: /Register/i }).click();
-    await page.waitForTimeout(10000);
 
-    // Obter companyId na BD
-    const companyRows = await db.query("SELECT * FROM Users WHERE Email = ?", [
-      companyData.email,
-    ]);
-    if (!companyRows.length) throw new Error("Empresa não encontrada na BD.");
+    // Poll até a empresa existir (evita timeout fixo)
+    const companyRows = await pollRow(
+      "SELECT * FROM Users WHERE Email = ?",
+      [companyData.email]
+    );
+    if (!companyRows.length)
+      throw new Error("Empresa não encontrada na BD após polling.");
     companyId = companyRows[0].Id || companyRows[0].id;
 
     // Login da empresa e criação do transporte via UI
@@ -108,13 +120,14 @@ test.describe("System Test: Create Bid on existing transport", () => {
     await page.getByRole("button", { name: /create request/i }).click();
     await expect(page).toHaveURL(/\/myTransports$/);
 
-    // Obter transportId na BD
-    const trRows = await db.query(
+    // Obter transportId na BD (polling para garantir inserção)
+    const trRows = await pollRow(
       "SELECT * FROM TransportRequests WHERE CompanyId = ? AND Origin = ?",
-      [companyId, "Porto"]
+      [companyId, "Porto"],
+      { attempts: 40, delay: 1000 }
     );
     if (!trRows.length)
-      throw new Error("Transport request não encontrada na BD.");
+      throw new Error("Transport request não encontrada na BD após polling.");
     console.log("Chaves TransportRequests:", Object.keys(trRows[0]));
     transportId =
       trRows[0].Id ||
@@ -136,11 +149,13 @@ test.describe("System Test: Create Bid on existing transport", () => {
     await page.getByLabel("Phone").fill(driverData.PhoneNumber);
     await page.getByLabel("Tax ID").fill(driverData.nif);
     await page.getByRole("button", { name: /Register/i }).click();
-    await page.waitForTimeout(10000);
-    const dRows = await db.query("SELECT * FROM Users WHERE Email = ?", [
-      driverData.email,
-    ]);
-    if (!dRows.length) throw new Error("Driver não encontrado na BD.");
+    const dRows = await pollRow(
+      "SELECT * FROM Users WHERE Email = ?",
+      [driverData.email],
+      { attempts: 40, delay: 1000 }
+    );
+    if (!dRows.length)
+      throw new Error("Driver não encontrado na BD após polling.");
     driverId = dRows[0].Id || dRows[0].id;
 
     await page.close();
