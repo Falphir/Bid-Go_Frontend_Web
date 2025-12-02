@@ -18,6 +18,7 @@
     background: #0066cc;
     color: #fff;
 }
+
 .app-btn.primary:hover:not(:disabled) {
     background: #0057ad;
 }
@@ -26,6 +27,7 @@
     background: #94a3b8;
     color: #fff;
 }
+
 .app-btn.secondary:hover:not(:disabled) {
     background: #7c8899;
 }
@@ -35,6 +37,7 @@
     border: 1px solid #cdd7e1;
     color: #294766;
 }
+
 .app-btn.ghost:hover:not(:disabled) {
     background: #eef3fa;
 }
@@ -43,6 +46,7 @@
     background: #e63946;
     color: #fff;
 }
+
 .app-btn.danger:hover:not(:disabled) {
     background: #c62835;
 }
@@ -56,6 +60,7 @@
 .app-btn:hover:not(:disabled) {
     transform: translateY(-1px);
 }
+
 .app-btn:active:not(:disabled) {
     transform: scale(0.97);
 }

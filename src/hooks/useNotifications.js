@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchNotifications, markAsRead, markAllAsRead } from "../services/notificationsService";
+import {
+  fetchNotifications,
+  markAsRead,
+  markAllAsRead,
+} from "../services/notificationsService";
+
+// Hook de notificações com filtros e marcação
 
 export function useNotifications({ userId } = {}) {
   const [notifications, setNotifications] = useState([]);

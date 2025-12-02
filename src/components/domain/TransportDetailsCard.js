@@ -2,6 +2,7 @@ import React from "react";
 import Countdown from "../Countdown/Countdown";
 import "./TransportDetailsCard.css";
 import defaultTransportImage from "../../assets/Image-not-found.png";
+// Cartão detalhes transporte
 
 function TransportDetailsCard({
                                   transport,

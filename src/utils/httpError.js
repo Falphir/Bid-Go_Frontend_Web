@@ -1,3 +1,4 @@
+// Extrai mensagem de erro legível a partir de erros HTTP/Axios
 export function getApiErrorMessage(err) {
   if (err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
     return "Request canceled.";

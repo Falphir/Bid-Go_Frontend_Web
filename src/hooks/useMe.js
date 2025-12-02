@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../api/axiosConfig";
 import axios from "axios";
 
+// Hook do utilizador atual (claims/token)
+
 function claimsArrayToObject(claims = []) {
   const map = {};
   for (const c of claims) map[c.type] = c.value;

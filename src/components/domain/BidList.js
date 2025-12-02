@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import BidCard from "./BidCard";
 import "./BidList.css";
+// Lista de propostas + ordenar
 
 function BidList({
   bids,

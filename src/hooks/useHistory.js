@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getDriverHistory, getCompanyHistory } from "../services/historyService";
+import {
+  getDriverHistory,
+  getCompanyHistory,
+} from "../services/historyService";
+
+// Hook de histórico por perfil (driver/empresa)
 
 export function useHistory({ userId, isDriver, isCompany } = {}) {
   const [items, setItems] = useState([]);
@@ -27,7 +32,11 @@ export function useHistory({ userId, isDriver, isCompany } = {}) {
         }
       } catch (err) {
         if (err?.name === "CanceledError") return;
-        setError(err?.response?.data?.message || err?.message || "Unable to load history.");
+        setError(
+          err?.response?.data?.message ||
+            err?.message ||
+            "Unable to load history."
+        );
       } finally {
         setLoading(false);
       }

@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./AddBidModal.css";
 import Button from "../Button/Button";
+
+// Modal adicionar bid
 export default function AddBidModal({
   open,
   onClose,
@@ -38,10 +40,22 @@ export default function AddBidModal({
     [deliveryDate]
   );
 
-  const biddingStartDate = transport?.biddingStartDate ? new Date(transport.biddingStartDate) : null;
-  const biddingEndDate = transport?.biddingEndDate ? new Date(transport.biddingEndDate) : null;
-  const auctionNotStarted = !!(biddingStartDate && !isNaN(biddingStartDate) && nowTs < biddingStartDate.getTime());
-  const auctionEnded = !!(biddingEndDate && !isNaN(biddingEndDate) && nowTs > biddingEndDate.getTime());
+  const biddingStartDate = transport?.biddingStartDate
+    ? new Date(transport.biddingStartDate)
+    : null;
+  const biddingEndDate = transport?.biddingEndDate
+    ? new Date(transport.biddingEndDate)
+    : null;
+  const auctionNotStarted = !!(
+    biddingStartDate &&
+    !isNaN(biddingStartDate) &&
+    nowTs < biddingStartDate.getTime()
+  );
+  const auctionEnded = !!(
+    biddingEndDate &&
+    !isNaN(biddingEndDate) &&
+    nowTs > biddingEndDate.getTime()
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -210,24 +224,21 @@ export default function AddBidModal({
             )}
           </label>
 
-            <div className="abm-actions">
-                <Button
-                    variant="secondary"
-                    onClick={onClose}
-                    disabled={saving}
-                >
-                    Cancel
-                </Button>
+          <div className="abm-actions">
+            <Button variant="secondary" onClick={onClose} disabled={saving}>
+              Cancel
+            </Button>
 
-                <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={saving || hasErrors || auctionNotStarted || auctionEnded}
-                >
-                    {saving ? "Submitting…" : "Submit Bid"}
-                </Button>
-            </div>
-
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={
+                saving || hasErrors || auctionNotStarted || auctionEnded
+              }
+            >
+              {saving ? "Submitting…" : "Submit Bid"}
+            </Button>
+          </div>
         </form>
       </div>
     </div>

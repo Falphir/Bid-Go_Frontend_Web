@@ -1,6 +1,7 @@
 import React from "react";
 import "./StatusMessage.css";
 
+// Mensagem de estado simples
 export default function StatusMessage({
   type = "info",
   children,

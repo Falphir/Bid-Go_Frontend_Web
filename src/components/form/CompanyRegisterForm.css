@@ -6,6 +6,7 @@
   color: #062e5c;
   font-size: 14px;
 }
+
 .login-label input {
   margin-top: 6px;
   padding: 10px 12px;
@@ -14,11 +15,13 @@
   font-size: 14px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
 .login-label input:focus {
   outline: none;
   border-color: #0066cc;
   box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25);
 }
+
 .error-message {
   color: #dc3545;
   font-size: 14px;

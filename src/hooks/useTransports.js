@@ -1,7 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
-import { getCompanyTransports, getDriverTransports } from "../services/transportsService";
+import {
+  getCompanyTransports,
+  getDriverTransports,
+} from "../services/transportsService";
 
-export function useTransports({ userId, isDriver, isCompany, initialFilters = {} } = {}) {
+// Hook de listagem de pedidos (driver/empresa) com filtros
+
+export function useTransports({
+  userId,
+  isDriver,
+  isCompany,
+  initialFilters = {},
+} = {}) {
   const [requests, setRequests] = useState([]);
   const [isRequestsEmpty, setIsRequestsEmpty] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,7 +46,10 @@ export function useTransports({ userId, isDriver, isCompany, initialFilters = {}
       setError(null);
       setIsRequestsEmpty(false);
       try {
-        const normalized = await getDriverTransports(currentFilters || filters, signal);
+        const normalized = await getDriverTransports(
+          currentFilters || filters,
+          signal
+        );
         const sorted = sortByNewest(normalized);
         setRequests(sorted);
         if (normalized.length === 0) setIsRequestsEmpty(true);
@@ -92,7 +105,8 @@ export function useTransports({ userId, isDriver, isCompany, initialFilters = {}
 
 function formatError(err) {
   if (!err) return null;
-  if (err.response) return `Server error: ${err.response.status} ${err.response.statusText}`;
+  if (err.response)
+    return `Server error: ${err.response.status} ${err.response.statusText}`;
   if (err.request) return "Network error: no response from server";
   return `Request error: ${err.message}`;
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import "./AcceptRejectOverlay.css";
+// Overlay aceitar/rejeitar proposta
 
 function AcceptRejectOverlay({ action, onConfirm, onCancel, processing }) {
     if (!action) return null;

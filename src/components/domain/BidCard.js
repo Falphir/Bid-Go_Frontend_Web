@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import "./BidCard.css";
 import Button from "../Button/Button";
+// Cartão de proposta
 
 function BidCard({
                      bid,

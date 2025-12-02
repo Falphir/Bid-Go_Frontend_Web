@@ -1,5 +1,7 @@
 import api from "../api/axiosConfig";
 
+// Service de bids: CRUD e ações manuais
+
 export async function getBidsByDriver(userId, signal) {
   if (!userId) return [];
   const res = await api.get(`/bids/bidsByDriver/${userId}`, { signal });
@@ -8,7 +10,10 @@ export async function getBidsByDriver(userId, signal) {
 
 export async function getActiveBids(transportRequestId, signal) {
   if (!transportRequestId) return [];
-  const res = await api.get(`/bids/bidsActive?transportRequestId=${transportRequestId}`, { signal });
+  const res = await api.get(
+    `/bids/bidsActive?transportRequestId=${transportRequestId}`,
+    { signal }
+  );
   return res.data || [];
 }
 
@@ -28,7 +33,9 @@ export async function cancelBid(bidId, signal) {
 }
 
 export async function manualBidAction(bidId, action, signal) {
-  const res = await api.post(`/bids/manual/${bidId}/${action}`, null, { signal });
+  const res = await api.post(`/bids/manual/${bidId}/${action}`, null, {
+    signal,
+  });
   return res.data;
 }
 

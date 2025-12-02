@@ -15,6 +15,8 @@ import {
   manualBidAction,
 } from "../services/bidsService";
 
+// Hook de detalhes do pedido (dados e ações)
+
 export function useRequestDetails({ transportId } = {}) {
   const [transport, setTransport] = useState(null);
   const [bids, setBids] = useState([]);
@@ -30,8 +32,13 @@ export function useRequestDetails({ transportId } = {}) {
       const updatedBids = await Promise.all(
         bidsRes.map(async (bid) => {
           try {
-            const ratingRes = await api.get(`/reviewRequest/average/driver/${bid.driver.driverId}`);
-            return { ...bid, driver: { ...bid.driver, averageRating: ratingRes.data.average } };
+            const ratingRes = await api.get(
+              `/reviewRequest/average/driver/${bid.driver.driverId}`
+            );
+            return {
+              ...bid,
+              driver: { ...bid.driver, averageRating: ratingRes.data.average },
+            };
           } catch {
             return { ...bid, driver: { ...bid.driver, averageRating: null } };
           }
@@ -58,7 +65,11 @@ export function useRequestDetails({ transportId } = {}) {
 
         const status = String(tr?.status ?? "").toUpperCase();
 
-        if (status === "DRAFT" || status === "CANCELED" || status === "CANCELLED") {
+        if (
+          status === "DRAFT" ||
+          status === "CANCELED" ||
+          status === "CANCELLED"
+        ) {
           setBids([]);
           setAcceptedBid(null);
           return;
@@ -77,8 +88,12 @@ export function useRequestDetails({ transportId } = {}) {
           status === "COMPLETED"
         ) {
           try {
-            const accRes = await api.get(`/bids/manual/byrequest/${transportId}/Accepted`);
-            const bid = Array.isArray(accRes.data) ? accRes.data[0] : accRes.data;
+            const accRes = await api.get(
+              `/bids/manual/byrequest/${transportId}/Accepted`
+            );
+            const bid = Array.isArray(accRes.data)
+              ? accRes.data[0]
+              : accRes.data;
             setAcceptedBid(bid || null);
             setBids([]);
           } catch (err) {
@@ -125,7 +140,9 @@ export function useRequestDetails({ transportId } = {}) {
 
   const updateExistingBid = async (bidId, payload) => {
     const res = await updateBid(bidId, payload);
-    setBids((prev) => prev.map((b) => (b.bidId === bidId ? { ...b, ...payload } : b)));
+    setBids((prev) =>
+      prev.map((b) => (b.bidId === bidId ? { ...b, ...payload } : b))
+    );
     return res;
   };
 

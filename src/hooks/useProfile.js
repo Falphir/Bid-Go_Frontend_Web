@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { getProfile, updateDriver, updateCompany, deactivateAccount, changePassword } from "../services/profileService";
+import {
+  getProfile,
+  updateDriver,
+  updateCompany,
+  deactivateAccount,
+  changePassword,
+} from "../services/profileService";
+
+// Hook de perfil: carregar e atualizar dados
 
 export function useProfile({ userId, isDriver, isCompany } = {}) {
   const [profile, setProfile] = useState(null);
@@ -44,7 +52,15 @@ export function useProfile({ userId, isDriver, isCompany } = {}) {
     return await changePassword(userId, currentPassword, newPassword);
   }
 
-  return { profile, loading, error, setProfile, saveProfile, deactivate, changePwd };
+  return {
+    profile,
+    loading,
+    error,
+    setProfile,
+    saveProfile,
+    deactivate,
+    changePwd,
+  };
 }
 
 export default useProfile;

@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import { recoverPassword, resetPassword } from "../services/authService";
 
+// Hook recuperar/reset da palavra‑passe
+
 export function useRecoverPassword() {
   const abortRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,9 @@ export function useRecoverPassword() {
       return res;
     } catch (err) {
       if (err?.name === "CanceledError") return null;
-      setError(err?.response?.data?.message || err?.message || "Recover failed");
+      setError(
+        err?.response?.data?.message || err?.message || "Recover failed"
+      );
       throw err;
     } finally {
       setLoading(false);

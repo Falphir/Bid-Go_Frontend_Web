@@ -2,6 +2,7 @@ import React from "react";
 import { mapStatusToClass, prettyStatus } from "../../utils/status";
 import "./StatusBadge.css";
 
+// Badge de estado por status
 export default function StatusBadge({ status, prefix, className = "" }) {
   const cls = mapStatusToClass(status);
   const label = prettyStatus(status);

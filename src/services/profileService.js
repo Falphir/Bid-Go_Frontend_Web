@@ -1,5 +1,7 @@
 import api from "../api/axiosConfig";
 
+// Service de perfil: obter/atualizar dados e credenciais
+
 export async function getProfile(userId, signal) {
   if (!userId) return null;
   const res = await api.get(`/profile/${userId}`, { signal });
@@ -23,14 +25,31 @@ export async function updateCompany(userId, formData, signal) {
 }
 
 export async function deactivateAccount(userId, signal) {
-  const res = await api.put(`/profile/${userId}/deactivateAccount`, null, { signal });
+  const res = await api.put(`/profile/${userId}/deactivateAccount`, null, {
+    signal,
+  });
   return res.data;
 }
 
-export async function changePassword(userId, currentPassword, newPassword, signal) {
-  const res = await api.put(`/profile/${userId}/changePassword`, { currentPassword, newPassword }, { signal });
+export async function changePassword(
+  userId,
+  currentPassword,
+  newPassword,
+  signal
+) {
+  const res = await api.put(
+    `/profile/${userId}/changePassword`,
+    { currentPassword, newPassword },
+    { signal }
+  );
   return res.data;
 }
 
-const profileService = { getProfile, updateDriver, updateCompany, deactivateAccount, changePassword };
+const profileService = {
+  getProfile,
+  updateDriver,
+  updateCompany,
+  deactivateAccount,
+  changePassword,
+};
 export default profileService;

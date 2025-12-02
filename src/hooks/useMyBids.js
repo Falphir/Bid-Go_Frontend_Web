@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { getBidsByDriver } from "../services/bidsService";
 
+// Hook das minhas bids (driver)
+
 export function useMyBids({ userId } = {}) {
   const [bids, setBids] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +19,9 @@ export function useMyBids({ userId } = {}) {
         setBids(data || []);
       } catch (err) {
         if (err?.name === "CanceledError") return;
-        setError(err?.response?.data?.message || err?.message || "Unable to load bids.");
+        setError(
+          err?.response?.data?.message || err?.message || "Unable to load bids."
+        );
       } finally {
         setLoading(false);
       }

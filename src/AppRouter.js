@@ -1,5 +1,8 @@
 import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
+// AppRouter é responsável por declarar todas as rotas da aplicação
+// usando React Router. As rotas aninhadas dentro de <App /> partilham
+// o mesmo layout/principal (Navbar, etc.).
 import App from "./App";
 import BidGoPage from "./pages/BidGoPage";
 import LoginPage from "./pages/LoginPage";
@@ -29,11 +32,10 @@ export default function AppRouter() {
             <Route path="/notifications" element={<NotificationPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/myBids" element={<MyBidsPage />} />
-              <Route path="/myTransports" element={<BidGoPage />} />
-
+            <Route path="/myTransports" element={<BidGoPage />} />
           </Route>
           <Route path="/Login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/recover" element={<RecoverPasswordPage />} />
           <Route path="*" element={<div>NOT FOUND</div>} />
         </Routes>

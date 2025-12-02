@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import { registerDriver, registerCompany } from "../services/authService";
 
+// Hook de registo (motorista/empresa)
+
 export function useRegister() {
   const abortRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -21,7 +23,9 @@ export function useRegister() {
       return res;
     } catch (err) {
       if (err?.name === "CanceledError") return null;
-      setError(err?.response?.data?.message || err?.message || "Registration failed");
+      setError(
+        err?.response?.data?.message || err?.message || "Registration failed"
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -39,7 +43,9 @@ export function useRegister() {
       return res;
     } catch (err) {
       if (err?.name === "CanceledError") return null;
-      setError(err?.response?.data?.message || err?.message || "Registration failed");
+      setError(
+        err?.response?.data?.message || err?.message || "Registration failed"
+      );
       throw err;
     } finally {
       setLoading(false);

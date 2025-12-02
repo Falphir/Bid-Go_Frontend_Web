@@ -1,5 +1,10 @@
 import api from "../api/axiosConfig";
-import { normalizeHistoryDriver, normalizeHistoryCompany } from "../utils/normalizers";
+import {
+  normalizeHistoryDriver,
+  normalizeHistoryCompany,
+} from "../utils/normalizers";
+
+// Service de histórico: driver e empresa
 
 export async function getDriverHistory(userId, signal) {
   if (!userId) return [];

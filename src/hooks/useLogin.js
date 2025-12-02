@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import { login as loginRequest } from "../services/authService";
 
+// Hook de login com cancelamento
+
 export function useLogin() {
   const abortRef = useRef(null);
   const [loading, setLoading] = useState(false);

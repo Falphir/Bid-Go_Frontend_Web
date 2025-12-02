@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 
+// Hook para ordenar bids por preço ou prazo
+
 export function useSortedBids(bids, sortBy, ascending) {
   return useMemo(() => {
     if (!Array.isArray(bids)) return [];

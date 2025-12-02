@@ -1,25 +1,26 @@
 import React from "react";
 import "./DateFields.css";
 
+// Campos de datas pickup/delivery
 export default function DateFields({ pickupDate, deliveryDate, onChange }) {
-    return (
-        <div className="row">
-            <div className="field">
-                <label>Pickup Date</label>
-                <input
-                    type="date"
-                    value={pickupDate}
-                    onChange={(e) => onChange("pickupDate", e.target.value)}
-                />
-            </div>
-            <div className="field">
-                <label>Delivery Date</label>
-                <input
-                    type="date"
-                    value={deliveryDate}
-                    onChange={(e) => onChange("deliveryDate", e.target.value)}
-                />
-            </div>
-        </div>
-    );
+  return (
+    <div className="row">
+      <div className="field">
+        <label>Pickup Date</label>
+        <input
+          type="date"
+          value={pickupDate}
+          onChange={(e) => onChange("pickupDate", e.target.value)}
+        />
+      </div>
+      <div className="field">
+        <label>Delivery Date</label>
+        <input
+          type="date"
+          value={deliveryDate}
+          onChange={(e) => onChange("deliveryDate", e.target.value)}
+        />
+      </div>
+    </div>
+  );
 }

@@ -2,6 +2,7 @@ import React from "react";
 import Countdown from "../../components/Countdown/Countdown";
 import "./TransportCard.css";
 import defaultTransportImage from "../../assets/Image-not-found.png";
+// Cartão resumo pedido transporte
 
 export default function TransportCard({ data, isCompany, isDriver, onView }) {
     if (!data) return null;

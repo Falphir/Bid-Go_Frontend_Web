@@ -7,6 +7,7 @@ import {
     FaBan,
 } from "react-icons/fa";
 import "./NotificationCard.css";
+// Cartão de notificação
 
 export default function NotificationCard({ notification, onMarkRead }) {
     if (!notification) return null;

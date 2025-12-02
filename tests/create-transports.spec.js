@@ -1,162 +1,166 @@
-require('./coverage-helper');
+/**
+ * Teste de Sistema — Create Transport Request
+ *
+ * Objetivo:
+ * - Validar, end-to-end, que uma empresa consegue criar um pedido de transporte via UI.
+ *
+ * Fluxo principal:
+ * 1) Registar uma empresa via UI.
+ * 2) Obter o `userId` da empresa na BD.
+ * 3) Iniciar sessão como empresa e criar um transporte via UI.
+ * 4) Confirmar sucesso na UI e persistência na BD (`TransportRequests`).
+ *
+ * Validações de dados (BD):
+ * - Tabelas: `Users`, `TransportRequests`.
+ * - Colunas `Id`/`id` e `CompanyId` podem variar por ambiente; o teste aplica fallbacks.
+ *
+ * Pré‑requisitos:
+ * - App disponível em `http://localhost:3000`.
+ * - Acesso à BD de teste através de `./utilis/db`.
+ *
+ * Limpeza (teardown):
+ * - Remove `TransportRequests` associados ao `userId` e o utilizador criado em `Users`.
+ */
 
-const { test, expect } = require('@playwright/test');
-const db = require('./utilis/db'); // Confirma se a pasta é 'utilis' ou 'utils'
-const path = require('path');
+require("./coverage-helper");
 
-test.describe('System Test: Create Transport Request', () => {
-    const timestamp = Date.now();
+const { test, expect } = require("@playwright/test");
+const db = require("./utilis/db");
+const path = require("path");
 
-    const userData = {
-        email: `company${timestamp}@gmail.com`,
-        password: 'Bidandgo@25',
-        name: 'Company E2E Tester',
-        PhoneNumber : '222333222',
-        nif : '111111122',
-        companyName: "Company E2E Lda",
-        address:"Rua de Teste",
-    };
+test.describe("System Test: Create Transport Request", () => {
+  const timestamp = Date.now();
 
-    // Variável para guardar o ID gerado pelo Backend
-    let userId;
+  const userData = {
+    email: `company${timestamp}@gmail.com`,
+    password: "Bidandgo@25",
+    name: "Company E2E Tester",
+    PhoneNumber: "222333222",
+    nif: "111111122",
+    companyName: "Company E2E Lda",
+    address: "Rua de Teste",
+  };
 
-    // --- 1. SETUP: REGISTAR VIA UI + RECUPERAR ID ---
-    test.beforeAll(async ({ browser }) => {
-        console.log('--- SETUP: A registar utilizador via UI ---');
+  let userId;
 
-        const context = await browser.newContext();
-        const page = await context.newPage();
+  test.beforeAll(async ({ browser }) => {
+    console.log("--- SETUP: registo de empresa via UI ---");
 
-        try {
-            // A. Ir para a página de registo
-            await page.goto('http://localhost:3000/Register');
+    const context = await browser.newContext();
+    const page = await context.newPage();
 
-            // --- PASSO 1: ESCOLHER TIPO DE CONTA ---
-            await expect(page.getByText(/Choose the account type/i)).toBeVisible();
-            await page.getByText('Company', { exact: true }).click();
+    try {
+      await page.goto("http://localhost:3000/Register");
+      await expect(page.getByText(/Choose the account type/i)).toBeVisible();
+      await page.getByText("Company", { exact: true }).click();
+      await page.getByLabel("Name", { exact: true }).fill(userData.name);
+      await page.getByLabel("Company Name").fill(userData.companyName);
+      await page.getByLabel("Address").fill(userData.address);
+      await page.getByLabel("Email").fill(userData.email);
+      await page.locator('input[type="password"]').fill(userData.password);
+      await page.getByLabel("Phone").fill(userData.PhoneNumber);
+      await page.getByLabel("NIF").fill(userData.nif);
+      await page.getByRole("button", { name: /Register/i }).click();
+      await page.waitForTimeout(3000);
+      console.log("Registo submetido via UI.");
+    } catch (e) {
+      console.error("Erro no preenchimento do registo:", e);
+      throw e;
+    }
 
-            // --- PASSO 2: PREENCHER FORMULÁRIO ---
-            await page.getByLabel('Name', { exact: true }).fill(userData.name);
-            await page.getByLabel('Company Name').fill(userData.companyName);
-            await page.getByLabel('Address').fill(userData.address);
-            await page.getByLabel('Email').fill(userData.email);
-            await page.locator('input[type="password"]').fill(userData.password);
-            await page.getByLabel('Phone').fill(userData.PhoneNumber);
-            await page.getByLabel('NIF').fill(userData.nif);
+    console.log("A recuperar o ID do utilizador na BD...");
+    const rows = await db.query("SELECT * FROM Users WHERE Email = ?", [
+      userData.email,
+    ]);
 
-            // --- PASSO 3: SUBMETER ---
-            await page.getByRole('button', { name: /Register/i }).click();
+    if (rows.length > 0) {
+      userId = rows[0].Id || rows[0].id;
+      console.log(`✅ User encontrado! ID: ${userId}`);
+    } else {
+      throw new Error(
+        "Erro Crítico: O user registado não apareceu na base de dados (Tabela vazia ou email diferente)."
+      );
+    }
 
-            // Esperar que o registo processe
-            await page.waitForTimeout(3000);
-            console.log('Registo submetido via UI.');
+    await page.close();
+    await context.close();
+  });
 
-        } catch (e) {
-            console.error('Erro no preenchimento do registo:', e);
-            throw e;
-        }
+  test.afterAll(async () => {
+    console.log("--- TEARDOWN ---");
+    if (userId) {
+      try {
+        await db.query("DELETE FROM TransportRequests WHERE CompanyId = ?", [
+          userId,
+        ]);
+        await db.query("DELETE FROM Users WHERE Id = ?", [userId]);
+      } catch (error) {
+        console.error("Erro ao limpar DB:", error.message);
+      }
+    }
+    await db.close();
+  });
 
-        // --- PASSO 4 (CRITICO): BUSCAR O ID GERADO À BD ---
-        // Sem isto, o userId fica undefined!
-        console.log('A recuperar o ID do utilizador na BD...');
+  test("User can login and create a transport request", async ({ page }) => {
+    page.on("console", (msg) => console.log(`Browser: ${msg.text()}`));
+    // Login
+    console.log("A fazer Login...");
+    await page.goto("http://localhost:3000/Login");
 
-        // Nota: Usa 'Users' com maiúscula por precaução
-        const rows = await db.query('SELECT * FROM Users WHERE Email = ?', [userData.email]);
+    await page.getByLabel(/email/i).fill(userData.email);
+    await page.locator('input[type="password"]').fill(userData.password);
+    await page.getByRole("button", { name: /sign in/i }).click();
+    await expect(page).toHaveURL(/\/$/, { timeout: 10000 });
+    console.log("Login com sucesso!");
+    // Criar transporte
+    console.log("A criar transporte...");
+    await page.goto("http://localhost:3000/createRequest");
 
-        if (rows.length > 0) {
-            // Tenta ler Id (Maiúsculo) ou id (Minúsculo) para evitar erros
-            userId = rows[0].Id || rows[0].id;
+    const imagePath = path.resolve(__dirname, "../src/assets/logo.png");
+    await page.setInputFiles("#image-upload", imagePath);
 
-            console.log(`✅ User encontrado! ID: ${userId}`);
+    await page.locator("input.Origin").fill("Porto");
+    await page.locator("input.Destination").fill("Lisbon");
+    await page.locator("input.PackageType").fill("Household appliance");
+    await page.locator("input.Weight").fill("10");
 
-        } else {
-            throw new Error("Erro Crítico: O user registado não apareceu na base de dados (Tabela vazia ou email diferente).");
-        }
+    await page.getByPlaceholder(/length/i).fill("2");
+    await page.getByPlaceholder(/width/i).fill("3");
+    await page.getByPlaceholder(/height/i).fill("4");
+    // Datas
+    const today = new Date();
+    const formatDate = (d) => d.toISOString().split("T")[0];
+    const pickupDate = formatDate(
+      new Date(today.getTime() + 48 * 60 * 60 * 1000)
+    );
+    const deliveryDate = formatDate(
+      new Date(today.getTime() + 72 * 60 * 60 * 1000)
+    );
+    const auctionStart = formatDate(today);
+    const auctionEnd = formatDate(
+      new Date(today.getTime() + 24 * 60 * 60 * 1000)
+    );
 
-        await page.close();
-        await context.close();
-    });
+    const dateInputs = page.locator('form.transport-form input[type="date"]');
+    await dateInputs.nth(0).fill(pickupDate);
+    await dateInputs.nth(1).fill(deliveryDate);
+    await dateInputs.nth(2).fill(auctionStart);
+    await dateInputs.nth(3).fill(auctionEnd);
 
-    // --- 3. LIMPEZA (TEARDOWN) ---
-    test.afterAll(async () => {
-        console.log('--- TEARDOWN ---');
-        if (userId) {
-            try {
-                // Tenta limpar transportes primeiro (por causa da chave estrangeira)
-                // Usa CompanyId ou userId conforme a tua tabela
-                await db.query('DELETE FROM TransportRequests WHERE CompanyId = ?', [userId]);
-                await db.query('DELETE FROM Users WHERE Id = ?', [userId]);
-            } catch (error) {
-                console.error("Erro ao limpar DB:", error.message);
-            }
-        }
-        await db.close();
-    });
+    await page.getByPlaceholder(/e\.g\.: 150\.00/i).fill("150");
+    await page.getByRole("button", { name: /create request/i }).click();
+    // Validar na UI
+    const toast = page.getByText(/successfully|sucesso/i);
+    await expect(toast).toBeVisible();
+    await expect(page).toHaveURL(/\/myTransports$/);
 
-    // --- 4. O TESTE REAL ---
-    test('User can login and create a transport request', async ({ page }) => {
-        // Logs para debug
-        page.on('console', msg => console.log(`Browser: ${msg.text()}`));
-
-        // LOGIN
-        console.log('A fazer Login...');
-        await page.goto('http://localhost:3000/Login');
-
-        await page.getByLabel(/email/i).fill(userData.email);
-        await page.locator('input[type="password"]').fill(userData.password);
-        await page.getByRole('button', { name: /sign in/i }).click();
-
-        // Validar Login
-        await expect(page).toHaveURL(/\/$/, { timeout: 10000 });
-        console.log('Login com sucesso!');
-
-        // CRIAR TRANSPORTE
-        console.log('A criar transporte...');
-        await page.goto('http://localhost:3000/createRequest');
-
-        const imagePath = path.resolve(__dirname, '../src/assets/logo.png');
-        await page.setInputFiles('#image-upload', imagePath);
-
-        await page.locator('input.Origin').fill('Porto');
-        await page.locator('input.Destination').fill('Lisbon');
-        await page.locator('input.PackageType').fill('Household appliance');
-        await page.locator('input.Weight').fill('10');
-
-        await page.getByPlaceholder(/length/i).fill('2');
-        await page.getByPlaceholder(/width/i).fill('3');
-        await page.getByPlaceholder(/height/i).fill('4');
-
-        // Datas
-        const today = new Date();
-        const formatDate = (d) => d.toISOString().split('T')[0];
-        const pickupDate = formatDate(new Date(today.getTime() + 48*60*60*1000));
-        const deliveryDate = formatDate(new Date(today.getTime() + 72*60*60*1000));
-        const auctionStart = formatDate(today);
-        const auctionEnd = formatDate(new Date(today.getTime() + 24*60*60*1000));
-
-        const dateInputs = page.locator('form.transport-form input[type="date"]');
-        await dateInputs.nth(0).fill(pickupDate);
-        await dateInputs.nth(1).fill(deliveryDate);
-        await dateInputs.nth(2).fill(auctionStart);
-        await dateInputs.nth(3).fill(auctionEnd);
-
-        await page.getByPlaceholder(/e\.g\.: 150\.00/i).fill('150');
-        await page.getByRole('button', { name: /create request/i }).click();
-
-        // Validação Final UI
-        const toast = page.getByText(/successfully|sucesso/i);
-        await expect(toast).toBeVisible();
-        await expect(page).toHaveURL(/\/myTransports$/);
-
-        console.log(`A verificar DB para o userId: ${userId}`);
-
-        // Validação Final DB
-        // CONFIRMAÇÃO FINAL: Tabela TransportRequests e coluna CompanyId
-        const rows = await db.query(
-            'SELECT * FROM TransportRequests WHERE CompanyId = ? AND Origin = ?',
-            [userId, 'Porto']
-        );
-        expect(rows.length).toBe(1);
-        console.log('Teste passou! Transporte gravado na DB.');
-    });
+    console.log(`A verificar DB para o userId: ${userId}`);
+    // Validar na BD
+    const rows = await db.query(
+      "SELECT * FROM TransportRequests WHERE CompanyId = ? AND Origin = ?",
+      [userId, "Porto"]
+    );
+    expect(rows.length).toBe(1);
+    console.log("Teste passou! Transporte gravado na DB.");
+  });
 });

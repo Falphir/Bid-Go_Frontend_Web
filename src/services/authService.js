@@ -1,5 +1,7 @@
 import api from "../api/axiosConfig";
 
+// Service de autenticação: login/registo/recover/reset
+
 export async function login(email, password, signal) {
   const res = await api.post("/auth/login", { email, password }, { signal });
   return res.data;
@@ -24,6 +26,10 @@ export async function recoverPassword(email, signal) {
 }
 
 export async function resetPassword(token, newPassword, signal) {
-  const res = await api.post(`/auth/reset-password`, { token, newPassword }, { signal });
+  const res = await api.post(
+    `/auth/reset-password`,
+    { token, newPassword },
+    { signal }
+  );
   return res.data;
 }

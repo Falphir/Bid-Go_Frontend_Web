@@ -4,11 +4,13 @@
   gap: 16px;
   margin-bottom: 16px;
 }
+
 .avatar-wrapper {
   position: relative;
   width: 72px;
   height: 72px;
 }
+
 .avatar-img {
   width: 72px;
   height: 72px;
@@ -17,6 +19,7 @@
   border: 2px solid #cdd7e1;
   background: #f0f6fc;
 }
+
 .avatar-overlay {
   position: absolute;
   inset: 0;
@@ -30,21 +33,26 @@
   opacity: 0;
   transition: opacity 0.2s ease;
 }
+
 .avatar-wrapper:hover .avatar-overlay {
   opacity: 1;
 }
+
 .avatar-overlay svg {
   width: 22px;
   height: 22px;
 }
+
 .header-text {
   flex: 1;
 }
+
 .email-sub {
   margin: 0;
   color: #5c6e80;
   font-size: 13px;
 }
+
 .link-button {
   background: none;
   border: none;
@@ -55,6 +63,7 @@
   gap: 8px;
   cursor: pointer;
 }
+
 .link-button:hover {
   color: #004fa1;
 }

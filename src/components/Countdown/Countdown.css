@@ -6,8 +6,10 @@
   font-size: 0.95rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  -moz-font-feature-settings: "tnum"; /* Firefox */
-  -webkit-font-feature-settings: "tnum"; /* Safari */
+  -moz-font-feature-settings: "tnum";
+  /* Firefox */
+  -webkit-font-feature-settings: "tnum";
+  /* Safari */
   font-feature-settings: "tnum";
 }
 
@@ -19,12 +21,15 @@
 .countdown.ok {
   color: #16a34a;
 }
+
 .countdown.soon {
   color: #e6b800;
 }
+
 .countdown.warning {
   color: orange;
 }
+
 .countdown.ended {
   color: #dc2626;
 }
@@ -32,12 +37,15 @@
 .countdown[data-state="ok"] {
   color: #16a34a;
 }
+
 .countdown[data-state="soon"] {
   color: #e6b800;
 }
+
 .countdown[data-state="warning"] {
   color: orange;
 }
+
 .countdown[data-state="ended"] {
   color: #dc2626;
 }
@@ -45,12 +53,15 @@
 .countdown.badge.ok {
   background: rgba(22, 163, 74, 0.1);
 }
+
 .countdown.badge.soon {
   background: rgba(230, 184, 0, 0.12);
 }
+
 .countdown.badge.warning {
   background: rgba(255, 165, 0, 0.12);
 }
+
 .countdown.badge.ended {
   background: rgba(220, 38, 38, 0.1);
 }

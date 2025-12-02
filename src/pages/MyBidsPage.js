@@ -6,6 +6,7 @@ import StatusMessage from "../components/feedback/StatusMessage";
 import StatusBadge from "../components/feedback/StatusBadge";
 import useMyBids from "../hooks/useMyBids";
 
+// Página "As minhas bids"
 export default function MyBidsPage() {
     const { userId, loading: meLoading } = useMe();
     const { bids, loading, error } = useMyBids({ userId });

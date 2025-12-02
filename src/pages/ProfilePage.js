@@ -17,6 +17,7 @@ import StatusMessage from "../components/feedback/StatusMessage";
 import { useToast } from "../components/feedback/ToastContext";
 import Button from "../components/Button/Button";
 import useProfile from "../hooks/useProfile";
+// Página de perfil do utilizador
 
 function ProfilePage() {
     const { userId, isDriver, isCompany, loading: meLoading } = useMe();

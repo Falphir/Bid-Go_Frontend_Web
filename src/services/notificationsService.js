@@ -1,5 +1,7 @@
 import api from "../api/axiosConfig";
 
+// Service de notificações: listar e marcar como lidas
+
 export async function fetchNotifications(userId, signal) {
   if (!userId) return [];
   const res = await api.get(`/notifications?userId=${userId}`, { signal });
@@ -7,7 +9,11 @@ export async function fetchNotifications(userId, signal) {
 }
 
 export async function markAsRead(notificationId, signal) {
-  const res = await api.patch(`/notifications/mark-read/${notificationId}`, null, { signal });
+  const res = await api.patch(
+    `/notifications/mark-read/${notificationId}`,
+    null,
+    { signal }
+  );
   return res.data;
 }
 

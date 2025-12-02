@@ -29,6 +29,7 @@
   flex-direction: column;
   gap: 12px;
 }
+
 .ebm-label {
   display: flex;
   flex-direction: column;
@@ -99,6 +100,7 @@
   background: #e2e8f0;
   color: #0f172a;
 }
+
 .ebm-save {
   background: #16a34a;
   color: #fff;

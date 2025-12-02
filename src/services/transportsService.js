@@ -1,6 +1,8 @@
 import api from "../api/axiosConfig";
 import { normalizeTransportList } from "../utils/normalizers";
 
+// Service de transportes: listar, criar, editar e estado
+
 function buildQueryString(filters) {
   const params = new URLSearchParams();
   if (!filters) return "";
@@ -26,7 +28,9 @@ export async function getDriverTransports(filters, signal) {
 }
 
 export async function createTransportJson(payload, signal) {
-  const res = await api.post("/transports/createTransport", payload, { signal });
+  const res = await api.post("/transports/createTransport", payload, {
+    signal,
+  });
   return res.data;
 }
 
@@ -39,7 +43,9 @@ export async function createTransportForm(formData, signal) {
 }
 
 export async function createDraftJson(payload, signal) {
-  const res = await api.post("/transports/createDRAFTTransport", payload, { signal });
+  const res = await api.post("/transports/createDRAFTTransport", payload, {
+    signal,
+  });
   return res.data;
 }
 
@@ -58,11 +64,19 @@ export async function getTransportById(transportId, signal) {
 
 export async function updateTransport(transportId, payload, signal) {
   try {
-    const res = await api.post(`/transports/updateTransport/${transportId}`, payload, { signal });
+    const res = await api.post(
+      `/transports/updateTransport/${transportId}`,
+      payload,
+      { signal }
+    );
     return res.data;
   } catch (err) {
     if (err.response && err.response.status === 405) {
-      const res = await api.put(`/transports/updateTransport/${transportId}`, payload, { signal });
+      const res = await api.put(
+        `/transports/updateTransport/${transportId}`,
+        payload,
+        { signal }
+      );
       return res.data;
     }
     throw err;
@@ -70,16 +84,26 @@ export async function updateTransport(transportId, payload, signal) {
 }
 
 export async function publishCompanyTransport(transportId, signal) {
-  const res = await api.put(`/transports/company/publish/${transportId}`, null, { signal });
+  const res = await api.put(
+    `/transports/company/publish/${transportId}`,
+    null,
+    { signal }
+  );
   return res.data;
 }
 
 export async function cancelTransport(transportId, signal) {
-  const res = await api.put(`/transports/canceled/${transportId}`, null, { signal });
+  const res = await api.put(`/transports/canceled/${transportId}`, null, {
+    signal,
+  });
   return res.data;
 }
 
 export async function updateTransportStatus(transportId, status, signal) {
-  const res = await api.put(`/transports/updateStatus/${transportId}`, { status }, { signal });
+  const res = await api.put(
+    `/transports/updateStatus/${transportId}`,
+    { status },
+    { signal }
+  );
   return res.data;
 }

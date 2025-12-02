@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Countdown.css";
 
+// Contagem regressiva leilão
 export default function Countdown({ endDate }) {
   const [timeLeft, setTimeLeft] = useState("");
   const [diffMs, setDiffMs] = useState(0);

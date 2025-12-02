@@ -69,27 +69,34 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
 }
+
 .add-bid-btn:active {
   transform: translateY(0);
   box-shadow: none;
 }
+
 .add-bid-btn span {
   font-size: 14px;
 }
+
 .add-bid-btn svg {
   font-size: 14px;
 }
 
 .add-bid-btn--ended {
-  background: #94a3b8; /* gray */
-  cursor: pointer; /* keep pointer to allow click for toast */
+  background: #94a3b8;
+  /* gray */
+  cursor: pointer;
+  /* keep pointer to allow click for toast */
   position: relative;
 }
+
 .add-bid-btn--ended:hover {
   background: #94a3b8;
   transform: none;
   box-shadow: none;
 }
+
 .add-bid-btn--ended:after {
   content: "Ended";
   font-size: 10px;
@@ -104,15 +111,18 @@
 }
 
 .add-bid-btn--notstarted {
-  background: #f59e0b; /* amber */
+  background: #f59e0b;
+  /* amber */
   cursor: pointer;
   position: relative;
 }
+
 .add-bid-btn--notstarted:hover {
   background: #f59e0b;
   transform: none;
   box-shadow: none;
 }
+
 .add-bid-btn--notstarted:after {
   content: "Not started";
   font-size: 10px;

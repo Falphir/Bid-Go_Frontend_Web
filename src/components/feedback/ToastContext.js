@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
 import "./ToastContext.css";
 
+// Contexto de toasts temporários
 const ToastCtx = createContext({ showToast: () => {}, toasts: [] });
 
 export function ToastProvider({ children, duration = 3000 }) {

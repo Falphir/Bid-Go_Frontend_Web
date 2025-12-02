@@ -1,6 +1,7 @@
 import React from "react";
 import "./HistoryTable.css";
 
+// Tabela genérica de histórico com colunas dinâmicas
 export default function HistoryTable({
   columns = [],
   rows = [],
