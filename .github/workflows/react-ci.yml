@@ -44,59 +44,9 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: bidgo
-        ports:
-          - 3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost -proot"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
-      - name: Checkout backend
-        uses: actions/checkout@v4
-        with:
-          repository: LDSGrupo04/Bid-Go_Backend
-          token: ${{ secrets.BACKEND_REPO_TOKEN }}
-          path: backend
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Load DB schema
-        run: |
-          sudo apt-get update && sudo apt-get install -y mysql-client
-          mysql -h 127.0.0.1 \
-          -P ${{ job.services.mysql.ports['3306'] }} \
-          -uroot -proot \
-          bidgo < tests/sql/schema.sql
-
-      - name: Debug paths depois dos checkouts
-        run: |
-          pwd
-          echo "--- ROOT ---"
-          ls
-          echo "--- backend ---"
-          ls backend || echo "backend NAO EXISTE"
-          
-      - name: Run API
-        working-directory: backend
-        run: |
-          export ConnectionStrings__DefaultConnection="Server=127.0.0.1;Port=${{ job.services.mysql.ports['3306'] }};Database=bidgo;User Id=root;Password=root;"
-          dotnet restore
-          dotnet run --project Bid-Go/Bid-Go.csproj --urls http://localhost:5000 &
-          sleep 15
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -109,13 +59,6 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install
-
-      - name: Set DB env vars
-        run: echo "DB_HOST=127.0.0.1" >> $GITHUB_ENV
-          echo "DB_PORT=${{ job.services.mysql.ports['3306'] }}" >> $GITHUB_ENV
-          echo "DB_USER=root" >> $GITHUB_ENV
-          echo "DB_PASSWORD=root" >> $GITHUB_ENV
-          echo "DB_NAME=bidgo" >> $GITHUB_ENV
 
       - name: Run Playwright E2E tests
         run: npm run test:e2e
