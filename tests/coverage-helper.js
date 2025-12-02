@@ -4,10 +4,6 @@
 // após cada teste Playwright e grava-a no formato esperado pelo NYC/Istanbul
 // dentro da pasta `.nyc_output`. Depois o relatório pode ser agregado/convertido
 // por ferramentas como `nyc report`.
-//
-// Nota: certifique-se de que o bundle do frontend (ex.: via babel/istanbul)
-// está instrumentado para expor `window.__coverage__` nos testes end-to-end.
-require("./coverage-helper");
 
 const fs = require("fs");
 const path = require("path");
