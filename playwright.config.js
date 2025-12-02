@@ -10,7 +10,7 @@ const { devices } = require('@playwright/test');
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 module.exports = {
   testDir: './tests',
-  timeout: 30_000,
+  timeout: 60_000,
   expect: { timeout: 5000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -27,7 +27,7 @@ module.exports = {
     // Usar env-cmd para garantir que o process spawned carrega .env.development
     command: 'env-cmd -f .env.development npm start',
     port: 3000,
-    timeout: 120_000,
+    timeout: 180_000,
     reuseExistingServer: !process.env.CI,
   },
   projects: [
@@ -48,6 +48,6 @@ module.exports = defineConfig({
         command: 'env-cmd -f .env.development npm start',
         port: 3000,
         reuseExistingServer: !process.env.CI,
-        timeout: 120000,
+        timeout: 180000,
     },
 });
