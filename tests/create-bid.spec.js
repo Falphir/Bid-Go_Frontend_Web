@@ -67,7 +67,7 @@ test.describe("System Test: Create Bid on existing transport", () => {
     await page.getByLabel("Phone").fill(companyData.PhoneNumber);
     await page.getByLabel("NIF").fill(companyData.nif);
     await page.getByRole("button", { name: /Register/i }).click();
-    await page.waitForTimeout(8000);
+    await page.waitForTimeout(10000);
 
     // Obter companyId na BD
     const companyRows = await db.query("SELECT * FROM Users WHERE Email = ?", [
@@ -136,7 +136,7 @@ test.describe("System Test: Create Bid on existing transport", () => {
     await page.getByLabel("Phone").fill(driverData.PhoneNumber);
     await page.getByLabel("Tax ID").fill(driverData.nif);
     await page.getByRole("button", { name: /Register/i }).click();
-    await page.waitForTimeout(6000);
+    await page.waitForTimeout(10000);
     const dRows = await db.query("SELECT * FROM Users WHERE Email = ?", [
       driverData.email,
     ]);
