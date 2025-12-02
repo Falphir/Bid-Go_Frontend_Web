@@ -69,18 +69,20 @@ test.describe("System Test: Create Transport Request", () => {
     }
 
     console.log("A recuperar o ID do utilizador na BD...");
-    const rows = await db.query("SELECT * FROM Users WHERE Email = ?", [
-      userData.email,
-    ]);
+      let rows = [];
+      // Polling: aguarda até 10s pelo registo na BD
+      for (let i = 0; i < 10; i++) {
+          rows = await db.query('SELECT * FROM Users WHERE Email = ?', [userData.email]);
+          if (rows.length > 0) break;
+          await new Promise(r => setTimeout(r, 1000));
+      }
 
-    if (rows.length > 0) {
-      userId = rows[0].Id || rows[0].id;
-      console.log(`✅ User encontrado! ID: ${userId}`);
-    } else {
-      throw new Error(
-        "Erro Crítico: O user registado não apareceu na base de dados (Tabela vazia ou email diferente)."
-      );
-    }
+      if (rows.length > 0) {
+          userId = rows[0].Id || rows[0].id;
+          console.log(`✅ User encontrado! ID: ${userId}`);
+      } else {
+          throw new Error("Erro Crítico: O user registado não apareceu na base de dados (Tabela vazia ou email diferente).");
+      }
 
     await page.close();
     await context.close();
