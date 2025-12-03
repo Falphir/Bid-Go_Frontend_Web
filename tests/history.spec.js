@@ -30,7 +30,6 @@ const path = require("path");
 
 test.describe.configure({ timeout: 90000 });
 
-// Helper de polling para aguardar inserções na BD sem esperas estáticas
 async function pollRow(sql, params, { attempts = 40, delay = 1000 } = {}) {
   for (let i = 0; i < attempts; i++) {
     const rows = await db.query(sql, params);
@@ -74,7 +73,6 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
 
-    // Registar empresa via UI
     try {
       await page.goto("http://localhost:3000/Register");
       await expect(page.getByText(/Choose the account type/i)).toBeVisible();
@@ -95,7 +93,6 @@ test.describe("System Test: History Page (Driver & Company)", () => {
       throw e;
     }
 
-    // Obter companyId na BD (polling)
     const companyRows = await pollRow(
       "SELECT * FROM Users WHERE Email = ?",
       [companyData.email]
@@ -106,7 +103,6 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     companyId = companyRows[0].Id || companyRows[0].id;
     console.log("CompanyId para history:", companyId);
 
-    // Registar driver via UI
     try {
       await page.goto("http://localhost:3000/Register");
       await expect(page.getByText(/Choose the account type/i)).toBeVisible();
@@ -131,7 +127,6 @@ test.describe("System Test: History Page (Driver & Company)", () => {
       throw e;
     }
 
-    // Obter driverId na BD (polling)
     const driverRows = await pollRow(
       "SELECT * FROM Users WHERE Email = ?",
       [driverData.email]
@@ -142,7 +137,6 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     driverId = driverRows[0].Id || driverRows[0].id;
     console.log("DriverId para history:", driverId);
 
-    // Login como company e criar um TransportRequest via UI
     console.log("A criar TransportRequest via UI para company...");
     await page.goto("http://localhost:3000/Login");
     await page.getByLabel(/email/i).fill(companyData.email);
@@ -192,7 +186,6 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     await expect(page).toHaveURL(/\/myTransports$/);
     console.log("TransportRequest criado via UI.");
 
-    // Obter transportRequestId na BD
     const trRows = await pollRow(
       "SELECT * FROM TransportRequests WHERE CompanyId = ? AND Origin = ? ORDER BY TransportRequestId DESC LIMIT 1",
       [companyId, "Porto"],
@@ -209,7 +202,6 @@ test.describe("System Test: History Page (Driver & Company)", () => {
       transportRequestId
     );
 
-    // Criar uma Bid como driver via UI
     await page.goto("http://localhost:3000/Login");
 
     console.log("A criar Bid via UI para histórico do driver...");
@@ -299,7 +291,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     } catch (e) {
       console.error("Erro ao limpar dados de history:", e.message);
     }
-    // Não fechar pool aqui para não interferir com outros testes em paralelo
+
   });
 
   test("Driver can login and see bidding history", async ({ page }) => {
