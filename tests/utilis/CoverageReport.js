@@ -1,66 +1,87 @@
+const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
-const readline = require('readline');
 const os = require('os');
+const readline = require('readline');
 
-// Configurações
-const lcovPath = path.join(__dirname, '..', 'coverage', 'lcov.info');
-const htmlFile = path.join(__dirname, '..', 'relatorio_cobertura.html');
-const pdfFile = path.join(__dirname, '..', 'Relatorio_Cobertura.pdf');
 
-async function main() {
+const currentDirHasPackage = fs.existsSync(path.join(__dirname, 'package.json'));
+const rootDir = currentDirHasPackage ? __dirname : path.resolve(__dirname, '..', '..');
+
+
+const reportsDir = path.join(rootDir, 'reports');
+
+
+const lcovPath = path.join(rootDir, 'coverage', 'lcov.info');
+const htmlFile = path.join(reportsDir, 'relatorio_cobertura.html');
+const pdfFile = path.join(reportsDir, 'Relatorio_Cobertura.pdf');
+
+console.log('A iniciar Testes com Cobertura...');
+console.log(`Raiz do projeto: ${rootDir}`);
+console.log(`Pasta de relatórios: ${reportsDir}`);
+
+if (!fs.existsSync(reportsDir)) {
+    fs.mkdirSync(reportsDir, { recursive: true });
+}
+
+
+[lcovPath, htmlFile, pdfFile].forEach(f => {
+    if (fs.existsSync(f)) try { fs.unlinkSync(f); } catch(e) {};
+});
+
+
+console.log('A recolher cobertura... (aguarde)');
+
+const execOptions = {
+    cwd: rootDir,
+    env: { ...process.env, NODE_ENV: 'test' },
+    maxBuffer: 1024 * 1024 * 10
+};
+
+exec('npm run e2e:coverage', execOptions, (error, stdout, stderr) => {
+    console.log('Execução terminada.');
+    if (stderr && !stderr.includes('npm update') && !stderr.includes('debugger')) {
+        console.error('Notas do Sistema:', stderr);
+    }
+
+    generateCoverageReport();
+});
+
+async function generateCoverageReport() {
+    await new Promise(r => setTimeout(r, 1000));
+    console.log('A processar ficheiro lcov.info...');
+
     if (!fs.existsSync(lcovPath)) {
-        console.error('❌ Erro: Ficheiro coverage/lcov.info não encontrado.');
-        console.error('ℹ️  Precisas de configurar o Playwright para gerar coverage (ver instruções).');
+        console.error(`Erro: O ficheiro não foi criado em: ${lcovPath}`);
         return;
     }
 
-    console.log('📊 A ler lcov.info...');
-
     const fileStream = fs.createReadStream(lcovPath);
-    const rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-    });
+    const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
 
-    let totalLines = 0;
-    let coveredLines = 0;
-    let totalFiles = 0;
-
+    let totalLines = 0, coveredLines = 0, totalFiles = 0;
     const fileStats = [];
-
-    let currentFile = '';
-    let currentFileTotal = 0;
-    let currentFileHit = 0;
+    let currentFile = '', currentFileTotal = 0, currentFileHit = 0;
 
     for await (const line of rl) {
         if (line.startsWith('SF:')) {
-            // Start File
             let rawPath = line.substring(3);
-            // Tenta limpar o caminho para ficar bonito (remove caminhos absolutos)
-            currentFile = path.basename(rawPath);
-            // Se quiseres pastas: currentFile = rawPath.split('src/')[1] || rawPath;
-
+            currentFile = rawPath.replace(rootDir, '').replace(/^[\\\/]/, '');
             currentFileTotal = 0;
             currentFileHit = 0;
         } else if (line.startsWith('DA:')) {
-            // Data Address: DA:linha,hits
             const parts = line.substring(3).split(',');
             const hits = parseInt(parts[1], 10);
-
             currentFileTotal++;
             if (hits > 0) currentFileHit++;
         } else if (line === 'end_of_record') {
             if (currentFileTotal > 0) {
-                const percentage = (currentFileHit / currentFileTotal) * 100;
                 fileStats.push({
                     name: currentFile,
                     total: currentFileTotal,
                     hit: currentFileHit,
-                    percent: percentage
+                    percent: (currentFileHit / currentFileTotal) * 100
                 });
-
                 totalLines += currentFileTotal;
                 coveredLines += currentFileHit;
                 totalFiles++;
@@ -68,13 +89,12 @@ async function main() {
         }
     }
 
-    // Ordenar (os com menos cobertura aparecem primeiro, para alertar)
     fileStats.sort((a, b) => a.percent - b.percent);
 
     const totalCoveragePercent = totalLines === 0 ? 0 : (coveredLines / totalLines) * 100;
     const uncoveredLines = totalLines - coveredLines;
 
-    // --- GERAR HTML (Mesmo Design do Mobile) ---
+
     const htmlContent = `
 <!DOCTYPE html>
 <html lang="pt">
@@ -82,7 +102,7 @@ async function main() {
     <meta charset="UTF-8">
     <title>Relatório de Cobertura - Bid-Go Web</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; line-height: 1.5; max-width: 900px; margin: 0 auto; padding: 40px; background-color: #fff; }
+        body { font-family: 'Segoe UI', sans-serif; color: #333; line-height: 1.5; max-width: 900px; margin: 0 auto; padding: 40px; background-color: #fff; }
         h1 { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #000; }
         p { margin-bottom: 15px; text-align: justify; font-size: 14px; }
         .summary-box { background-color: #f9f9f9; border: 1px solid #ccc; padding: 15px; margin-bottom: 30px; border-radius: 4px; }
@@ -98,11 +118,13 @@ async function main() {
 </head>
 <body>
     <h1>Relatório de Cobertura de Testes (Web)</h1>
-    <p>O presente relatório apresenta os resultados da análise de cobertura de código da aplicação Web <strong>Bid-Go</strong>.</p>
+    
+    <p>O presente relatório apresenta os resultados da análise de cobertura de testes do sistema <strong>Bid-Go</strong> (Web), com o objetivo de avaliar a extensão e eficácia dos testes automatizados implementados. A cobertura de testes é um indicador essencial da qualidade do software, permitindo identificar áreas do código que foram ou não verificadas durante a execução dos testes.</p>
+    
+    <p>Os resultados foram obtidos através da recolha de métricas durante a execução dos testes E2E, abrangendo componentes, páginas e lógica da interface da aplicação. Este relatório fornece uma visão detalhada sobre a percentagem de linhas e ramos de código testados, possibilitando uma avaliação objetiva da robustez e fiabilidade do sistema.</p>
 
     <div class="summary-box">
         <div class="summary-title">Coverage Summary</div>
-        <div class="metric-row"><span class="metric-label">Parser:</span> <span>LCOV (Playwright/NYC)</span></div>
         <div class="metric-row"><span class="metric-label">Files:</span> <span>${totalFiles}</span></div>
         <div class="metric-row"><span class="metric-label">Line coverage:</span> <span>${totalCoveragePercent.toFixed(1)}% (${coveredLines} of ${totalLines})</span></div>
         <div class="metric-row"><span class="metric-label">Uncovered lines:</span> <span>${uncoveredLines}</span></div>
@@ -110,13 +132,7 @@ async function main() {
 
     <h2>Coverage Details</h2>
     <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Line Coverage</th>
-                <th>Lines (Hit/Total)</th>
-            </tr>
-        </thead>
+        <thead><tr><th>Name</th><th>Line Coverage</th><th>Lines (Hit/Total)</th></tr></thead>
         <tbody>
             ${fileStats.map(f => {
         const color = f.percent >= 80 ? '#28a745' : (f.percent >= 50 ? '#ffc107' : '#dc3545');
@@ -124,51 +140,52 @@ async function main() {
                 <tr>
                     <td>${f.name}</td>
                     <td>
-                        <div class="bar-container">
-                            <div class="bar-fill" style="width: ${f.percent}%; background-color: ${color};"></div>
-                        </div>
+                        <div class="bar-container"><div class="bar-fill" style="width: ${f.percent}%; background-color: ${color};"></div></div>
                         <strong>${f.percent.toFixed(1)}%</strong>
                     </td>
                     <td>${f.hit} / ${f.total}</td>
-                </tr>
-                `;
+                </tr>`;
     }).join('')}
         </tbody>
     </table>
 </body>
-</html>
-    `;
+</html>`;
 
     fs.writeFileSync(htmlFile, htmlContent);
-    console.log(`✅ HTML gerado: ${htmlFile}`);
-
+    console.log(`HTML criado: ${htmlFile}`);
     convertToPdf(htmlFile, pdfFile);
 }
 
 function convertToPdf(htmlPath, pdfPath) {
-    console.log('🔄 A converter para PDF...');
+    console.log('A converter para PDF...');
     const possiblePaths = [
         'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
         'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
         'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
         '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-        '/usr/bin/google-chrome'
+        '/usr/bin/google-chrome',
+        '/usr/bin/chromium-browser'
     ];
 
     const browserPath = possiblePaths.find(p => fs.existsSync(p));
-    if (!browserPath) return;
+    if (!browserPath) {
+        console.log('Navegador não encontrado. PDF não criado.');
+        return;
+    }
 
     const cmd = `"${browserPath}" --headless --disable-gpu --print-to-pdf="${pdfPath}" --no-pdf-header-footer "${htmlPath}"`;
+
     exec(cmd, (err) => {
         if (!err) {
-            console.log(`📄 PDF Cobertura Gerado: ${pdfPath}`);
-            // Abrir automaticamente
-            const platform = os.platform();
-            if (platform === 'win32') exec(`start "" "${pdfPath}"`);
-            else if (platform === 'darwin') exec(`open "${pdfPath}"`);
-            else exec(`xdg-open "${pdfPath}"`);
+            console.log(`PDF Cobertura criado: ${pdfPath}`);
+            openFile(pdfPath);
         }
     });
 }
 
-main();
+function openFile(filePath) {
+    if (!fs.existsSync(filePath)) return;
+    const platform = os.platform();
+    let cmd = platform === 'win32' ? `start "" "${filePath}"` : (platform === 'darwin' ? `open "${filePath}"` : `xdg-open "${filePath}"`);
+    exec(cmd);
+}
