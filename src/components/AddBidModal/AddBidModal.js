@@ -61,12 +61,16 @@ export default function AddBidModal({
     [deliveryDate]
   );
 
-  const biddingStartDate = transport?.biddingStartDate
-    ? new Date(transport.biddingStartDate)
-    : null;
-  const biddingEndDate = transport?.biddingEndDate
-    ? new Date(transport.biddingEndDate)
-    : null;
+  const biddingStartDate = useMemo(
+    () => (transport?.biddingStartDate ? new Date(transport.biddingStartDate) : null),
+    [transport?.biddingStartDate]
+  );
+
+  const biddingEndDate = useMemo(
+    () => (transport?.biddingEndDate ? new Date(transport.biddingEndDate) : null),
+    [transport?.biddingEndDate]
+  );
+
   const auctionNotStarted = !!(
     biddingStartDate &&
     !isNaN(biddingStartDate) &&
