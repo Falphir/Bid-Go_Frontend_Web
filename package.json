@@ -2,6 +2,10 @@
   "name": "bid-go",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.10.0",
+    "npm": ">=10.0.0"
+  },
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
