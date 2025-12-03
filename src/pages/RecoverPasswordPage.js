@@ -6,7 +6,16 @@ import { useNavigate } from "react-router";
 import PasswordInput from "../components/PasswordInput/PasswordInput";
 import useRecoverPassword from "../hooks/useRecoverPassword";
 
-// Página recuperar/reset da palavra‑passe
+/**
+ * Page that handles both requesting a password-recovery email and
+ * resetting the password using a token.
+ *
+ * It uses {@link useRecoverPassword} to talk to the backend and
+ * {@link useToast} to show feedback messages.
+ *
+ * @returns {JSX.Element} Rendered recover/reset password page.
+ */
+
 function RecoverPasswordPage() {
   const [mode, setMode] = useState("request");
   const [email, setEmail] = useState("");

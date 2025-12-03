@@ -1,7 +1,7 @@
 {
   "config": {
-    "configFile": "C:\\Users\\guerr\\Desktop\\Trabalhos\\LEI\\TrabalhoLDS2025\\LDSGrupo04\\Bid-Go_Frontend\\playwright.config.js",
-    "rootDir": "C:/Users/guerr/Desktop/Trabalhos/LEI/TrabalhoLDS2025/LDSGrupo04/Bid-Go_Frontend/tests",
+    "configFile": "C:\\Users\\tiago\\Documents\\GitHub\\Bid-Go_Frontend\\playwright.config.js",
+    "rootDir": "C:/Users/tiago/Documents/GitHub/Bid-Go_Frontend/tests",
     "forbidOnly": false,
     "fullyParallel": false,
     "globalSetup": null,
@@ -26,7 +26,7 @@
     "quiet": false,
     "projects": [
       {
-        "outputDir": "C:/Users/guerr/Desktop/Trabalhos/LEI/TrabalhoLDS2025/LDSGrupo04/Bid-Go_Frontend/test-results",
+        "outputDir": "C:/Users/tiago/Documents/GitHub/Bid-Go_Frontend/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
@@ -34,7 +34,7 @@
         },
         "id": "",
         "name": "",
-        "testDir": "C:/Users/guerr/Desktop/Trabalhos/LEI/TrabalhoLDS2025/LDSGrupo04/Bid-Go_Frontend/tests",
+        "testDir": "C:/Users/tiago/Documents/GitHub/Bid-Go_Frontend/tests",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -47,7 +47,7 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.57.0",
-    "workers": 6,
+    "workers": 4,
     "webServer": {
       "command": "env-cmd -f .env.development npm start",
       "port": 3000,
@@ -85,19 +85,19 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6732,
+                      "duration": 5987,
                       "errors": [],
                       "stdout": [
                         {
                           "text": "Chaves TransportRequests: [\n  \u001b[32m'TransportRequestId'\u001b[39m,\n  \u001b[32m'Origin'\u001b[39m,\n  \u001b[32m'Destination'\u001b[39m,\n  \u001b[32m'Package'\u001b[39m,\n  \u001b[32m'Weight'\u001b[39m,\n  \u001b[32m'Volume'\u001b[39m,\n  \u001b[32m'Length'\u001b[39m,\n  \u001b[32m'Width'\u001b[39m,\n  \u001b[32m'Height'\u001b[39m,\n  \u001b[32m'PickupDate'\u001b[39m,\n  \u001b[32m'DeliveryDate'\u001b[39m,\n  \u001b[32m'Image'\u001b[39m,\n  \u001b[32m'MaxPrice'\u001b[39m,\n  \u001b[32m'Status'\u001b[39m,\n  \u001b[32m'BiddingStartDate'\u001b[39m,\n  \u001b[32m'BiddingEndDate'\u001b[39m,\n  \u001b[32m'IsAutomaticSelectionEnabled'\u001b[39m,\n  \u001b[32m'IsAutomaticSelectionExecuted'\u001b[39m,\n  \u001b[32m'SelectedBidId'\u001b[39m,\n  \u001b[32m'CompanyId'\u001b[39m\n]\n"
                         },
                         {
-                          "text": "[coverage-helper] Gravado: C:\\Users\\guerr\\Desktop\\Trabalhos\\LEI\\TrabalhoLDS2025\\LDSGrupo04\\Bid-Go_Frontend\\.nyc_output\\playwright-Driver_can_place_a_bid_and_see_confirmation_UI_DB_-1764771966444.json\n"
+                          "text": "[coverage-helper] Gravado: C:\\Users\\tiago\\Documents\\GitHub\\Bid-Go_Frontend\\.nyc_output\\playwright-Driver_can_place_a_bid_and_see_confirmation_UI_DB_-1764775093613.json\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-03T14:25:46.894Z",
+                      "startTime": "2025-12-03T15:17:50.733Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -143,7 +143,7 @@
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 5706,
+                      "duration": 7827,
                       "errors": [],
                       "stdout": [
                         {
@@ -156,7 +156,7 @@
                           "text": "A recuperar o ID do utilizador na BD...\n"
                         },
                         {
-                          "text": "✅ User encontrado! ID: 738\n"
+                          "text": "✅ User encontrado! ID: 833\n"
                         },
                         {
                           "text": "A fazer Login...\n"
@@ -177,13 +177,13 @@
                           "text": "Browser: Company Transports Response: {data: Array(1), status: 200, statusText: OK, headers: AxiosHeaders, config: Object}\n"
                         },
                         {
-                          "text": "A verificar DB para o userId: 738\n"
+                          "text": "A verificar DB para o userId: 833\n"
                         },
                         {
                           "text": "Teste passou! Transporte gravado na DB.\n"
                         },
                         {
-                          "text": "[coverage-helper] Gravado: C:\\Users\\guerr\\Desktop\\Trabalhos\\LEI\\TrabalhoLDS2025\\LDSGrupo04\\Bid-Go_Frontend\\.nyc_output\\playwright-User_can_login_and_create_a_transport_request-1764771957423.json\n"
+                          "text": "[coverage-helper] Gravado: C:\\Users\\tiago\\Documents\\GitHub\\Bid-Go_Frontend\\.nyc_output\\playwright-User_can_login_and_create_a_transport_request-1764775087874.json\n"
                         },
                         {
                           "text": "--- TEARDOWN ---\n"
@@ -191,7 +191,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-03T14:25:46.900Z",
+                      "startTime": "2025-12-03T15:17:50.677Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -237,7 +237,7 @@
                       "workerIndex": 2,
                       "parallelIndex": 2,
                       "status": "passed",
-                      "duration": 4670,
+                      "duration": 4052,
                       "errors": [],
                       "stdout": [
                         {
@@ -247,13 +247,13 @@
                           "text": "Company registo submetido.\n"
                         },
                         {
-                          "text": "CompanyId para history: \u001b[33m740\u001b[39m\n"
+                          "text": "CompanyId para history: \u001b[33m835\u001b[39m\n"
                         },
                         {
                           "text": "Driver registo submetido.\n"
                         },
                         {
-                          "text": "DriverId para history: \u001b[33m742\u001b[39m\n"
+                          "text": "DriverId para history: \u001b[33m837\u001b[39m\n"
                         },
                         {
                           "text": "A criar TransportRequest via UI para company...\n"
@@ -262,13 +262,13 @@
                           "text": "TransportRequest criado via UI.\n"
                         },
                         {
-                          "text": "TransportRequestId para history (via UI): \u001b[33m389\u001b[39m\n"
+                          "text": "TransportRequestId para history (via UI): \u001b[33m438\u001b[39m\n"
                         },
                         {
                           "text": "A criar Bid via UI para histórico do driver...\n"
                         },
                         {
-                          "text": "BidId para history (via UI): \u001b[33m288\u001b[39m\n"
+                          "text": "BidId para history (via UI): \u001b[33m325\u001b[39m\n"
                         },
                         {
                           "text": "--- TESTE: Driver vê histórico ---\n"
@@ -276,7 +276,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-03T14:25:46.897Z",
+                      "startTime": "2025-12-03T15:17:50.737Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -305,7 +305,7 @@
                       "workerIndex": 2,
                       "parallelIndex": 2,
                       "status": "passed",
-                      "duration": 3691,
+                      "duration": 3939,
                       "errors": [],
                       "stdout": [
                         {
@@ -317,7 +317,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-03T14:26:05.939Z",
+                      "startTime": "2025-12-03T15:18:18.428Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -363,7 +363,7 @@
                       "workerIndex": 3,
                       "parallelIndex": 3,
                       "status": "passed",
-                      "duration": 10705,
+                      "duration": 13684,
                       "errors": [],
                       "stdout": [
                         {
@@ -373,22 +373,22 @@
                           "text": "Company registada e página de login acessível.\n"
                         },
                         {
-                          "text": "CompanyId: \u001b[33m739\u001b[39m\n"
+                          "text": "CompanyId: \u001b[33m832\u001b[39m\n"
                         },
                         {
                           "text": "Driver registado e página de login acessível.\n"
                         },
                         {
-                          "text": "DriverId: \u001b[33m743\u001b[39m\n"
+                          "text": "DriverId: \u001b[33m836\u001b[39m\n"
                         },
                         {
                           "text": "TransportRequest criado.\n"
                         },
                         {
-                          "text": "TransportRequestId: \u001b[33m390\u001b[39m\n"
+                          "text": "TransportRequestId: \u001b[33m437\u001b[39m\n"
                         },
                         {
-                          "text": "BidId: \u001b[33m289\u001b[39m\n"
+                          "text": "BidId: \u001b[33m324\u001b[39m\n"
                         },
                         {
                           "text": "--- TESTE STATUS: aceitar bid e avançar estados ---\n"
@@ -418,7 +418,7 @@
                           "text": "Fluxo de estados validado (forçando WAITINGPICKUP e INTRANSIT na BD quando necessário): PENDING -> WAITINGPICKUP -> INTRANSIT -> COMPLETED.\n"
                         },
                         {
-                          "text": "[coverage-helper] Gravado: C:\\Users\\guerr\\Desktop\\Trabalhos\\LEI\\TrabalhoLDS2025\\LDSGrupo04\\Bid-Go_Frontend\\.nyc_output\\playwright-Company_and_Driver_can_progress_transport_status_until_Completed-1764771974727.json\n"
+                          "text": "[coverage-helper] Gravado: C:\\Users\\tiago\\Documents\\GitHub\\Bid-Go_Frontend\\.nyc_output\\playwright-Company_and_Driver_can_progress_transport_status_until_Completed-1764775107848.json\n"
                         },
                         {
                           "text": "--- TEARDOWN STATUS FLOW ---\n"
@@ -426,7 +426,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-03T14:25:46.918Z",
+                      "startTime": "2025-12-03T15:17:50.713Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -446,8 +446,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-03T14:25:45.850Z",
-    "duration": 29381.591,
+    "startTime": "2025-12-03T15:17:48.798Z",
+    "duration": 39632.482,
     "expected": 5,
     "skipped": 0,
     "unexpected": 0,

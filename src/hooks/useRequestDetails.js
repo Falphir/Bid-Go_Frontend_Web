@@ -15,8 +15,37 @@ import {
   manualBidAction,
 } from "../services/bidsService";
 
-// Hook de detalhes do pedido (dados e ações)
+/**
+ * Result object returned by {@link useRequestDetails}.
+ *
+ * @typedef {Object} UseRequestDetailsResult
+ * @property {Object|null} transport - Current transport request being displayed.
+ * @property {Object[]} bids - Active bids for the request when status is ACTIVE.
+ * @property {Object|null} acceptedBid - Accepted bid when the request is in a later status.
+ * @property {boolean} loading - Indicates whether data is being loaded.
+ * @property {string|null} error - Error message when loading fails; null otherwise.
+ * @property {function(): Promise<*>} refreshTransport - Reloads the transport details from the API.
+ * @property {function(): Promise<void>} loadActiveBids - Fetches the current active bids.
+ * @property {function(Object): Promise<*>} createBidForTransport - Creates a bid and refreshes the list.
+ * @property {function(*, Object): Promise<*>} updateExistingBid - Updates an existing bid and refreshes local state.
+ * @property {function(*): Promise<*>} cancelExistingBid - Cancels a bid and removes it from the list.
+ * @property {function(*, string): Promise<*>} manualAction - Triggers a manual action (accept/reject) on a bid.
+ * @property {function(Object): Promise<*>} saveTransport - Saves changes to the transport.
+ * @property {function(): Promise<*>} publishTransport - Publishes a draft transport.
+ * @property {function(): Promise<*>} cancelExistingTransport - Cancels the transport.
+ * @property {function(string): Promise<*>} setStatus - Updates the transport status.
+ */
 
+
+/**
+ * React hook that loads a single transport request and its related bids
+ * and exposes high-level actions to manage both the transport and the
+ * bids list.
+ *
+ * @param {Object} [options] - Hook options.
+ * @param {(string|number)} [options.transportId] - Identifier of the transport request to load.
+ * @returns {UseRequestDetailsResult} Request data, bids and action helpers.
+ */
 export function useRequestDetails({ transportId } = {}) {
   const [transport, setTransport] = useState(null);
   const [bids, setBids] = useState([]);

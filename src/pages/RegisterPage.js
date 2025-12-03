@@ -8,7 +8,17 @@ import { getApiErrorMessage } from "../utils/httpError";
 import { useToast } from "../components/feedback/ToastContext";
 import useRegister from "../hooks/useRegister";
 
-// Página de registo (motorista/empresa)
+/**
+ * Registration page that supports both driver and company account
+ * flows.
+ *
+ * It switches between dedicated forms for each account type and
+ * delegates the actual API calls to {@link useRegister}, showing
+ * feedback via {@link useToast}.
+ *
+ * @returns {JSX.Element} Rendered registration page.
+ */
+
 function RegisterPage() {
   const [mode, setMode] = useState(null);
 

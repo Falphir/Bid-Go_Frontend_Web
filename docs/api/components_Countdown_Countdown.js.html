@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/Countdown/Countdown.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/Countdown/Countdown.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from "react";
+import "./Countdown.css";
+
+/**
+ * Countdown label for auction end time.
+ *
+ * Given an `endDate`, it displays a compact time-left string (e.g.
+ * `2d 5h` or `3h 10m`) and changes color as the deadline approaches.
+ *
+ * @param {{ endDate: (string|Date) }} props - Component props with the auction end date.
+ * @returns {JSX.Element} Formatted countdown span.
+ */
+export default function Countdown({ endDate }) {
+  const [timeLeft, setTimeLeft] = useState("");
+  const [diffMs, setDiffMs] = useState(0);
+
+  useEffect(() => {
+    if (!endDate) return;
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const end = new Date(endDate).getTime();
+      const diff = end - now;
+
+      setDiffMs(diff);
+
+      if (diff &lt;= 0) {
+        setTimeLeft("Auction ended");
+        return;
+      }
+
+      const totalMinutes = Math.floor(diff / (1000 * 60));
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      if (hours >= 24) {
+        const days = Math.floor(hours / 24);
+        setTimeLeft(`${days}d ${hours % 24}h`);
+      } else {
+        setTimeLeft(`${hours}h ${minutes}m`);
+      }
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 60000);
+    return () => clearInterval(timer);
+  }, [endDate]);
+
+  let color = "green";
+  if (diffMs &lt;= 0) color = "red";
+  else if (diffMs &lt; 60 * 60 * 1000) color = "orange";
+  else if (diffMs &lt; 6 * 60 * 60 * 1000) color = "#e6b800";
+
+  return &lt;span style={{ color, fontWeight: 600 }}>{timeLeft}&lt;/span>;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AcceptRejectOverlay">AcceptRejectOverlay</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#AvatarCropper">AvatarCropper</a></li><li><a href="global.html#AvatarSection">AvatarSection</a></li><li><a href="global.html#BidCard">BidCard</a></li><li><a href="global.html#BidGoPage">BidGoPage</a></li><li><a href="global.html#BidList">BidList</a></li><li><a href="global.html#CompanyFormGrid">CompanyFormGrid</a></li><li><a href="global.html#CompanyRegisterForm">CompanyRegisterForm</a></li><li><a href="global.html#DeactivateAccountModal">DeactivateAccountModal</a></li><li><a href="global.html#DriverDocsSection">DriverDocsSection</a></li><li><a href="global.html#DriverFormGrid">DriverFormGrid</a></li><li><a href="global.html#DriverRegisterForm">DriverRegisterForm</a></li><li><a href="global.html#HistoryPage">HistoryPage</a></li><li><a href="global.html#LoginForm">LoginForm</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#PasswordChangeModal">PasswordChangeModal</a></li><li><a href="global.html#ProfilePage">ProfilePage</a></li><li><a href="global.html#RecoverPasswordPage">RecoverPasswordPage</a></li><li><a href="global.html#RegisterPage">RegisterPage</a></li><li><a href="global.html#RequestDetailsPage">RequestDetailsPage</a></li><li><a href="global.html#ToastCtx">ToastCtx</a></li><li><a href="global.html#ToastProvider">ToastProvider</a></li><li><a href="global.html#TransportDetailsCard">TransportDetailsCard</a></li><li><a href="global.html#aliases">aliases</a></li><li><a href="global.html#api">api</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#bidsService">bidsService</a></li><li><a href="global.html#buildQueryString">buildQueryString</a></li><li><a href="global.html#cancelBid">cancelBid</a></li><li><a href="global.html#cancelTransport">cancelTransport</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#claimsArrayToObject">claimsArrayToObject</a></li><li><a href="global.html#createBid">createBid</a></li><li><a href="global.html#createDraftForm">createDraftForm</a></li><li><a href="global.html#createDraftJson">createDraftJson</a></li><li><a href="global.html#createTransportForm">createTransportForm</a></li><li><a href="global.html#createTransportJson">createTransportJson</a></li><li><a href="global.html#deactivateAccount">deactivateAccount</a></li><li><a href="global.html#fetchNotifications">fetchNotifications</a></li><li><a href="global.html#fmtDate">fmtDate</a></li><li><a href="global.html#formatError">formatError</a></li><li><a href="global.html#getActiveBids">getActiveBids</a></li><li><a href="global.html#getApiErrorMessage">getApiErrorMessage</a></li><li><a href="global.html#getBidsByDriver">getBidsByDriver</a></li><li><a href="global.html#getCompanyHistory">getCompanyHistory</a></li><li><a href="global.html#getCompanyTransports">getCompanyTransports</a></li><li><a href="global.html#getDriverHistory">getDriverHistory</a></li><li><a href="global.html#getDriverTransports">getDriverTransports</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getTransportById">getTransportById</a></li><li><a href="global.html#historyService">historyService</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#manualBidAction">manualBidAction</a></li><li><a href="global.html#mapStatusToClass">mapStatusToClass</a></li><li><a href="global.html#markAllAsRead">markAllAsRead</a></li><li><a href="global.html#markAsRead">markAsRead</a></li><li><a href="global.html#normalizeHistoryCompany">normalizeHistoryCompany</a></li><li><a href="global.html#normalizeHistoryDriver">normalizeHistoryDriver</a></li><li><a href="global.html#normalizeTransportList">normalizeTransportList</a></li><li><a href="global.html#notificationsService">notificationsService</a></li><li><a href="global.html#prettyStatus">prettyStatus</a></li><li><a href="global.html#profileService">profileService</a></li><li><a href="global.html#publishCompanyTransport">publishCompanyTransport</a></li><li><a href="global.html#recoverPassword">recoverPassword</a></li><li><a href="global.html#registerCompany">registerCompany</a></li><li><a href="global.html#registerDriver">registerDriver</a></li><li><a href="global.html#resetPassword">resetPassword</a></li><li><a href="global.html#sortByNewest">sortByNewest</a></li><li><a href="global.html#updateBid">updateBid</a></li><li><a href="global.html#updateCompany">updateCompany</a></li><li><a href="global.html#updateDriver">updateDriver</a></li><li><a href="global.html#updateTransport">updateTransport</a></li><li><a href="global.html#updateTransportStatus">updateTransportStatus</a></li><li><a href="global.html#useCreateTransport">useCreateTransport</a></li><li><a href="global.html#useHistory">useHistory</a></li><li><a href="global.html#useLogin">useLogin</a></li><li><a href="global.html#useMe">useMe</a></li><li><a href="global.html#useMyBids">useMyBids</a></li><li><a href="global.html#useNotifications">useNotifications</a></li><li><a href="global.html#useProfile">useProfile</a></li><li><a href="global.html#useRecoverPassword">useRecoverPassword</a></li><li><a href="global.html#useRegister">useRegister</a></li><li><a href="global.html#useRequestDetails">useRequestDetails</a></li><li><a href="global.html#useSortedBids">useSortedBids</a></li><li><a href="global.html#useToast">useToast</a></li><li><a href="global.html#validateTransportFields">validateTransportFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 03 2025 16:18:17 GMT+0000 (Hora padrão da Europa Ocidental)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

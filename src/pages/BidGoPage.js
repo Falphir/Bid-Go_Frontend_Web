@@ -10,7 +10,21 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Pagination from "../components/pagination/Pagination";
 
-// Página principal: listagem e filtros de pedidos
+/**
+ * Main page of the Bid-Go web application.
+ *
+ * For drivers, it displays a list of available transport requests that
+ * can be filtered and paginated. For companies, it shows their own
+ * created transport requests and allows navigation to the creation
+ * screen.
+ *
+ * The page relies on {@link useMe} to detect the current user role and
+ * {@link useTransports} to load and manage the list of transports,
+ * including filters and pagination.
+ *
+ * @returns {JSX.Element} Rendered Bid-Go main page component.
+ */
+
 function BidGoPage() {
   const navigate = useNavigate();
   const { userId, isDriver, isCompany, loading: meLoading } = useMe();

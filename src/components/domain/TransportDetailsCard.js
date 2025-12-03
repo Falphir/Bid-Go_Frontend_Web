@@ -1,9 +1,26 @@
+/**
+ * @typedef {Object} TransportDetailsCardProps
+ * @property {Object} transport - Full transport object with details to display.
+ * @property {JSX.Element|null} [actions] - Optional action buttons or controls rendered above the details.
+ * @property {boolean} [showMaxPrice=true] - Whether to show the maximum price row.
+ * @property {boolean} [showAuction=true] - Whether to show auction start/end information.
+ * @property {boolean} [showDescription=true] - Whether to show the description field.
+ */
+
 import React from "react";
 import Countdown from "../Countdown/Countdown";
 import "./TransportDetailsCard.css";
 import defaultTransportImage from "../../assets/Image-not-found.png";
-// Cartão detalhes transporte
 
+/**
+ * Detailed card component for a single transport request.
+ *
+ * It displays origin, destination, price, weight, dimensions, pickup
+ * and delivery deadlines and optionally auction timing and description.
+ *
+ * @param {TransportDetailsCardProps} props - Card configuration and transport data.
+ * @returns {JSX.Element|null} Rendered details card or null when no transport is provided.
+ */
 function TransportDetailsCard({
                                   transport,
                                   actions = null,

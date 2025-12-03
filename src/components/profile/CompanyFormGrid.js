@@ -1,7 +1,20 @@
+/**
+ * @typedef {Object} CompanyFormGridProps
+ * @property {Object|null} profile - Company profile object used to fill the form.
+ * @property {boolean} editing - Whether the form is in editing mode.
+ * @property {function(string, string): void} onChange - Callback to update a specific profile field.
+ */
+
 import React from "react";
 import "./CompanyFormGrid.css";
 
-// Form de perfil de empresa
+
+/**
+ * Grid layout form for viewing and editing company profile data.
+ *
+ * @param {CompanyFormGridProps} props - Profile data and change handler.
+ * @returns {JSX.Element} Rendered company profile grid.
+ */
 function CompanyFormGrid({ profile, editing, onChange }) {
   return (
     <div className={`form-grid company-layout ${!editing ? "readonly" : ""}`}>

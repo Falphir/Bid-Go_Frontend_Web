@@ -1,8 +1,23 @@
+/**
+ * @typedef {Object} AvatarSectionProps
+ * @property {Object|null} profile - Current profile object containing at least `name`, `email` and `profileImage`.
+ * @property {string|null} [previewAvatar] - Data URL or URL of a temporary avatar preview.
+ * @property {boolean} editing - Whether the profile is in editing mode.
+ * @property {function(): void} onStartEdit - Callback to start avatar/profile editing.
+ * @property {function(Event): void} onSelectAvatar - Change handler for the avatar file input.
+ */
+
 import React from "react";
 import { FiEdit2, FiCamera } from "react-icons/fi";
 import "./AvatarSection.css";
 
-// Avatar + info de perfil com edição
+
+/**
+ * Profile header section with avatar, basic user information and edit controls.
+ *
+ * @param {AvatarSectionProps} props - Profile data and avatar editing callbacks.
+ * @returns {JSX.Element} Rendered avatar section.
+ */
 function AvatarSection({
   profile,
   previewAvatar,

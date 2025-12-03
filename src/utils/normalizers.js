@@ -1,7 +1,11 @@
 import placeholderImage from "../assets/Image-not-found.png";
-// Normalizadores: ajustam respostas da API para o formato usado no UI
 
-// Lista de transportes → objetos consistentes para cards
+/**
+ * Normalizes a raw transport list payload into an array of card-friendly objects.
+ *
+ * @param {any} data - Raw data returned by the backend for transport listing.
+ * @returns {Object[]} Array of normalized transport objects.
+ */
 export function normalizeTransportList(data) {
   const arr = Array.isArray(data)
     ? data
@@ -32,7 +36,12 @@ export function normalizeTransportList(data) {
   }));
 }
 
-// Data → string legível (local)
+/**
+ * Formats a date-like value into a localized string.
+ *
+ * @param {any} value - Raw date value from the backend.
+ * @returns {string} Localized date/time string or "—" when invalid.
+ */
 function fmtDate(value) {
   if (!value) return "—";
   const d = new Date(value);
@@ -40,7 +49,12 @@ function fmtDate(value) {
   return d.toLocaleDateString() + " " + d.toLocaleTimeString();
 }
 
-// Histórico para Driver → linhas da tabela
+/**
+ * Normalizes driver history data into table-friendly rows.
+ *
+ * @param {any} data - Raw driver history payload from the backend.
+ * @returns {Object[]} Array of normalized driver history entries.
+ */
 export function normalizeHistoryDriver(data) {
   const arr = Array.isArray(data)
     ? data
@@ -75,7 +89,12 @@ export function normalizeHistoryDriver(data) {
   });
 }
 
-// Histórico para Company → linhas da tabela
+/**
+ * Normalizes company history data into table-friendly rows.
+ *
+ * @param {any} data - Raw company history payload from the backend.
+ * @returns {Object[]} Array of normalized company history entries.
+ */
 export function normalizeHistoryCompany(data) {
   const arr = Array.isArray(data)
     ? data

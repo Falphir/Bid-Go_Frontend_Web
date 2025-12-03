@@ -1,4 +1,14 @@
-// Extrai mensagem de erro legível a partir de erros HTTP/Axios
+/**
+ * Extracts a user-friendly error message from an HTTP/Axios error.
+ *
+ * This utility inspects common Axios error shapes (network errors,
+ * validation errors, structured `errors` arrays/objects, RFC7807-style
+ * payloads, etc.) and converts them into a single localized string that
+ * can be displayed in the UI.
+ *
+ * @param {any} err - Error object thrown by Axios or by the HTTP layer.
+ * @returns {string} Human-readable error message suitable for display to the user.
+ */
 export function getApiErrorMessage(err) {
   if (err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
     return "Request canceled.";

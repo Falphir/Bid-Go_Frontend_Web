@@ -1,10 +1,26 @@
+/**
+ * @typedef {Object} PaginationProps
+ * @property {number} currentPage - Current page (1-based) being viewed.
+ * @property {number} totalPages - Total number of pages available.
+ * @property {function(number): void} onPageChange - Callback invoked with the new page index.
+ */
+
 import React from "react";
 import "./Pagination.css";
 import { faAngleLeft } from "@fortawesome/free-solid-svg-icons/faAngleLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 
-// Paginação
+
+/**
+ * Simple previous/next pagination control.
+ *
+ * It hides itself when there is only a single page and disables the
+ * corresponding arrow buttons when at the bounds.
+ *
+ * @param {PaginationProps} props - Pagination state and change handler.
+ * @returns {JSX.Element|null} Rendered pagination navigation or null when not needed.
+ */
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
   return (

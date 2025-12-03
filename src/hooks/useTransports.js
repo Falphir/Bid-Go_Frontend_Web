@@ -1,10 +1,44 @@
+/**
+ * Options accepted by {@link useTransports}.
+ *
+ * @typedef {Object} UseTransportsOptions
+ * @property {string|number} [userId] - Identifier of the current user.
+ * @property {boolean} [isDriver] - Whether the current user is a driver.
+ * @property {boolean} [isCompany] - Whether the current user is a company.
+ * @property {Object} [initialFilters] - Initial filters applied when fetching driver transports.
+ */
+
+/**
+ * Result object returned by {@link useTransports}.
+ *
+ * @typedef {Object} UseTransportsResult
+ * @property {Object[]} requests - Normalized list of transport requests.
+ * @property {boolean} isRequestsEmpty - True when there are no requests to show.
+ * @property {boolean} loading - Indicates whether a fetch operation is in progress.
+ * @property {string|null} error - Error message when loading fails; null otherwise.
+ * @property {Object} filters - Current filters used when fetching driver transports.
+ * @property {boolean} showFilters - Whether the filters panel is currently visible.
+ * @property {function(boolean)} setShowFilters - Setter for the `showFilters` flag.
+ * @property {function(Object)} setFilters - Setter for the current filters.
+ * @property {function(Object)} applyFilters - Applies new filters and triggers a fetch.
+ * @property {function(Object)} clearFilters - Clears filters and refreshes the list.
+ */
+
+/**
+ * React hook that loads and manages transport requests for drivers and companies.
+ *
+ * When `isCompany` is true it fetches company transports, and when `isDriver`
+ * is true it fetches driver-visible transports, optionally filtered by origin,
+ * destination and other criteria.
+ *
+ * @param {UseTransportsOptions} [options] - Configuration options for the hook.
+ * @returns {UseTransportsResult} Object containing transport data, loading state and helpers.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   getCompanyTransports,
   getDriverTransports,
 } from "../services/transportsService";
-
-// Hook de listagem de pedidos (driver/empresa) com filtros
 
 export function useTransports({
   userId,
@@ -103,6 +137,12 @@ export function useTransports({
   };
 }
 
+/**
+ * Formats an error object into a short user-facing message.
+ *
+ * @param {any} err - Error instance thrown during a request.
+ * @returns {string|null} Formatted error message or null if no error.
+ */
 function formatError(err) {
   if (!err) return null;
   if (err.response)
@@ -111,6 +151,14 @@ function formatError(err) {
   return `Request error: ${err.message}`;
 }
 
+/**
+ * Sorts a list of transport-like objects from newest to oldest.
+ *
+ * It uses `createdAt` when available, or falls back to `biddingEndDate`.
+ *
+ * @param {any[]} list - List of items containing a `createdAt` or `biddingEndDate` field.
+ * @returns {any[]} New array sorted by descending creation/bidding date.
+ */
 function sortByNewest(list) {
   if (!Array.isArray(list)) return [];
   const getTime = (t) => {

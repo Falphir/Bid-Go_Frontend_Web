@@ -1,8 +1,29 @@
+/**
+ * @typedef {Object} EditBidModalProps
+ * @property {boolean} open - Whether the edit modal is visible.
+ * @property {Object|null} bid - Bid data being edited.
+ * @property {function(): void} onClose - Callback invoked when the modal should be closed.
+ * @property {function(Object): void} onSave - Callback invoked with the updated bid payload.
+ * @property {boolean} [saving] - Indicates whether an update request is in progress.
+ * @property {number} [maxPrice] - Maximum allowed price for the bid.
+ * @property {string|Date} [pickupDate] - Pickup date used to validate the bid deadline.
+ * @property {string|Date} [deliveryDate] - Delivery date used to validate the bid deadline.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import "./EditBidModal.css";
 import Button from "../Button/Button";
 
-// Modal para editar bid
+/**
+ * Modal dialog that allows editing an existing bid.
+ *
+ * It pre-fills the current bid value and deadline, validates changes
+ * against optional `maxPrice` and pickup/delivery constraints, and
+ * invokes `onSave` with the normalized update payload.
+ *
+ * @param {EditBidModalProps} props - Modal configuration and bid context.
+ * @returns {JSX.Element|null} Rendered modal or null when `open` or `bid` are falsy.
+ */
 export default function EditBidModal({
   open,
   bid,

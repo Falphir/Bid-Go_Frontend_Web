@@ -5,7 +5,18 @@ import useNotifications from "../hooks/useNotifications";
 import StatusMessage from "../components/feedback/StatusMessage";
 import { useMe } from "../hooks/useMe";
 
-// Página de notificações com filtros
+/**
+ * Page that shows all notifications for the current user with basic
+ * filtering (type, read/unread and ordering).
+ *
+ * It relies on {@link useMe} to obtain the user id and
+ * {@link useNotifications} to load and filter notifications, reusing
+ * {@link NotificationCard} and {@link StatusMessage} components.
+ *
+ * @returns {JSX.Element} Rendered notifications page.
+ */
+
+
 export default function NotificationPage() {
   const { userId, loading: meLoading } = useMe();
   const {

@@ -1,8 +1,5 @@
 import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
-// AppRouter é responsável por declarar todas as rotas da aplicação
-// usando React Router. As rotas aninhadas dentro de <App /> partilham
-// o mesmo layout/principal (Navbar, etc.).
 import App from "./App";
 import BidGoPage from "./pages/BidGoPage";
 import LoginPage from "./pages/LoginPage";
@@ -14,6 +11,15 @@ import HistoryPage from "./pages/HistoryPage";
 import MyBidsPage from "./pages/MyBidsPage";
 import RegisterPage from "./pages/RegisterPage";
 import NotificationPage from "./pages/NotificationPage";
+
+/**
+ * Main routing configuration for the Bid-Go application.
+ *
+ * It defines the mapping between URL paths and page components, both
+ * for public and authenticated areas of the system.
+ *
+ * @returns {JSX.Element} React Router configuration component.
+ */
 
 export default function AppRouter() {
   return (

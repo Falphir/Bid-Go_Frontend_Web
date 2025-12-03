@@ -1,7 +1,22 @@
+/**
+ * @typedef {Object} ImageUploadProps
+ * @property {File|null} [file] - Currently selected image file.
+ * @property {function(Event): void} onChange - Change handler for the file input.
+ */
+
 import React from "react";
 import "./ImageUpload.css";
 
-// Upload de imagem
+
+/**
+ * Drop-zone style image upload input.
+ *
+ * It renders a stylized file input and shows the selected file name
+ * when a file has been chosen.
+ *
+ * @param {ImageUploadProps} props - Image file and change handler.
+ * @returns {JSX.Element} Rendered image upload control.
+ */
 export default function ImageUpload({ file, onChange }) {
   return (
     <div className="drop-zone-wrapper">

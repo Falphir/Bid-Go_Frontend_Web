@@ -1,7 +1,27 @@
+/**
+ * @typedef {Object} EditTransportModalProps
+ * @property {boolean} open - Whether the transport edit modal is visible.
+ * @property {Object|null} transport - Transport data being edited.
+ * @property {function(): void} onClose - Callback invoked when the modal should be closed.
+ * @property {function(Object): void} onSave - Callback invoked with the updated transport payload.
+ * @property {boolean} [saving] - Indicates whether a save request is in progress.
+ */
+
 import React, { useEffect, useState } from "react";
 import "./EditTransportModal.css";
 
-// Modal para editar transporte
+
+/**
+ * Modal dialog used to edit an existing transport request.
+ *
+ * It pre-fills the form with the current transport data, allows the
+ * user to change core fields (origin, destination, package, dates,
+ * dimensions, price, image and automatic selection) and calls `onSave`
+ * with a normalized payload when the form is submitted.
+ *
+ * @param {EditTransportModalProps} props - Modal configuration and transport context.
+ * @returns {JSX.Element|null} Rendered modal or null when `open` or `transport` are falsy.
+ */
 export default function EditTransportModal({
   open,
   transport,

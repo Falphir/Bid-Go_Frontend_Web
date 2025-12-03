@@ -18,7 +18,17 @@ import useSortedBids from "../hooks/useSortedBids";
 import Button from "../components/Button/Button";
 import useRequestDetails from "../hooks/useRequestDetails";
 
-// Página de detalhe do pedido com ações e propostas
+/**
+ * Request details page that displays a single transport request and
+ * its related bids.
+ *
+ * Depending on the current user's role (driver or company), it allows
+ * creating, editing and canceling bids, manually accepting/rejecting
+ * bids and editing or publishing/canceling the transport itself.
+ *
+ * @returns {JSX.Element} Rendered request details page.
+ */
+
 function RequestDetailsPage() {
   const navigate = useNavigate();
   const { userId, isDriver, isCompany, loading: meLoading } = useMe();

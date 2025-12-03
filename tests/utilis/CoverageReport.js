@@ -1,3 +1,13 @@
+/**
+ * Node.js script that runs end-to-end tests with coverage and
+ * generates human-readable HTML and PDF coverage reports.
+ *
+ * It executes `npm run e2e:coverage`, parses the resulting
+ * `coverage/lcov.info` file and produces an HTML summary in the
+ * `reports` folder, optionally converting it to PDF using a local
+ * Chrome/Edge installation.
+ */
+
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');

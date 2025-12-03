@@ -1,7 +1,28 @@
+/**
+ * @typedef {Object} Filters
+ * @property {string} origin
+ * @property {string} destination
+ * @property {string} deliveryDate
+ * @property {"asc"|"desc"|""} priceOrder
+ */
+
+/**
+ * @typedef {Object} FiltersPanelProps
+ * @property {Filters} initialFilters - Initial set of filter values.
+ * @property {function(Filters): void} [onApply] - Callback invoked when the user applies the filters.
+ * @property {function(Filters): void} [onClear] - Callback invoked after filters are cleared.
+ */
+
 import React, { useState } from "react";
 import "./FiltersPanel.css";
 
-// Painel filtros listagem
+
+/**
+ * Top panel with origin/destination and price filters for transport lists.
+ *
+ * @param {FiltersPanelProps} props - Filter values and callbacks.
+ * @returns {JSX.Element} Rendered filters panel form.
+ */
 export default function FiltersPanel({ initialFilters, onApply, onClear }) {
   const [filters, setFilters] = useState(initialFilters);
 

@@ -6,8 +6,26 @@ import {
   createDraftForm,
 } from "../services/transportsService";
 
-// Hook para criar transportes e rascunhos
+/**
+ * Result object returned by {@link useCreateTransport}.
+ *
+ * @typedef {Object} UseCreateTransportResult
+ * @property {function(Object): Promise<*>} createTransport - Creates a new transport or draft based on the given options.
+ * @property {function(Object): Promise<*>} createDraft - Creates a new draft transport based on the given options.
+ * @property {boolean} loading - Indicates whether a create/draft request is in progress.
+ */
 
+
+/**
+ * React hook that wraps the transport and draft creation operations.
+ *
+ * It exposes two async helpers, `createTransport` and `createDraft`,
+ * both of which accept an options object with `isForm` and `payload`
+ * and automatically manage an `AbortController` and a shared `loading`
+ * flag.
+ *
+ * @returns {UseCreateTransportResult} Helper functions and loading flag.
+ */
 export function useCreateTransport() {
   const abortRef = useRef(null);
   const [loading, setLoading] = useState(false);

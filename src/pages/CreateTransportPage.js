@@ -11,7 +11,16 @@ import { useNavigate } from "react-router";
 import Button from "../components/Button/Button";
 import useCreateTransport from "../hooks/useCreateTransport";
 
-// Página de criação de pedido de transporte
+/**
+ * Page that allows a company user to create a new transport request or draft.
+ *
+ * It collects transport details, validates required fields and uses
+ * {@link useCreateTransport} to either create a published request or a
+ * draft, showing success and error messages via {@link useToast}.
+ *
+ * @returns {JSX.Element} Rendered create-transport page.
+ */
+
 const validateTransportFields = ({
   origin,
   destination,

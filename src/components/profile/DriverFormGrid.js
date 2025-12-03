@@ -1,7 +1,20 @@
+/**
+ * @typedef {Object} DriverFormGridProps
+ * @property {Object|null} profile - Driver profile object used to fill the form.
+ * @property {boolean} editing - Whether the form is in editing mode.
+ * @property {function(string, string): void} onChange - Callback to update a specific profile field.
+ */
+
 import React from "react";
 import "./DriverFormGrid.css";
 
-// Form de dados de motorista (edição/leitura)
+
+/**
+ * Grid layout form for viewing and editing driver profile data.
+ *
+ * @param {DriverFormGridProps} props - Profile data and change handler.
+ * @returns {JSX.Element} Rendered driver profile grid.
+ */
 function DriverFormGrid({ profile, editing, onChange }) {
   return (
     <div className={`form-grid one-col ${!editing ? "readonly" : ""}`}>

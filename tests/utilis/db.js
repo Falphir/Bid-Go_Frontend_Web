@@ -1,11 +1,12 @@
-// Utilitário de base de dados para testes (Playwright/Jest)
-// Cria um pool de ligações MySQL e expõe funções simples para executar queries
-// e encerrar o pool no final dos testes.
-//
-// Requer as seguintes variáveis de ambiente:
-// - DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
-//
-// Nota: usar um utilizador/BD de testes para evitar impactar dados reais.
+/**
+ * Simple MySQL helper for tests (Playwright/Jest).
+ *
+ * It lazily creates a connection pool using `mysql2/promise` based on
+ * environment variables (DB_HOST, DB_PORT, DB_USER, DB_PASSWORD,
+ * DB_NAME) and exposes small helpers to run parametrized queries and
+ * to close the pool during test teardown.
+ */
+
 const mysql = require('mysql2/promise');
 
 let pool = null;
@@ -27,10 +28,11 @@ function ensurePool() {
 }
 
 /**
- * Executa uma query parametrizada usando o pool
- * @param {string} sql - Instrução SQL (pode conter placeholders ?)
- * @param {Array|Object} [params] - Parâmetros para a query
- * @returns {Promise<any>} Resultados da query (linhas)
+ * Executes a parametrized SQL query using the shared pool.
+ *
+ * @param {string} sql - SQL statement, possibly containing `?` placeholders.
+ * @param {Array|Object} [params] - Parameters for the query.
+ * @returns {Promise<*>} Query results (rows).
  */
 async function query(sql, params) {
     const p = ensurePool();
@@ -39,8 +41,9 @@ async function query(sql, params) {
 }
 
 /**
- * Encerra o pool de ligações. Deve ser chamado no teardown dos testes.
- * @returns {Promise<void>}
+ * Closes the connection pool. Should be called during test teardown.
+ *
+ * @returns {Promise<void>} Resolves when all connections are closed.
  */
 async function close() {
     if (!pool) return;

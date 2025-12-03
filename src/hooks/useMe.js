@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import api from "../api/axiosConfig";
 import axios from "axios";
 
-// Hook do utilizador atual (claims/token)
-
+/**
+ * Converts an array of claim objects into a simpler user descriptor.
+ *
+ * @param {Object[]} [claims] - Raw claims array returned by the backend.
+ * @returns {{nameId: (string|null), userId: (number|null), userType: (string|null), exp: (number|null), iss: (string|null), aud: (string|null)}}
+ *   Normalized user claims object.
+ */
 function claimsArrayToObject(claims = []) {
   const map = {};
   for (const c of claims) map[c.type] = c.value;
@@ -20,6 +25,24 @@ function claimsArrayToObject(claims = []) {
   };
 }
 
+/**
+ * Hook that exposes information about the currently authenticated user.
+ *
+ * It tries to parse the JWT token stored in local/session storage for a
+ * quick synchronous initialization and then validates the session by
+ * calling the `auth/me` endpoint. It derives convenience flags for the
+ * user role (driver/company).
+ *
+ * @returns {{
+ *   me: (Object|null),
+ *   userId: (number|null),
+ *   role: (string|null),
+ *   isDriver: boolean,
+ *   isCompany: boolean,
+ *   loading: boolean,
+ *   error: any
+ * }} User descriptor and related state flags.
+ */
 export function useMe() {
   const parseJwtSync = (tokenStr) => {
     try {

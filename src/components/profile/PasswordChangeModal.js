@@ -1,10 +1,25 @@
+/**
+ * @typedef {Object} PasswordChangeModalProps
+ * @property {boolean} open - Whether the password change modal is visible.
+ * @property {{ old: string, new: string, confirm: string }} passwords - Current values for the three password fields.
+ * @property {function(string, string): void} onChangeField - Callback to update one of the password fields.
+ * @property {function(): void} onClose - Callback invoked when the user closes the modal.
+ * @property {function(): void} onSave - Callback invoked when the user confirms the password change.
+ */
+
 import React from "react";
 import ReactDOM from "react-dom";
 import PasswordInput from "../PasswordInput/PasswordInput";
 import "./PasswordChangeModal.css";
 import Button from "../Button/Button";
 
-// Modal para alterar password
+
+/**
+ * Modal dialog that lets the user change their account password.
+ *
+ * @param {PasswordChangeModalProps} props - Modal state, current values and callbacks.
+ * @returns {JSX.Element|null} Rendered modal portal or null when `open` is false.
+ */
 function PasswordChangeModal({
   open,
   passwords,

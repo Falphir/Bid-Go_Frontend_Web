@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/AddBidModal/AddBidModal.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/AddBidModal/AddBidModal.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @typedef {Object} AddBidModalProps
+ * @property {boolean} open - Whether the modal is visible.
+ * @property {function(): void} onClose - Callback invoked when the modal should be closed.
+ * @property {function(Object): void} onSave - Callback invoked with the new bid payload when the form is submitted.
+ * @property {boolean} [saving] - Indicates whether a bid creation request is in progress.
+ * @property {Object} [transport] - Transport request data related to the bid.
+ * @property {number} [maxPrice] - Maximum allowed price for the bid.
+ * @property {string|Date} [pickupDate] - Pickup date used to validate the bid deadline.
+ * @property {string|Date} [deliveryDate] - Delivery date used to validate the bid deadline.
+ */
+
+import React, { useEffect, useMemo, useState } from "react";
+import "./AddBidModal.css";
+import Button from "../Button/Button";
+
+/**
+ * Modal dialog that allows a driver to create a new bid for a transport request.
+ *
+ * It validates the bid value against the optional `maxPrice` and ensures the
+ * deadline is within the pickup and delivery date range. When submitted,
+ * it calls {@link AddBidModalProps.onSave} with the normalized bid payload.
+ *
+ * @param {AddBidModalProps} props - Modal configuration and context.
+ * @returns {JSX.Element|null} Rendered modal or null when `open` is false.
+ */
+export default function AddBidModal({
+  open,
+  onClose,
+  onSave,
+  saving,
+  transport,
+  maxPrice,
+  pickupDate,
+  deliveryDate,
+}) {
+  const [value, setValue] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [nowTs, setNowTs] = useState(Date.now());
+
+  const [errors, setErrors] = useState({ value: "", deadline: "" });
+
+  const toLocalYMD = (d) => {
+    if (!d) return "";
+    const dt = new Date(d);
+    if (Number.isNaN(dt.getTime())) return "";
+    return new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 10);
+  };
+
+  const minDeadlineISO = useMemo(() => {
+    if (!pickupDate) return "";
+    const dt = new Date(pickupDate);
+    if (Number.isNaN(dt.getTime())) return "";
+    dt.setDate(dt.getDate() + 1);
+    return toLocalYMD(dt);
+  }, [pickupDate]);
+  const maxDeadlineISO = useMemo(
+    () => toLocalYMD(deliveryDate),
+    [deliveryDate]
+  );
+
+  const biddingStartDate = transport?.biddingStartDate
+    ? new Date(transport.biddingStartDate)
+    : null;
+  const biddingEndDate = transport?.biddingEndDate
+    ? new Date(transport.biddingEndDate)
+    : null;
+  const auctionNotStarted = !!(
+    biddingStartDate &amp;&amp;
+    !isNaN(biddingStartDate) &amp;&amp;
+    nowTs &lt; biddingStartDate.getTime()
+  );
+  const auctionEnded = !!(
+    biddingEndDate &amp;&amp;
+    !isNaN(biddingEndDate) &amp;&amp;
+    nowTs > biddingEndDate.getTime()
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    setValue("");
+    const today = new Date();
+    const local = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 10);
+    setDeadline(local);
+  }, [open]);
+
+  useEffect(() => {
+    const timers = [];
+    if (biddingStartDate &amp;&amp; !isNaN(biddingStartDate)) {
+      const diffStart = biddingStartDate.getTime() - Date.now();
+      if (diffStart > 0) {
+        timers.push(setTimeout(() => setNowTs(Date.now()), diffStart + 50));
+      }
+    }
+    if (biddingEndDate &amp;&amp; !isNaN(biddingEndDate)) {
+      const diffEnd = biddingEndDate.getTime() - Date.now();
+      if (diffEnd > 0) {
+        timers.push(setTimeout(() => setNowTs(Date.now()), diffEnd + 50));
+      }
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [biddingStartDate, biddingEndDate]);
+
+  if (!open) return null;
+
+  const validateValue = (vStr) => {
+    if (vStr === "" || vStr === null) return "Price is required.";
+    const num = Number(vStr);
+    if (!isFinite(num)) return "Price must be a number.";
+    if (num &lt; 0) return "Price must be equal or greater than 0.";
+    if (!/^\d+(\.\d{1,2})?$/.test(String(vStr))) return "Max 2 decimal places.";
+    if (maxPrice != null &amp;&amp; num > Number(maxPrice)) {
+      return `Price cannot exceed ${Number(maxPrice).toFixed(2)}€.`;
+    }
+    return "";
+  };
+
+  const validateDeadline = (dateStr) => {
+    if (!dateStr) return "Deadline is required.";
+    if (minDeadlineISO &amp;&amp; dateStr &lt; minDeadlineISO) {
+      return `Deadline cannot be before pickup date (${minDeadlineISO}).`;
+    }
+    if (maxDeadlineISO &amp;&amp; dateStr > maxDeadlineISO) {
+      return `Deadline cannot be after delivery date (${maxDeadlineISO}).`;
+    }
+    return "";
+  };
+
+  const hasErrors = !!(errors.value || errors.deadline);
+
+  const handleValueChange = (e) => {
+    const v = e.target.value;
+    setValue(v);
+    setErrors((prev) => ({ ...prev, value: validateValue(v) }));
+  };
+
+  const handleDeadlineChange = (e) => {
+    const d = e.target.value;
+    setDeadline(d);
+    setErrors((prev) => ({ ...prev, deadline: validateDeadline(d) }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (auctionNotStarted || auctionEnded) return; // guard
+    const vErr = validateValue(value);
+    const dErr = validateDeadline(deadline);
+    setErrors({ value: vErr, deadline: dErr });
+    if (vErr || dErr) return;
+
+    onSave({
+      transportRequestId: transport?.transportRequestId || transport?.id,
+      value: Number(value),
+      deliveryDeadline: deadline ? new Date(deadline).toISOString() : null,
+    });
+  };
+
+  return (
+    &lt;div
+      className="abm-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      &lt;div className="abm-modal" onClick={(e) => e.stopPropagation()}>
+        &lt;h3 className="abm-title">New Bid&lt;/h3>
+        {transport &amp;&amp; (
+          &lt;p className="abm-sub">
+            To &lt;strong>{transport.package}&lt;/strong> — Destination:{" "}
+            {transport.destination}
+          &lt;/p>
+        )}
+
+        {auctionNotStarted &amp;&amp; (
+          &lt;div className="ebm-error" role="alert" style={{ marginBottom: 12 }}>
+            Auction hasn't started yet. You can't create bids for this request.
+          &lt;/div>
+        )}
+        {auctionEnded &amp;&amp; (
+          &lt;div className="ebm-error" role="alert" style={{ marginBottom: 12 }}>
+            Auction ended. You can't create new bids for this request.
+          &lt;/div>
+        )}
+
+        &lt;form onSubmit={handleSubmit} className="abm-form">
+          &lt;label className="abm-label">
+            Price (€)
+            &lt;input
+              type="number"
+              min="0"
+              step="1.0"
+              className={`ebm-input ${errors.value ? "invalid" : ""}`}
+              value={value}
+              onChange={handleValueChange}
+              onBlur={handleValueChange}
+              aria-invalid={!!errors.value}
+              aria-describedby={errors.value ? "err-price" : undefined}
+              required
+              disabled={auctionNotStarted || auctionEnded}
+            />
+            {errors.value ? (
+              &lt;span id="err-price" className="ebm-error">
+                {errors.value}
+              &lt;/span>
+            ) : (
+              &lt;small className="ebm-help">
+                Enter a positive amount (up to 2 decimals).
+              &lt;/small>
+            )}
+          &lt;/label>
+
+          &lt;label className="abm-label">
+            Deadline
+            &lt;input
+              type="date"
+              className={`ebm-input ${errors.deadline ? "invalid" : ""}`}
+              value={deadline}
+              onChange={handleDeadlineChange}
+              onBlur={handleDeadlineChange}
+              min={minDeadlineISO || undefined}
+              max={maxDeadlineISO || undefined}
+              aria-invalid={!!errors.deadline}
+              aria-describedby={errors.deadline ? "err-deadline" : undefined}
+              required
+              disabled={auctionNotStarted || auctionEnded}
+            />
+            {errors.deadline ? (
+              &lt;span id="err-deadline" className="ebm-error">
+                {errors.deadline}
+              &lt;/span>
+            ) : (
+              &lt;small className="ebm-help">
+                {minDeadlineISO &amp;&amp; maxDeadlineISO
+                  ? `Deadline must be between ${minDeadlineISO} and ${maxDeadlineISO}.`
+                  : minDeadlineISO
+                  ? `Deadline must be after ${minDeadlineISO}.`
+                  : maxDeadlineISO
+                  ? `Deadline must be before ${maxDeadlineISO}.`
+                  : "Select a valid deadline date."}
+              &lt;/small>
+            )}
+          &lt;/label>
+
+          &lt;div className="abm-actions">
+            &lt;Button variant="secondary" onClick={onClose} disabled={saving}>
+              Cancel
+            &lt;/Button>
+
+            &lt;Button
+              variant="primary"
+              type="submit"
+              disabled={
+                saving || hasErrors || auctionNotStarted || auctionEnded
+              }
+            >
+              {saving ? "Submitting…" : "Submit Bid"}
+            &lt;/Button>
+          &lt;/div>
+        &lt;/form>
+      &lt;/div>
+    &lt;/div>
+  );
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AcceptRejectOverlay">AcceptRejectOverlay</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#AvatarCropper">AvatarCropper</a></li><li><a href="global.html#AvatarSection">AvatarSection</a></li><li><a href="global.html#BidCard">BidCard</a></li><li><a href="global.html#BidGoPage">BidGoPage</a></li><li><a href="global.html#BidList">BidList</a></li><li><a href="global.html#CompanyFormGrid">CompanyFormGrid</a></li><li><a href="global.html#CompanyRegisterForm">CompanyRegisterForm</a></li><li><a href="global.html#DeactivateAccountModal">DeactivateAccountModal</a></li><li><a href="global.html#DriverDocsSection">DriverDocsSection</a></li><li><a href="global.html#DriverFormGrid">DriverFormGrid</a></li><li><a href="global.html#DriverRegisterForm">DriverRegisterForm</a></li><li><a href="global.html#HistoryPage">HistoryPage</a></li><li><a href="global.html#LoginForm">LoginForm</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#PasswordChangeModal">PasswordChangeModal</a></li><li><a href="global.html#ProfilePage">ProfilePage</a></li><li><a href="global.html#RecoverPasswordPage">RecoverPasswordPage</a></li><li><a href="global.html#RegisterPage">RegisterPage</a></li><li><a href="global.html#RequestDetailsPage">RequestDetailsPage</a></li><li><a href="global.html#ToastCtx">ToastCtx</a></li><li><a href="global.html#ToastProvider">ToastProvider</a></li><li><a href="global.html#TransportDetailsCard">TransportDetailsCard</a></li><li><a href="global.html#aliases">aliases</a></li><li><a href="global.html#api">api</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#bidsService">bidsService</a></li><li><a href="global.html#buildQueryString">buildQueryString</a></li><li><a href="global.html#cancelBid">cancelBid</a></li><li><a href="global.html#cancelTransport">cancelTransport</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#claimsArrayToObject">claimsArrayToObject</a></li><li><a href="global.html#createBid">createBid</a></li><li><a href="global.html#createDraftForm">createDraftForm</a></li><li><a href="global.html#createDraftJson">createDraftJson</a></li><li><a href="global.html#createTransportForm">createTransportForm</a></li><li><a href="global.html#createTransportJson">createTransportJson</a></li><li><a href="global.html#deactivateAccount">deactivateAccount</a></li><li><a href="global.html#fetchNotifications">fetchNotifications</a></li><li><a href="global.html#fmtDate">fmtDate</a></li><li><a href="global.html#formatError">formatError</a></li><li><a href="global.html#getActiveBids">getActiveBids</a></li><li><a href="global.html#getApiErrorMessage">getApiErrorMessage</a></li><li><a href="global.html#getBidsByDriver">getBidsByDriver</a></li><li><a href="global.html#getCompanyHistory">getCompanyHistory</a></li><li><a href="global.html#getCompanyTransports">getCompanyTransports</a></li><li><a href="global.html#getDriverHistory">getDriverHistory</a></li><li><a href="global.html#getDriverTransports">getDriverTransports</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getTransportById">getTransportById</a></li><li><a href="global.html#historyService">historyService</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#manualBidAction">manualBidAction</a></li><li><a href="global.html#mapStatusToClass">mapStatusToClass</a></li><li><a href="global.html#markAllAsRead">markAllAsRead</a></li><li><a href="global.html#markAsRead">markAsRead</a></li><li><a href="global.html#normalizeHistoryCompany">normalizeHistoryCompany</a></li><li><a href="global.html#normalizeHistoryDriver">normalizeHistoryDriver</a></li><li><a href="global.html#normalizeTransportList">normalizeTransportList</a></li><li><a href="global.html#notificationsService">notificationsService</a></li><li><a href="global.html#prettyStatus">prettyStatus</a></li><li><a href="global.html#profileService">profileService</a></li><li><a href="global.html#publishCompanyTransport">publishCompanyTransport</a></li><li><a href="global.html#recoverPassword">recoverPassword</a></li><li><a href="global.html#registerCompany">registerCompany</a></li><li><a href="global.html#registerDriver">registerDriver</a></li><li><a href="global.html#resetPassword">resetPassword</a></li><li><a href="global.html#sortByNewest">sortByNewest</a></li><li><a href="global.html#updateBid">updateBid</a></li><li><a href="global.html#updateCompany">updateCompany</a></li><li><a href="global.html#updateDriver">updateDriver</a></li><li><a href="global.html#updateTransport">updateTransport</a></li><li><a href="global.html#updateTransportStatus">updateTransportStatus</a></li><li><a href="global.html#useCreateTransport">useCreateTransport</a></li><li><a href="global.html#useHistory">useHistory</a></li><li><a href="global.html#useLogin">useLogin</a></li><li><a href="global.html#useMe">useMe</a></li><li><a href="global.html#useMyBids">useMyBids</a></li><li><a href="global.html#useNotifications">useNotifications</a></li><li><a href="global.html#useProfile">useProfile</a></li><li><a href="global.html#useRecoverPassword">useRecoverPassword</a></li><li><a href="global.html#useRegister">useRegister</a></li><li><a href="global.html#useRequestDetails">useRequestDetails</a></li><li><a href="global.html#useSortedBids">useSortedBids</a></li><li><a href="global.html#useToast">useToast</a></li><li><a href="global.html#validateTransportFields">validateTransportFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 03 2025 16:18:17 GMT+0000 (Hora padrão da Europa Ocidental)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

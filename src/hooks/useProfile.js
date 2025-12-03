@@ -7,8 +7,31 @@ import {
   changePassword,
 } from "../services/profileService";
 
-// Hook de perfil: carregar e atualizar dados
+/**
+ * @typedef {Object} UseProfileResult
+ * @property {Object|null} profile - Loaded profile information or null if not available.
+ * @property {boolean} loading - Indicates whether the profile is being loaded.
+ * @property {string|null} error - Error message when loading fails; null otherwise.
+ * @property {function(Object): void} setProfile - Setter for the local profile state.
+ * @property {function(*): Promise<Object>} saveProfile - Persists profile changes for driver/company.
+ * @property {function(): Promise<Object>} deactivate - Deactivates the current account.
+ * @property {function(string, string): Promise<Object>} changePwd - Changes the account password.
+ */
 
+
+/**
+ * React hook that loads and updates the current user's profile.
+ *
+ * It fetches profile data based on `userId` and role flags (`isDriver`,
+ * `isCompany`), and exposes helper functions to save profile changes,
+ * deactivate the account and change the password.
+ *
+ * @param {Object} [options] - Options object specifying the user identifier and account type.
+ * @param {(string|number)} [options.userId] - Identifier of the current user.
+ * @param {boolean} [options.isDriver] - Whether the current user is a driver.
+ * @param {boolean} [options.isCompany] - Whether the current user is a company.
+ * @returns {UseProfileResult} Profile data and related update helpers.
+ */
 export function useProfile({ userId, isDriver, isCompany } = {}) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);

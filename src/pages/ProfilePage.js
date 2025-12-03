@@ -17,7 +17,16 @@ import StatusMessage from "../components/feedback/StatusMessage";
 import { useToast } from "../components/feedback/ToastContext";
 import Button from "../components/Button/Button";
 import useProfile from "../hooks/useProfile";
-// Página de perfil do utilizador
+
+/**
+ * User profile page for both driver and company accounts.
+ *
+ * It loads the current profile using {@link useProfile}, lets the user
+ * edit core fields, upload images (avatar and driver documents),
+ * change the password and deactivate the account.
+ *
+ * @returns {JSX.Element} Rendered profile page.
+ */
 
 function ProfilePage() {
     const { userId, isDriver, isCompany, loading: meLoading } = useMe();

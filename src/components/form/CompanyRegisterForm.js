@@ -1,9 +1,40 @@
+/**
+ * @typedef {Object} CompanyRegisterFormValues
+ * @property {string} name
+ * @property {string} companyName
+ * @property {string} address
+ * @property {string} email
+ * @property {string} password
+ * @property {string} phone
+ * @property {string} nif
+ */
+
+/**
+ * @typedef {Object} CompanyRegisterFormProps
+ * @property {CompanyRegisterFormValues} values - Current form field values.
+ * @property {string|null} [error] - Error message to display below the form.
+ * @property {boolean} [loading] - Indicates whether a submit request is in progress.
+ * @property {function(string, *): void} onChange - Callback to update a specific field.
+ * @property {function(): void} onSubmit - Callback invoked when the user confirms registration.
+ * @property {function(): void} onCancel - Callback invoked when the user cancels.
+ */
+
 import React from "react";
 import PasswordInput from "../PasswordInput/PasswordInput";
 import "./CompanyRegisterForm.css";
 import Button from "../Button/Button";
 
-// Form registo empresa
+
+/**
+ * Registration form for company accounts.
+ *
+ * It collects basic company information (name, address, email, phone,
+ * NIF, password) and delegates state management and submit handling to
+ * the parent component via callbacks.
+ *
+ * @param {CompanyRegisterFormProps} props - Form configuration and state handlers.
+ * @returns {JSX.Element} Rendered company registration form.
+ */
 function CompanyRegisterForm({
   values,
   error,

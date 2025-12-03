@@ -1,3 +1,13 @@
+/**
+ * Reports web vitals metrics.
+ *
+ * This helper can be used to log or send Core Web Vitals metrics to an
+ * analytics endpoint. It is typically called from `index.js` with a
+ * custom logging function.
+ *
+ * @param {function(Object): void} onPerfEntry -
+ *   Callback invoked with each collected performance metric.
+ */
 // reportWebVitals permite recolher métricas de performance da aplicação
 // usando a biblioteca 'web-vitals'. Se fornecer uma função em onPerfEntry
 // (por exemplo, console.log ou envio para um endpoint), as métricas serão

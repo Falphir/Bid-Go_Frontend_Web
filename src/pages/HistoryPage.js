@@ -5,7 +5,16 @@ import StatusMessage from "../components/feedback/StatusMessage";
 import HistoryTable from "../components/history/HistoryTable";
 import useHistory from "../hooks/useHistory";
 
-// Página de histórico com tabela dinâmica
+/**
+ * History page displaying either bidding history for drivers or
+ * transport request history for companies.
+ *
+ * It uses {@link useMe} to determine the current user role and
+ * {@link useHistory} to load normalized history items, rendering them
+ * in a dynamic {@link HistoryTable}.
+ *
+ * @returns {JSX.Element} Rendered history page.
+ */
 function HistoryPage() {
   const { userId, isDriver, isCompany, loading: meLoading } = useMe();
   const { items, loading, error } = useHistory({ userId, isDriver, isCompany });

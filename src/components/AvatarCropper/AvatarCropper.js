@@ -1,9 +1,24 @@
+/**
+ * @typedef {Object} AvatarCropperProps
+ * @property {string} image - Source URL or data URL of the image to crop.
+ * @property {function(): void} onCancel - Callback invoked when the user cancels cropping.
+ * @property {function(File): void} onSave - Callback invoked with the cropped avatar file.
+ */
+
 import React, { useState } from "react";
 import Cropper from "react-easy-crop";
 import "./AvatarCropper.css";
 import Button from "../Button/Button";
 
-// Cropper de avatar
+/**
+ * Modal-like avatar cropper using `react-easy-crop`.
+ *
+ * It lets the user adjust crop and zoom over the provided image and,
+ * when saved, returns a JPEG `File` containing only the selected area.
+ *
+ * @param {AvatarCropperProps} props - Cropper configuration and callbacks.
+ * @returns {JSX.Element} Rendered avatar cropper overlay.
+ */
 function AvatarCropper({ image, onCancel, onSave }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);

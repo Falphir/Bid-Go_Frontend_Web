@@ -6,7 +6,17 @@ import StatusMessage from "../components/feedback/StatusMessage";
 import StatusBadge from "../components/feedback/StatusBadge";
 import useMyBids from "../hooks/useMyBids";
 
-// Página "As minhas bids"
+/**
+ * Page that displays all bids created by the currently authenticated driver.
+ *
+ * It uses {@link useMe} to obtain the current user identifier and
+ * {@link useMyBids} to load the list of bids. Each bid is displayed with
+ * its request id, status badges and basic metadata and allows navigation
+ * to the related transport request details.
+ *
+ * @returns {JSX.Element} Rendered My Bids page component.
+ */
+
 export default function MyBidsPage() {
     const { userId, loading: meLoading } = useMe();
     const { bids, loading, error } = useMyBids({ userId });

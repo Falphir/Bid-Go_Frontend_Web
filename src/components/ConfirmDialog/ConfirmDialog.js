@@ -1,8 +1,28 @@
+/**
+ * @typedef {Object} ConfirmDialogProps
+ * @property {boolean} open - Whether the dialog is visible.
+ * @property {string} [title] - Dialog title displayed at the top.
+ * @property {string} [message] - Body message asking for confirmation.
+ * @property {string} [confirmText] - Label for the confirm button.
+ * @property {string} [cancelText] - Label for the cancel button.
+ * @property {boolean} [loading] - Indicates if a confirm action is in progress.
+ * @property {function(): void} [onConfirm] - Callback invoked when the user confirms.
+ * @property {function(): void} [onCancel] - Callback invoked when the user cancels or closes the dialog.
+ */
+
 import React, { useEffect, useRef } from "react";
 import "./ConfirmDialog.css";
 import Button from "../Button/Button";
 
-// Modal de confirmação acessível
+/**
+ * Accessible confirmation modal dialog.
+ *
+ * It traps accidental clicks outside as cancel, listens to the `Escape`
+ * key to dismiss and focuses the confirm button when opened.
+ *
+ * @param {ConfirmDialogProps} props - Dialog configuration and callbacks.
+ * @returns {JSX.Element|null} Rendered dialog or null when `open` is false.
+ */
 export default function ConfirmDialog({
   open,
   title = "Confirm Action",

@@ -1,8 +1,25 @@
+/**
+ * @typedef {Object} PasswordInputProps
+ * @property {string} value - Current password value.
+ * @property {function(Event): void} onChange - Change handler for the underlying input.
+ * @property {string} [placeholder] - Placeholder text for the password field.
+ * @property {string} [name] - Name attribute of the input.
+ * @property {boolean} [required] - Whether the field is required.
+ * @property {string} [autoComplete] - Auto-complete attribute value.
+ * @property {string} [label] - Optional label rendered above the input.
+ */
+
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import "./PasswordInput.css";
 
-// Campo de password com toggle mostrar/ocultar
+
+/**
+ * Password input with a show/hide toggle button.
+ *
+ * @param {PasswordInputProps} props - Password field configuration and handlers.
+ * @returns {JSX.Element} Rendered password input component.
+ */
 export default function PasswordInput({
   value,
   onChange,

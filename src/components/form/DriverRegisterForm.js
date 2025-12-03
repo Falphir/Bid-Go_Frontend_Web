@@ -1,9 +1,40 @@
+/**
+ * @typedef {Object} DriverRegisterFormValues
+ * @property {string} name
+ * @property {string} email
+ * @property {string} password
+ * @property {string} phone
+ * @property {string} nif
+ * @property {*} [driverLicense]
+ * @property {*} [insurance]
+ */
+
+/**
+ * @typedef {Object} DriverRegisterFormProps
+ * @property {DriverRegisterFormValues} values - Current form field values.
+ * @property {string|null} [error] - Error message shown below the form.
+ * @property {boolean} [loading] - Indicates whether a submit request is in progress.
+ * @property {function(string, *): void} onChange - Callback to update a specific field.
+ * @property {function(): void} onSubmit - Callback invoked when the user confirms registration.
+ * @property {function(): void} onCancel - Callback invoked when the user cancels.
+ */
+
 import React from "react";
 import PasswordInput from "../PasswordInput/PasswordInput";
 import Button from "../Button/Button";
 import "./DriverRegisterForm.css";
 
-// Form registo motorista
+
+/**
+ * Registration form for driver accounts.
+ *
+ * It collects basic driver information (name, email, phone, tax id,
+ * password) and images for driver license and insurance, delegating
+ * state management and submission to the parent component.
+ *
+ * @param {DriverRegisterFormProps} props - Form configuration and handlers.
+ * @returns {JSX.Element} Rendered driver registration form.
+ */
 function DriverRegisterForm({
   values,
   error,

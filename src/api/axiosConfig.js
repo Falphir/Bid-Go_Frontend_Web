@@ -1,6 +1,13 @@
 import axios from "axios";
 
-// Axios base instance
+/**
+ * Axios HTTP client preconfigured for the Bid-Go backend API.
+ *
+ * This instance sets the base URL from the `REACT_APP_API_URL` environment
+ * variable, automatically attaches the `Authorization` header when a token
+ * is present and handles 401 responses by clearing stored tokens and
+ * redirecting to the login page (except during Playwright tests).
+ */
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
 });

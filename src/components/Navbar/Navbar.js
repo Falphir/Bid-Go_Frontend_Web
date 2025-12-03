@@ -12,7 +12,16 @@ import {
   FaBan,
 } from "react-icons/fa";
 
-// Navbar com utilizador + notificações
+/**
+ * Top navigation bar displaying the application logo, the current user
+ * information and a notifications dropdown.
+ *
+ * It fetches the current user from `/auth/me`, loads a small set of
+ * recent notifications and exposes links to profile, history,
+ * notifications, my bids/transports and logout.
+ *
+ * @returns {JSX.Element} Rendered navigation bar.
+ */
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [openMenu, setOpenMenu] = useState(false);

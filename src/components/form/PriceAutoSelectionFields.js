@@ -1,7 +1,20 @@
+/**
+ * @typedef {Object} PriceAutoSelectionFieldsProps
+ * @property {string|number} maxPrice - Current maximum price value.
+ * @property {boolean} isAutomaticSelectionEnabled - Whether the automatic algorithm is enabled.
+ * @property {function(string, *): void} onChange - Callback to update price or toggle automatic selection.
+ */
+
 import React from "react";
 import "./PriceAutoSelectionFields.css";
 
-// Campos preço + seleção automática
+
+/**
+ * Form fragment with inputs for maximum price and an automatic selection toggle.
+ *
+ * @param {PriceAutoSelectionFieldsProps} props - Price and automatic selection options.
+ * @returns {JSX.Element} Rendered price and toggle controls.
+ */
 export default function PriceAutoSelectionFields({
   maxPrice,
   isAutomaticSelectionEnabled,

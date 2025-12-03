@@ -1,9 +1,31 @@
+/**
+ * @typedef {Object} LoginFormProps
+ * @property {string} email
+ * @property {string} password
+ * @property {boolean} remember
+ * @property {boolean} loading
+ * @property {function(string): void} onChangeEmail
+ * @property {function(string): void} onChangePassword
+ * @property {function(boolean): void} onToggleRemember
+ * @property {function(Event): void} onSubmit
+ */
+
 import React from "react";
 import PasswordInput from "../PasswordInput/PasswordInput";
 import "./LoginForm.css";
 import { useNavigate } from "react-router";
 
-// Form login
+
+/**
+ * Login form component used on the authentication page.
+ *
+ * It delegates all state handling and submission logic to the parent
+ * via callbacks, and provides a shortcut link to the password
+ * recovery page using React Router.
+ *
+ * @param {LoginFormProps} props - Login values and handlers.
+ * @returns {JSX.Element} Rendered login form.
+ */
 function LoginForm({
   email,
   password,

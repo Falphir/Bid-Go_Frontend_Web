@@ -1,8 +1,26 @@
 import { useRef, useState, useEffect } from "react";
 import { registerDriver, registerCompany } from "../services/authService";
 
-// Hook de registo (motorista/empresa)
+/**
+ * Result object returned by {@link useRegister}.
+ *
+ * @typedef {Object} UseRegisterResult
+ * @property {function(FormData): Promise<*>} submitDriver - Submits a new driver registration.
+ * @property {function(Object): Promise<*>} submitCompany - Submits a new company registration.
+ * @property {boolean} loading - Indicates whether a registration request is in progress.
+ * @property {string|null} error - Error message when registration fails; null otherwise.
+ */
 
+
+/**
+ * React hook that wraps driver and company registration calls.
+ *
+ * It manages an internal `AbortController` and exposes two helpers
+ * (`submitDriver` and `submitCompany`) together with `loading` and
+ * `error` flags.
+ *
+ * @returns {UseRegisterResult} Registration helpers and state.
+ */
 export function useRegister() {
   const abortRef = useRef(null);
   const [loading, setLoading] = useState(false);

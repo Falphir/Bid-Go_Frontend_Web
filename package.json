@@ -32,7 +32,9 @@
     "start:coverage": "cross-env COVERAGE=true craco start",
     "e2e": "playwright test",
     "e2e:coverage": "playwright test && nyc report --reporter=html --reporter=text-summary --reporter=lcov",
-    "e2e:debug": "playwright test --headed --debug"
+    "e2e:debug": "playwright test --headed --debug",
+    "docs:build": "jsdoc -c jsdoc.json",
+    "docs": "npm run docs:build"
   },
   "eslintConfig": {
     "extends": [
@@ -63,6 +65,7 @@
     "babel-plugin-istanbul": "^7.0.1",
     "cross-env": "^10.1.0",
     "istanbul-lib-coverage": "^3.2.2",
+    "jsdoc": "^4.0.5",
     "lcov-result-merger": "^5.0.1",
     "nyc": "^17.1.0"
   }

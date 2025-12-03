@@ -1,8 +1,29 @@
+/**
+ * @typedef {Object} AddBidModalProps
+ * @property {boolean} open - Whether the modal is visible.
+ * @property {function(): void} onClose - Callback invoked when the modal should be closed.
+ * @property {function(Object): void} onSave - Callback invoked with the new bid payload when the form is submitted.
+ * @property {boolean} [saving] - Indicates whether a bid creation request is in progress.
+ * @property {Object} [transport] - Transport request data related to the bid.
+ * @property {number} [maxPrice] - Maximum allowed price for the bid.
+ * @property {string|Date} [pickupDate] - Pickup date used to validate the bid deadline.
+ * @property {string|Date} [deliveryDate] - Delivery date used to validate the bid deadline.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import "./AddBidModal.css";
 import Button from "../Button/Button";
 
-// Modal adicionar bid
+/**
+ * Modal dialog that allows a driver to create a new bid for a transport request.
+ *
+ * It validates the bid value against the optional `maxPrice` and ensures the
+ * deadline is within the pickup and delivery date range. When submitted,
+ * it calls {@link AddBidModalProps.onSave} with the normalized bid payload.
+ *
+ * @param {AddBidModalProps} props - Modal configuration and context.
+ * @returns {JSX.Element|null} Rendered modal or null when `open` is false.
+ */
 export default function AddBidModal({
   open,
   onClose,

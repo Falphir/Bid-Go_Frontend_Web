@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: hooks/useTransports.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: hooks/useTransports.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Options accepted by {@link useTransports}.
+ *
+ * @typedef {Object} UseTransportsOptions
+ * @property {string|number} [userId] - Identifier of the current user.
+ * @property {boolean} [isDriver] - Whether the current user is a driver.
+ * @property {boolean} [isCompany] - Whether the current user is a company.
+ * @property {Object} [initialFilters] - Initial filters applied when fetching driver transports.
+ */
+
+/**
+ * Result object returned by {@link useTransports}.
+ *
+ * @typedef {Object} UseTransportsResult
+ * @property {Object[]} requests - Normalized list of transport requests.
+ * @property {boolean} isRequestsEmpty - True when there are no requests to show.
+ * @property {boolean} loading - Indicates whether a fetch operation is in progress.
+ * @property {string|null} error - Error message when loading fails; null otherwise.
+ * @property {Object} filters - Current filters used when fetching driver transports.
+ * @property {boolean} showFilters - Whether the filters panel is currently visible.
+ * @property {function(boolean)} setShowFilters - Setter for the `showFilters` flag.
+ * @property {function(Object)} setFilters - Setter for the current filters.
+ * @property {function(Object)} applyFilters - Applies new filters and triggers a fetch.
+ * @property {function(Object)} clearFilters - Clears filters and refreshes the list.
+ */
+
+/**
+ * React hook that loads and manages transport requests for drivers and companies.
+ *
+ * When `isCompany` is true it fetches company transports, and when `isDriver`
+ * is true it fetches driver-visible transports, optionally filtered by origin,
+ * destination and other criteria.
+ *
+ * @param {UseTransportsOptions} [options] - Configuration options for the hook.
+ * @returns {UseTransportsResult} Object containing transport data, loading state and helpers.
+ */
+import { useCallback, useEffect, useState } from "react";
+import {
+  getCompanyTransports,
+  getDriverTransports,
+} from "../services/transportsService";
+
+export function useTransports({
+  userId,
+  isDriver,
+  isCompany,
+  initialFilters = {},
+} = {}) {
+  const [requests, setRequests] = useState([]);
+  const [isRequestsEmpty, setIsRequestsEmpty] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [filters, setFilters] = useState(initialFilters);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const fetchForCompany = useCallback(
+    async (signal) => {
+      if (!userId) return;
+      setLoading(true);
+      setError(null);
+      setIsRequestsEmpty(false);
+      try {
+        const normalized = await getCompanyTransports(userId, signal);
+        const sorted = sortByNewest(normalized);
+        setRequests(sorted);
+        if (normalized.length === 0) setIsRequestsEmpty(true);
+      } catch (err) {
+        if (err.name === "CanceledError") return;
+        setError(formatError(err));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [userId]
+  );
+
+  const fetchForDriver = useCallback(
+    async (signal, currentFilters) => {
+      setLoading(true);
+      setError(null);
+      setIsRequestsEmpty(false);
+      try {
+        const normalized = await getDriverTransports(
+          currentFilters || filters,
+          signal
+        );
+        const sorted = sortByNewest(normalized);
+        setRequests(sorted);
+        if (normalized.length === 0) setIsRequestsEmpty(true);
+      } catch (err) {
+        if (err.name === "CanceledError") return;
+        setError(formatError(err));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filters]
+  );
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    if (isCompany &amp;&amp; userId) {
+      fetchForCompany(controller.signal);
+    } else if (isDriver) {
+      fetchForDriver(controller.signal, filters);
+    }
+
+    return () => controller.abort();
+  }, [isDriver, isCompany, userId, filters, fetchForCompany, fetchForDriver]);
+
+  function applyFilters(f) {
+    setFilters(f);
+    const controller = new AbortController();
+    fetchForDriver(controller.signal, f);
+    setTimeout(() => controller.abort(), 30000);
+  }
+
+  function clearFilters(cleared) {
+    setFilters(cleared);
+    const controller = new AbortController();
+    fetchForDriver(controller.signal, cleared);
+    setTimeout(() => controller.abort(), 30000);
+  }
+
+  return {
+    requests,
+    isRequestsEmpty,
+    loading,
+    error,
+    filters,
+    showFilters,
+    setShowFilters,
+    setFilters,
+    applyFilters,
+    clearFilters,
+  };
+}
+
+/**
+ * Formats an error object into a short user-facing message.
+ *
+ * @param {any} err - Error instance thrown during a request.
+ * @returns {string|null} Formatted error message or null if no error.
+ */
+function formatError(err) {
+  if (!err) return null;
+  if (err.response)
+    return `Server error: ${err.response.status} ${err.response.statusText}`;
+  if (err.request) return "Network error: no response from server";
+  return `Request error: ${err.message}`;
+}
+
+/**
+ * Sorts a list of transport-like objects from newest to oldest.
+ *
+ * It uses `createdAt` when available, or falls back to `biddingEndDate`.
+ *
+ * @param {any[]} list - List of items containing a `createdAt` or `biddingEndDate` field.
+ * @returns {any[]} New array sorted by descending creation/bidding date.
+ */
+function sortByNewest(list) {
+  if (!Array.isArray(list)) return [];
+  const getTime = (t) => {
+    const d = new Date(t.createdAt || t.biddingEndDate || 0);
+    const time = d.getTime();
+    return isNaN(time) ? 0 : time;
+  };
+  return [...list].sort((a, b) => getTime(b) - getTime(a));
+}
+
+export default useTransports;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AcceptRejectOverlay">AcceptRejectOverlay</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#AvatarCropper">AvatarCropper</a></li><li><a href="global.html#AvatarSection">AvatarSection</a></li><li><a href="global.html#BidCard">BidCard</a></li><li><a href="global.html#BidGoPage">BidGoPage</a></li><li><a href="global.html#BidList">BidList</a></li><li><a href="global.html#CompanyFormGrid">CompanyFormGrid</a></li><li><a href="global.html#CompanyRegisterForm">CompanyRegisterForm</a></li><li><a href="global.html#DeactivateAccountModal">DeactivateAccountModal</a></li><li><a href="global.html#DriverDocsSection">DriverDocsSection</a></li><li><a href="global.html#DriverFormGrid">DriverFormGrid</a></li><li><a href="global.html#DriverRegisterForm">DriverRegisterForm</a></li><li><a href="global.html#HistoryPage">HistoryPage</a></li><li><a href="global.html#LoginForm">LoginForm</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#PasswordChangeModal">PasswordChangeModal</a></li><li><a href="global.html#ProfilePage">ProfilePage</a></li><li><a href="global.html#RecoverPasswordPage">RecoverPasswordPage</a></li><li><a href="global.html#RegisterPage">RegisterPage</a></li><li><a href="global.html#RequestDetailsPage">RequestDetailsPage</a></li><li><a href="global.html#ToastCtx">ToastCtx</a></li><li><a href="global.html#ToastProvider">ToastProvider</a></li><li><a href="global.html#TransportDetailsCard">TransportDetailsCard</a></li><li><a href="global.html#aliases">aliases</a></li><li><a href="global.html#api">api</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#bidsService">bidsService</a></li><li><a href="global.html#buildQueryString">buildQueryString</a></li><li><a href="global.html#cancelBid">cancelBid</a></li><li><a href="global.html#cancelTransport">cancelTransport</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#claimsArrayToObject">claimsArrayToObject</a></li><li><a href="global.html#createBid">createBid</a></li><li><a href="global.html#createDraftForm">createDraftForm</a></li><li><a href="global.html#createDraftJson">createDraftJson</a></li><li><a href="global.html#createTransportForm">createTransportForm</a></li><li><a href="global.html#createTransportJson">createTransportJson</a></li><li><a href="global.html#deactivateAccount">deactivateAccount</a></li><li><a href="global.html#fetchNotifications">fetchNotifications</a></li><li><a href="global.html#fmtDate">fmtDate</a></li><li><a href="global.html#formatError">formatError</a></li><li><a href="global.html#getActiveBids">getActiveBids</a></li><li><a href="global.html#getApiErrorMessage">getApiErrorMessage</a></li><li><a href="global.html#getBidsByDriver">getBidsByDriver</a></li><li><a href="global.html#getCompanyHistory">getCompanyHistory</a></li><li><a href="global.html#getCompanyTransports">getCompanyTransports</a></li><li><a href="global.html#getDriverHistory">getDriverHistory</a></li><li><a href="global.html#getDriverTransports">getDriverTransports</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getTransportById">getTransportById</a></li><li><a href="global.html#historyService">historyService</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#manualBidAction">manualBidAction</a></li><li><a href="global.html#mapStatusToClass">mapStatusToClass</a></li><li><a href="global.html#markAllAsRead">markAllAsRead</a></li><li><a href="global.html#markAsRead">markAsRead</a></li><li><a href="global.html#normalizeHistoryCompany">normalizeHistoryCompany</a></li><li><a href="global.html#normalizeHistoryDriver">normalizeHistoryDriver</a></li><li><a href="global.html#normalizeTransportList">normalizeTransportList</a></li><li><a href="global.html#notificationsService">notificationsService</a></li><li><a href="global.html#prettyStatus">prettyStatus</a></li><li><a href="global.html#profileService">profileService</a></li><li><a href="global.html#publishCompanyTransport">publishCompanyTransport</a></li><li><a href="global.html#recoverPassword">recoverPassword</a></li><li><a href="global.html#registerCompany">registerCompany</a></li><li><a href="global.html#registerDriver">registerDriver</a></li><li><a href="global.html#resetPassword">resetPassword</a></li><li><a href="global.html#sortByNewest">sortByNewest</a></li><li><a href="global.html#updateBid">updateBid</a></li><li><a href="global.html#updateCompany">updateCompany</a></li><li><a href="global.html#updateDriver">updateDriver</a></li><li><a href="global.html#updateTransport">updateTransport</a></li><li><a href="global.html#updateTransportStatus">updateTransportStatus</a></li><li><a href="global.html#useCreateTransport">useCreateTransport</a></li><li><a href="global.html#useHistory">useHistory</a></li><li><a href="global.html#useLogin">useLogin</a></li><li><a href="global.html#useMe">useMe</a></li><li><a href="global.html#useMyBids">useMyBids</a></li><li><a href="global.html#useNotifications">useNotifications</a></li><li><a href="global.html#useProfile">useProfile</a></li><li><a href="global.html#useRecoverPassword">useRecoverPassword</a></li><li><a href="global.html#useRegister">useRegister</a></li><li><a href="global.html#useRequestDetails">useRequestDetails</a></li><li><a href="global.html#useSortedBids">useSortedBids</a></li><li><a href="global.html#useToast">useToast</a></li><li><a href="global.html#validateTransportFields">validateTransportFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 03 2025 16:18:17 GMT+0000 (Hora padrão da Europa Ocidental)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

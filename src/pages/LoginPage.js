@@ -6,7 +6,20 @@ import LoginForm from "../components/form/LoginForm";
 import { useToast } from "../components/feedback/ToastContext";
 import useLogin from "../hooks/useLogin";
 
-// Página de autenticação (login)
+/**
+ * Login page for the Bid-Go web application.
+ *
+ * It renders the main login form, handles form state, triggers the
+ * {@link useLogin} hook to authenticate the user and, on success,
+ * stores the token (if the user chose to be remembered) and navigates
+ * to the main application route.
+ *
+ * The page also listens to navigation state to show toasts when coming
+ * from other pages (for example after registration or password reset).
+ *
+ * @returns {JSX.Element} Rendered login page component.
+ */
+
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

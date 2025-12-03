@@ -1,3 +1,11 @@
+/**
+ * Playwright coverage helper.
+ *
+ * This hook runs after each Playwright test, collects the
+ * `window.__coverage__` object from the browser context (when
+ * available) and writes it as a JSON file under `tests/.nyc_output`,
+ * so that Istanbul/NYC can merge the coverage into the main report.
+ */
 // Helper de cobertura para Playwright
 //
 // Este ficheiro recolhe a cobertura de código gerada no browser (window.__coverage__)

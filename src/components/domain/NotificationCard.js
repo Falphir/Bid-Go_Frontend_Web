@@ -1,3 +1,9 @@
+/**
+ * @typedef {Object} NotificationCardProps
+ * @property {Object} notification - Notification data to display.
+ * @property {function(*): void} [onMarkRead] - Callback to mark a notification as read.
+ */
+
 import React from "react";
 import {
     FaCheckCircle,
@@ -7,8 +13,16 @@ import {
     FaBan,
 } from "react-icons/fa";
 import "./NotificationCard.css";
-// Cartão de notificação
 
+/**
+ * Card component that displays a single notification with icon, label and timestamp.
+ *
+ * When clicked, if the notification is unread, it triggers `onMarkRead` with
+ * the notification identifier so the parent can update its state.
+ *
+ * @param {NotificationCardProps} props - Notification configuration and callbacks.
+ * @returns {JSX.Element|null} Rendered notification card or null when no notification is provided.
+ */
 export default function NotificationCard({ notification, onMarkRead }) {
     if (!notification) return null;
     const { notificationId, type, timeStamp, context, isRead } = notification;
