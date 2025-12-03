@@ -1,0 +1,459 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\guerr\\Desktop\\Trabalhos\\LEI\\TrabalhoLDS2025\\LDSGrupo04\\Bid-Go_Frontend\\playwright.config.js",
+    "rootDir": "C:/Users/guerr/Desktop/Trabalhos/LEI/TrabalhoLDS2025/LDSGrupo04/Bid-Go_Frontend/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/guerr/Desktop/Trabalhos/LEI/TrabalhoLDS2025/LDSGrupo04/Bid-Go_Frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/guerr/Desktop/Trabalhos/LEI/TrabalhoLDS2025/LDSGrupo04/Bid-Go_Frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 6,
+    "webServer": {
+      "command": "env-cmd -f .env.development npm start",
+      "port": 3000,
+      "reuseExistingServer": true,
+      "timeout": 180000
+    }
+  },
+  "suites": [
+    {
+      "title": "create-bid.spec.js",
+      "file": "create-bid.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "System Test: Create Bid on existing transport",
+          "file": "create-bid.spec.js",
+          "line": 42,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Driver can place a bid and see confirmation (UI + DB)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5287,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Chaves TransportRequests: [\n  \u001b[32m'TransportRequestId'\u001b[39m,\n  \u001b[32m'Origin'\u001b[39m,\n  \u001b[32m'Destination'\u001b[39m,\n  \u001b[32m'Package'\u001b[39m,\n  \u001b[32m'Weight'\u001b[39m,\n  \u001b[32m'Volume'\u001b[39m,\n  \u001b[32m'Length'\u001b[39m,\n  \u001b[32m'Width'\u001b[39m,\n  \u001b[32m'Height'\u001b[39m,\n  \u001b[32m'PickupDate'\u001b[39m,\n  \u001b[32m'DeliveryDate'\u001b[39m,\n  \u001b[32m'Image'\u001b[39m,\n  \u001b[32m'MaxPrice'\u001b[39m,\n  \u001b[32m'Status'\u001b[39m,\n  \u001b[32m'BiddingStartDate'\u001b[39m,\n  \u001b[32m'BiddingEndDate'\u001b[39m,\n  \u001b[32m'IsAutomaticSelectionEnabled'\u001b[39m,\n  \u001b[32m'IsAutomaticSelectionExecuted'\u001b[39m,\n  \u001b[32m'SelectedBidId'\u001b[39m,\n  \u001b[32m'CompanyId'\u001b[39m\n]\n"
+                        },
+                        {
+                          "text": "[coverage-helper] Gravado: C:\\Users\\guerr\\Desktop\\Trabalhos\\LEI\\TrabalhoLDS2025\\LDSGrupo04\\Bid-Go_Frontend\\.nyc_output\\playwright-Driver_can_place_a_bid_and_see_confirmation_UI_DB_-1764779655426.json\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-03T16:33:57.395Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2d9690e1198b5bde0f1a-e1eecee14e18f62ec4f8",
+              "file": "create-bid.spec.js",
+              "line": 185,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "create-transports.spec.js",
+      "file": "create-transports.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "System Test: Create Transport Request",
+          "file": "create-transports.spec.js",
+          "line": 31,
+          "column": 6,
+          "specs": [
+            {
+              "title": "User can login and create a transport request",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 6474,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "--- SETUP: registo de empresa via UI ---\n"
+                        },
+                        {
+                          "text": "Registo submetido via UI.\n"
+                        },
+                        {
+                          "text": "A recuperar o ID do utilizador na BD...\n"
+                        },
+                        {
+                          "text": "✅ User encontrado! ID: 881\n"
+                        },
+                        {
+                          "text": "A fazer Login...\n"
+                        },
+                        {
+                          "text": "Browser: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold\n"
+                        },
+                        {
+                          "text": "Browser: Company Transports Response: {data: Array(0), status: 200, statusText: OK, headers: AxiosHeaders, config: Object}\n"
+                        },
+                        {
+                          "text": "Login com sucesso!\n"
+                        },
+                        {
+                          "text": "A criar transporte...\n"
+                        },
+                        {
+                          "text": "Browser: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold\n"
+                        },
+                        {
+                          "text": "A verificar DB para o userId: 881\n"
+                        },
+                        {
+                          "text": "Browser: Company Transports Response: {data: Array(1), status: 200, statusText: OK, headers: AxiosHeaders, config: Object}\n"
+                        },
+                        {
+                          "text": "Teste passou! Transporte gravado na DB.\n"
+                        },
+                        {
+                          "text": "[coverage-helper] Gravado: C:\\Users\\guerr\\Desktop\\Trabalhos\\LEI\\TrabalhoLDS2025\\LDSGrupo04\\Bid-Go_Frontend\\.nyc_output\\playwright-User_can_login_and_create_a_transport_request-1764779648588.json\n"
+                        },
+                        {
+                          "text": "--- TEARDOWN ---\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-03T16:33:57.390Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8ba6d0ded9a19d55d684-b501348883e46eb76dd4",
+              "file": "create-transports.spec.js",
+              "line": 106,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "history.spec.js",
+      "file": "history.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "System Test: History Page (Driver & Company)",
+          "file": "history.spec.js",
+          "line": 43,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Driver can login and see bidding history",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3939,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "--- SETUP HISTORY: criar driver e company + transport + bid via UI ---\n"
+                        },
+                        {
+                          "text": "Company registo submetido.\n"
+                        },
+                        {
+                          "text": "CompanyId para history: \u001b[33m884\u001b[39m\n"
+                        },
+                        {
+                          "text": "Driver registo submetido.\n"
+                        },
+                        {
+                          "text": "DriverId para history: \u001b[33m885\u001b[39m\n"
+                        },
+                        {
+                          "text": "A criar TransportRequest via UI para company...\n"
+                        },
+                        {
+                          "text": "TransportRequest criado via UI.\n"
+                        },
+                        {
+                          "text": "TransportRequestId para history (via UI): \u001b[33m463\u001b[39m\n"
+                        },
+                        {
+                          "text": "A criar Bid via UI para histórico do driver...\n"
+                        },
+                        {
+                          "text": "BidId para history (via UI): \u001b[33m345\u001b[39m\n"
+                        },
+                        {
+                          "text": "--- TESTE: Driver vê histórico ---\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-03T16:33:57.409Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "256e00334ecda521afce-75d290399747d1b9c149",
+              "file": "history.spec.js",
+              "line": 305,
+              "column": 3
+            },
+            {
+              "title": "Company can login and see transport requests history",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 2753,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "--- TESTE: Company vê histórico ---\n"
+                        },
+                        {
+                          "text": "--- TEARDOWN HISTORY ---\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-03T16:34:18.266Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "256e00334ecda521afce-d27d89ab89b4b1e5dea7",
+              "file": "history.spec.js",
+              "line": 328,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "update-transport-status.spec.js",
+      "file": "update-transport-status.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "System Test: Transport Status Flow",
+          "file": "update-transport-status.spec.js",
+          "line": 40,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Company and Driver can progress transport status until Completed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 11660,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "--- SETUP STATUS FLOW ---\n"
+                        },
+                        {
+                          "text": "Company registada e página de login acessível.\n"
+                        },
+                        {
+                          "text": "CompanyId: \u001b[33m882\u001b[39m\n"
+                        },
+                        {
+                          "text": "Driver registado e página de login acessível.\n"
+                        },
+                        {
+                          "text": "DriverId: \u001b[33m886\u001b[39m\n"
+                        },
+                        {
+                          "text": "TransportRequest criado.\n"
+                        },
+                        {
+                          "text": "TransportRequestId: \u001b[33m464\u001b[39m\n"
+                        },
+                        {
+                          "text": "BidId: \u001b[33m344\u001b[39m\n"
+                        },
+                        {
+                          "text": "--- TESTE STATUS: aceitar bid e avançar estados ---\n"
+                        },
+                        {
+                          "text": "Aceite efetuado. A iniciar polling DB...\n"
+                        },
+                        {
+                          "text": "Status na BD após Accept: { ok: \u001b[33mtrue\u001b[39m, status: \u001b[32m'PENDING'\u001b[39m, attempt: \u001b[33m1\u001b[39m }\n"
+                        },
+                        {
+                          "text": "Status na BD após Mark Pickup (esperado WAITINGPICKUP ou COMPLETED): { ok: \u001b[33mtrue\u001b[39m, status: \u001b[32m'WAITINGPICKUP'\u001b[39m, attempt: \u001b[33m2\u001b[39m }\n"
+                        },
+                        {
+                          "text": "Status na BD ao entrar como driver (WAITINGPICKUP ou COMPLETED): { ok: \u001b[33mtrue\u001b[39m, status: \u001b[32m'WAITINGPICKUP'\u001b[39m, attempt: \u001b[33m1\u001b[39m }\n"
+                        },
+                        {
+                          "text": "Status na BD após Start Transport (esperado INTRANSIT ou COMPLETED): { ok: \u001b[33mtrue\u001b[39m, status: \u001b[32m'INTRANSIT'\u001b[39m, attempt: \u001b[33m2\u001b[39m }\n"
+                        },
+                        {
+                          "text": "Status antes de tentar completar transporte: { ok: \u001b[33mtrue\u001b[39m, status: \u001b[32m'INTRANSIT'\u001b[39m, attempt: \u001b[33m1\u001b[39m }\n"
+                        },
+                        {
+                          "text": "Status final na BD (esperado COMPLETED): { ok: \u001b[33mtrue\u001b[39m, status: \u001b[32m'COMPLETED'\u001b[39m, attempt: \u001b[33m2\u001b[39m }\n"
+                        },
+                        {
+                          "text": "Fluxo de estados validado (forçando WAITINGPICKUP e INTRANSIT na BD quando necessário): PENDING -> WAITINGPICKUP -> INTRANSIT -> COMPLETED.\n"
+                        },
+                        {
+                          "text": "[coverage-helper] Gravado: C:\\Users\\guerr\\Desktop\\Trabalhos\\LEI\\TrabalhoLDS2025\\LDSGrupo04\\Bid-Go_Frontend\\.nyc_output\\playwright-Company_and_Driver_can_progress_transport_status_until_Completed-1764779665921.json\n"
+                        },
+                        {
+                          "text": "--- TEARDOWN STATUS FLOW ---\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-03T16:33:57.442Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2a960020286189fb16d4-1d91cfd896e86bbbd39e",
+              "file": "update-transport-status.spec.js",
+              "line": 369,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-12-03T16:33:56.259Z",
+    "duration": 30151.946,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

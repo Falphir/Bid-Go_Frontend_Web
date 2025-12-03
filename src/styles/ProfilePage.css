@@ -1,0 +1,158 @@
+.profile-page {
+    min-height: 100dvh;
+    background-color: #f7fbff;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px;
+    box-sizing: border-box;
+}
+
+.profile-card {
+    background-color: #ffffff;
+    width: 720px;
+    max-width: 100%;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.card-title {
+    margin: 0;
+    color: #062e5c;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.banner {
+    margin: 12px 0 16px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    border: 1px solid #cdd7e1;
+    background: #f4f8ff;
+    color: #1a3e6e;
+}
+
+.banner.success {
+    background: #eef8f1;
+    color: #1c5a2e;
+    border-color: #caead3;
+}
+
+.banner.error {
+    background: #fff1f1;
+    color: #7d1f24;
+    border-color: #f3c2c2;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.actions-left {
+    display: flex;
+    gap: 10px;
+}
+
+.footer-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.footer-row.spaced {
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.link-icon {
+    background: none;
+    border: none;
+    color: #3a78c8;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.link-icon:hover {
+    text-decoration: underline;
+}
+
+.link-icon.danger {
+    color: #e74c3c;
+}
+
+.link-icon.danger:hover {
+    text-decoration: underline;
+    color: #c0392b;
+}
+
+@keyframes fadeIn {
+    from {
+        transform: scale(0.97);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 720px) {
+    .form-grid.company-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid.company-layout .span-2 {
+        grid-column: 1 / -1;
+    }
+
+    .driver-block {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cropper-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.cropper-modal {
+    width: 90%;
+    max-width: 400px;
+    height: 400px;
+    background: #fff;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cropper-actions {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+}

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/CreateTransportPage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/CreateTransportPage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from "react";
+import "../styles/CreateTransportPage.css";
+import { getApiErrorMessage } from "../utils/httpError";
+import { useToast } from "../components/feedback/ToastContext";
+import ImageUpload from "../components/form/ImageUpload";
+import DimensionFields from "../components/form/DimensionFields";
+import DateFields from "../components/form/DateFields";
+import AuctionDatesFields from "../components/form/AuctionDatesFields";
+import PriceAutoSelectionFields from "../components/form/PriceAutoSelectionFields";
+import { useNavigate } from "react-router";
+import Button from "../components/Button/Button";
+import useCreateTransport from "../hooks/useCreateTransport";
+
+/**
+ * Page that allows a company user to create a new transport request or draft.
+ *
+ * It collects transport details, validates required fields and uses
+ * {@link useCreateTransport} to either create a published request or a
+ * draft, showing success and error messages via {@link useToast}.
+ *
+ * @returns {JSX.Element} Rendered create-transport page.
+ */
+
+// Página de criação de pedido de transporte
+const validateTransportFields = ({
+  origin,
+  destination,
+  pckg,
+  weight,
+  length,
+  width,
+  height,
+  pickupDate,
+  deliveryDate,
+  biddingStartDate,
+  biddingEndDate,
+  maxPrice,
+  volume,
+  imageFile,
+}) => {
+  const missing = [];
+
+  if (!origin?.trim()) missing.push("Origin");
+  if (!destination?.trim()) missing.push("Destination");
+  if (!pckg?.trim()) missing.push("Package Type");
+  if (!weight?.trim()) missing.push("Weight");
+  if (!length?.trim()) missing.push("Length");
+  if (!width?.trim()) missing.push("Width");
+  if (!height?.trim()) missing.push("Height");
+  if (!pickupDate?.trim()) missing.push("Pickup Date");
+  if (!deliveryDate?.trim()) missing.push("Delivery Date");
+  if (!biddingStartDate?.trim()) missing.push("Auction Start");
+  if (!biddingEndDate?.trim()) missing.push("Auction End");
+  if (!maxPrice?.trim()) missing.push("Max Price");
+  if (!volume?.trim()) missing.push("Volume");
+
+  if (!imageFile) missing.push("Image");
+
+  return missing;
+};
+
+function CreateTransportPage() {
+  const [imageFile, setImageFile] = useState(null);
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
+  const [pckg, setPckg] = useState("");
+  const [weight, setWeight] = useState("");
+  const [length, setLength] = useState("");
+  const [width, setWidth] = useState("");
+  const [height, setHeight] = useState("");
+  const [dimensions, setDimensions] = useState("//");
+  const [pickupDate, setPickupDate] = useState("");
+  const [deliveryDate, setDeliveryDate] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [biddingStartDate, setBiddingStartDate] = useState("");
+  const [biddingEndDate, setBiddingEndDate] = useState("");
+  const [isAutomaticSelectionEnabled, setIsAutomaticSelectionEnabled] =
+    useState(false);
+  const [volume, setVolume] = useState("");
+  const { showToast } = useToast();
+  const navigate = useNavigate();
+  const { createTransport, createDraft, loading } = useCreateTransport();
+
+  const handleImageChange = (e) => {
+    const file = e.target.files &amp;&amp; e.target.files[0];
+    if (file) setImageFile(file);
+  };
+
+  const updateDimensionsString = (l, w, h) => {
+    setDimensions(`${l || ""}/${w || ""}/${h || ""}`);
+  };
+
+  useEffect(() => {
+    const parse = (v) => {
+      if (!v) return NaN;
+      const n = parseFloat(String(v).replace(",", "."));
+      return Number.isFinite(n) ? n : NaN;
+    };
+
+    const l = parse(length);
+    const w = parse(width);
+    const h = parse(height);
+
+    const vol = l * w * h;
+
+    if (Number.isFinite(vol)) setVolume(String(Math.round(vol)));
+    else setVolume("");
+  }, [length, width, height]);
+
+  const handleCreateDraft = async () => {
+    const missing = validateTransportFields({
+      origin,
+      destination,
+      pckg,
+      weight,
+      length,
+      width,
+      height,
+      pickupDate,
+      deliveryDate,
+      biddingStartDate,
+      biddingEndDate,
+      maxPrice,
+      volume,
+      imageFile,
+    });
+
+    if (missing.length > 0) {
+      showToast(
+        `Missing required fields to create DRAFT: ${missing.join(", ")}`,
+        "error"
+      );
+      return;
+    }
+
+    try {
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("image", imageFile);
+
+        formData.append("origin", origin);
+        formData.append("destination", destination);
+        formData.append("package", pckg);
+        formData.append("weight", Number(weight) || null);
+        formData.append("length", Number(length) || null);
+        formData.append("width", Number(width) || null);
+        formData.append("height", Number(height) || null);
+        formData.append("dimensions", dimensions);
+        formData.append("pickupDate", pickupDate);
+        formData.append("deliveryDate", deliveryDate);
+        formData.append("maxPrice", Number(maxPrice) || null);
+        formData.append("biddingStartDate", biddingStartDate);
+        formData.append("biddingEndDate", biddingEndDate);
+        formData.append("volume", Number(volume) || null);
+        const token = localStorage.getItem("token");
+        const tokenPayload = parseJwt(token);
+        const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+        formData.append("companyId", String(userId));
+        formData.append(
+          "isAutomaticSelectionEnabled",
+          isAutomaticSelectionEnabled ? "true" : "false"
+        );
+
+        await createDraft({ isForm: true, payload: formData });
+      } else {
+        const token = localStorage.getItem("token");
+        const tokenPayload = parseJwt(token);
+        const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+
+        const payload = {
+          origin,
+          destination,
+          pckg,
+          weight: Number(weight) || null,
+          length: Number(length) || null,
+          width: Number(width) || null,
+          height: Number(height) || null,
+          dimensions,
+          pickupDate,
+          deliveryDate,
+          maxPrice: Number(maxPrice) || null,
+          biddingStartDate,
+          biddingEndDate,
+          volume: Number(volume) || null,
+          companyId: userId,
+          isAutomaticSelectionEnabled,
+        };
+
+        await createDraft({ isForm: false, payload });
+      }
+
+      showToast("Draft created successfully.", "success");
+      navigate("/myTransports");
+    } catch (err) {
+      const msg = getApiErrorMessage(err);
+      showToast(msg, "error");
+    }
+  };
+
+  const parseJwt = (tokenStr) => {
+    try {
+      const parts = tokenStr.split(".");
+      const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const padded = b64.padEnd(b64.length + ((4 - (b64.length % 4)) % 4), "=");
+      const json = decodeURIComponent(
+        atob(padded)
+          .split("")
+          .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+          .join("")
+      );
+      return JSON.parse(json);
+    } catch {
+      return null;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    if (e?.preventDefault) e.preventDefault();
+
+    const successMessage = "Request created successfully.";
+    try {
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("image", imageFile);
+
+        formData.append("origin", origin);
+        formData.append("destination", destination);
+        formData.append("package", pckg);
+        formData.append("weight", Number(weight) || null);
+        formData.append("length", Number(length) || null);
+        formData.append("width", Number(width) || null);
+        formData.append("height", Number(height) || null);
+        formData.append("dimensions", dimensions);
+        formData.append("pickupDate", pickupDate);
+        formData.append("deliveryDate", deliveryDate);
+        formData.append("maxPrice", Number(maxPrice) || null);
+        formData.append("biddingStartDate", biddingStartDate);
+        formData.append("biddingEndDate", biddingEndDate);
+        formData.append("volume", Number(volume) || null);
+        const token = localStorage.getItem("token");
+        const tokenPayload = parseJwt(token);
+        const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+        formData.append("companyId", String(userId));
+        formData.append(
+          "isAutomaticSelectionEnabled",
+          isAutomaticSelectionEnabled ? "true" : "false"
+        );
+
+        await createTransport({ isForm: true, payload: formData });
+      } else {
+        const token = localStorage.getItem("token");
+        const tokenPayload = parseJwt(token);
+        const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+
+        const payload = {
+          origin,
+          destination,
+          pckg,
+          weight: Number(weight) || null,
+          length: Number(length) || null,
+          width: Number(width) || null,
+          height: Number(height) || null,
+          dimensions,
+          pickupDate,
+          deliveryDate,
+          maxPrice: Number(maxPrice) || null,
+          biddingStartDate,
+          biddingEndDate,
+          volume: Number(volume) || null,
+          companyId: userId,
+          isAutomaticSelectionEnabled,
+        };
+
+        await createTransport({ isForm: false, payload });
+      }
+
+      showToast(successMessage, "success");
+      navigate("/myTransports");
+    } catch (err) {
+      const msg = getApiErrorMessage(err);
+      showToast(msg, "error");
+    }
+  };
+
+  return (
+    &lt;div className="create-transport-container">
+      &lt;h2 className="create-title">New Transport Request&lt;/h2>
+
+      &lt;form
+        className="transport-form"
+        onSubmit={(e) => {
+          const missing = validateTransportFields({
+            origin,
+            destination,
+            pckg,
+            weight,
+            length,
+            width,
+            height,
+            pickupDate,
+            deliveryDate,
+            biddingStartDate,
+            biddingEndDate,
+            maxPrice,
+            volume,
+            imageFile,
+          });
+
+          if (missing.length > 0) {
+            e.preventDefault();
+            showToast(
+              `Fill all required fields: ${missing.join(", ")}`,
+              "error"
+            );
+            return;
+          }
+
+          handleSubmit(e);
+        }}
+      >
+        &lt;ImageUpload file={imageFile} onChange={handleImageChange} />
+
+        &lt;div className="row">
+          &lt;div className="field">
+            &lt;label>Origin&lt;/label>
+            &lt;input
+              className="Origin"
+              type="text"
+              placeholder="Address / District / Postal Code"
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
+            />
+          &lt;/div>
+
+          &lt;div className="field">
+            &lt;label>Destination&lt;/label>
+            &lt;input
+              className="Destination"
+              type="text"
+              placeholder="Address / District / Postal Code"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+            />
+          &lt;/div>
+        &lt;/div>
+
+        &lt;div className="field">
+          &lt;label>Package Type&lt;/label>
+          &lt;input
+            className="PackageType"
+            type="text"
+            placeholder="Ex.: Household appliance"
+            value={pckg}
+            onChange={(e) => setPckg(e.target.value)}
+          />
+        &lt;/div>
+
+        &lt;div className="row">
+          &lt;div className="field">
+            &lt;label>Weight (kg)&lt;/label>
+            &lt;input
+              className="Weight"
+              type="text"
+              placeholder="Ex.: 10"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+            />
+          &lt;/div>
+
+          &lt;DimensionFields
+            length={length}
+            width={width}
+            height={height}
+            volume={volume}
+            onChange={(field, value) => {
+              if (field === "length") setLength(value);
+              if (field === "width") setWidth(value);
+              if (field === "height") setHeight(value);
+
+              updateDimensionsString(
+                field === "length" ? value : length,
+                field === "width" ? value : width,
+                field === "height" ? value : height
+              );
+            }}
+          />
+        &lt;/div>
+
+        &lt;DateFields
+          pickupDate={pickupDate}
+          deliveryDate={deliveryDate}
+          onChange={(field, value) => {
+            if (field === "pickupDate") setPickupDate(value);
+            if (field === "deliveryDate") setDeliveryDate(value);
+          }}
+        />
+
+        &lt;AuctionDatesFields
+          biddingStartDate={biddingStartDate}
+          biddingEndDate={biddingEndDate}
+          onChange={(field, value) => {
+            if (field === "biddingStartDate") setBiddingStartDate(value);
+            if (field === "biddingEndDate") setBiddingEndDate(value);
+          }}
+        />
+
+        &lt;PriceAutoSelectionFields
+          maxPrice={maxPrice}
+          isAutomaticSelectionEnabled={isAutomaticSelectionEnabled}
+          onChange={(field, value) => {
+            if (field === "maxPrice") setMaxPrice(value);
+            if (field === "isAutomaticSelectionEnabled")
+              setIsAutomaticSelectionEnabled(value);
+          }}
+        />
+
+        &lt;div className="form-actions" style={{ display: "flex", gap: "12px" }}>
+          &lt;Button variant="secondary" type="button" onClick={handleCreateDraft}>
+            {loading ? "Please wait…" : "Create DRAFT"}
+          &lt;/Button>
+
+          &lt;Button variant="primary" type="submit">
+            {loading ? "Creating…" : "Create Request"}
+          &lt;/Button>
+        &lt;/div>
+      &lt;/form>
+    &lt;/div>
+  );
+}
+
+export default CreateTransportPage;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AcceptRejectOverlay">AcceptRejectOverlay</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#AvatarCropper">AvatarCropper</a></li><li><a href="global.html#AvatarSection">AvatarSection</a></li><li><a href="global.html#BidCard">BidCard</a></li><li><a href="global.html#BidGoPage">BidGoPage</a></li><li><a href="global.html#BidList">BidList</a></li><li><a href="global.html#CompanyFormGrid">CompanyFormGrid</a></li><li><a href="global.html#CompanyRegisterForm">CompanyRegisterForm</a></li><li><a href="global.html#DeactivateAccountModal">DeactivateAccountModal</a></li><li><a href="global.html#DriverDocsSection">DriverDocsSection</a></li><li><a href="global.html#DriverFormGrid">DriverFormGrid</a></li><li><a href="global.html#DriverRegisterForm">DriverRegisterForm</a></li><li><a href="global.html#HistoryPage">HistoryPage</a></li><li><a href="global.html#LoginForm">LoginForm</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#PasswordChangeModal">PasswordChangeModal</a></li><li><a href="global.html#ProfilePage">ProfilePage</a></li><li><a href="global.html#RecoverPasswordPage">RecoverPasswordPage</a></li><li><a href="global.html#RegisterPage">RegisterPage</a></li><li><a href="global.html#RequestDetailsPage">RequestDetailsPage</a></li><li><a href="global.html#ToastCtx">ToastCtx</a></li><li><a href="global.html#ToastProvider">ToastProvider</a></li><li><a href="global.html#TransportDetailsCard">TransportDetailsCard</a></li><li><a href="global.html#aliases">aliases</a></li><li><a href="global.html#api">api</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#bidsService">bidsService</a></li><li><a href="global.html#buildQueryString">buildQueryString</a></li><li><a href="global.html#cancelBid">cancelBid</a></li><li><a href="global.html#cancelTransport">cancelTransport</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#claimsArrayToObject">claimsArrayToObject</a></li><li><a href="global.html#createBid">createBid</a></li><li><a href="global.html#createDraftForm">createDraftForm</a></li><li><a href="global.html#createDraftJson">createDraftJson</a></li><li><a href="global.html#createTransportForm">createTransportForm</a></li><li><a href="global.html#createTransportJson">createTransportJson</a></li><li><a href="global.html#deactivateAccount">deactivateAccount</a></li><li><a href="global.html#fetchNotifications">fetchNotifications</a></li><li><a href="global.html#fmtDate">fmtDate</a></li><li><a href="global.html#formatError">formatError</a></li><li><a href="global.html#getActiveBids">getActiveBids</a></li><li><a href="global.html#getApiErrorMessage">getApiErrorMessage</a></li><li><a href="global.html#getBidsByDriver">getBidsByDriver</a></li><li><a href="global.html#getCompanyHistory">getCompanyHistory</a></li><li><a href="global.html#getCompanyTransports">getCompanyTransports</a></li><li><a href="global.html#getDriverHistory">getDriverHistory</a></li><li><a href="global.html#getDriverTransports">getDriverTransports</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getTransportById">getTransportById</a></li><li><a href="global.html#historyService">historyService</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#manualBidAction">manualBidAction</a></li><li><a href="global.html#mapStatusToClass">mapStatusToClass</a></li><li><a href="global.html#markAllAsRead">markAllAsRead</a></li><li><a href="global.html#markAsRead">markAsRead</a></li><li><a href="global.html#normalizeHistoryCompany">normalizeHistoryCompany</a></li><li><a href="global.html#normalizeHistoryDriver">normalizeHistoryDriver</a></li><li><a href="global.html#normalizeTransportList">normalizeTransportList</a></li><li><a href="global.html#notificationsService">notificationsService</a></li><li><a href="global.html#prettyStatus">prettyStatus</a></li><li><a href="global.html#profileService">profileService</a></li><li><a href="global.html#publishCompanyTransport">publishCompanyTransport</a></li><li><a href="global.html#recoverPassword">recoverPassword</a></li><li><a href="global.html#registerCompany">registerCompany</a></li><li><a href="global.html#registerDriver">registerDriver</a></li><li><a href="global.html#resetPassword">resetPassword</a></li><li><a href="global.html#sortByNewest">sortByNewest</a></li><li><a href="global.html#updateBid">updateBid</a></li><li><a href="global.html#updateCompany">updateCompany</a></li><li><a href="global.html#updateDriver">updateDriver</a></li><li><a href="global.html#updateTransport">updateTransport</a></li><li><a href="global.html#updateTransportStatus">updateTransportStatus</a></li><li><a href="global.html#useCreateTransport">useCreateTransport</a></li><li><a href="global.html#useHistory">useHistory</a></li><li><a href="global.html#useLogin">useLogin</a></li><li><a href="global.html#useMe">useMe</a></li><li><a href="global.html#useMyBids">useMyBids</a></li><li><a href="global.html#useNotifications">useNotifications</a></li><li><a href="global.html#useProfile">useProfile</a></li><li><a href="global.html#useRecoverPassword">useRecoverPassword</a></li><li><a href="global.html#useRegister">useRegister</a></li><li><a href="global.html#useRequestDetails">useRequestDetails</a></li><li><a href="global.html#useSortedBids">useSortedBids</a></li><li><a href="global.html#useToast">useToast</a></li><li><a href="global.html#validateTransportFields">validateTransportFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 03 2025 16:18:17 GMT+0000 (Hora padrão da Europa Ocidental)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+.acceptbids-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #f7fbff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 28px;
+  color: #062e5c;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.title-row .page-title {
+  text-align: left;
+  margin: 0;
+  font-size: 24px;
+}
+
+.title-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cancel-request-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.canceled-badge {
+  display: inline-block;
+  background: #ef4444;
+  /* red */
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.transport-card .transport-actions {
+  position: absolute;
+  top: -40px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  z-index: 120;
+  pointer-events: auto;
+}
+
+.transport-card .transport-actions .btn-edit,
+.transport-card .transport-actions .btn-publish,
+.transport-card .transport-actions .btn-cancel {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.12);
+}
+
+.transport-details .transport-actions .btn-edit {
+  background: #06b6d4;
+  color: #fff;
+}
+
+.transport-details .transport-actions .btn-edit:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.transport-details .transport-actions .btn-publish {
+  background: #2563eb;
+  color: #fff;
+}
+
+.transport-details .transport-actions .btn-publish[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.notes-box {
+  border: 1px solid #ccd6e2;
+  background-color: #f7fbff;
+  color: #294766;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.status-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.bid-card>.status-actions {
+  margin-left: auto;
+  margin-top: 0;
+  align-self: flex-end;
+}
+
+.status-btn {
+  appearance: none;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(2, 6, 23, 0.08);
+}
+
+.status-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.status-btn--primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.status-btn--primary:hover:not(:disabled) {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.status-btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.status-btn--success {
+  background: #16a34a;
+  color: #fff;
+}
+
+.status-btn--success:hover:not(:disabled) {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.status-btn--success:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.status-btn--danger {
+  background: #ef4444;
+  color: #fff;
+}
+
+.status-btn--danger:hover:not(:disabled) {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.status-btn--danger:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.status-btn--warning {
+  background: #f59e0b;
+  color: #1f2937;
+}
+
+.status-btn--warning:hover:not(:disabled) {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.status-btn--warning:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.no-bids {
+  text-align: center;
+  color: #667a91;
+  font-size: 14px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

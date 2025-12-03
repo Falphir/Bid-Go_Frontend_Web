@@ -1,0 +1,143 @@
+.bids-section {
+  background-color: #ffffff;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.bids-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.bids-header h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #062e5c;
+  margin: 0;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-select {
+  border-radius: 8px;
+  border: 1px solid #ccd6e2;
+  padding: 6px 10px;
+  font-size: 14px;
+  background-color: #f8fafc;
+  color: #062e5c;
+}
+
+.order-btn {
+  border: none;
+  background: #e2e8f0;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 6px 10px;
+  transition: background 0.2s ease;
+  font-size: 16px;
+}
+
+.order-btn:hover {
+  background: #d1d8e0;
+}
+
+.add-bid-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease,
+    box-shadow 0.2s ease;
+  margin-left: 8px;
+}
+
+.add-bid-btn:hover {
+  background: #1e4fc9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.add-bid-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.add-bid-btn span {
+  font-size: 14px;
+}
+
+.add-bid-btn svg {
+  font-size: 14px;
+}
+
+.add-bid-btn--ended {
+  background: #94a3b8;
+  /* gray */
+  cursor: pointer;
+  /* keep pointer to allow click for toast */
+  position: relative;
+}
+
+.add-bid-btn--ended:hover {
+  background: #94a3b8;
+  transform: none;
+  box-shadow: none;
+}
+
+.add-bid-btn--ended:after {
+  content: "Ended";
+  font-size: 10px;
+  font-weight: 600;
+  background: #1e293b;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
+.add-bid-btn--notstarted {
+  background: #f59e0b;
+  /* amber */
+  cursor: pointer;
+  position: relative;
+}
+
+.add-bid-btn--notstarted:hover {
+  background: #f59e0b;
+  transform: none;
+  box-shadow: none;
+}
+
+.add-bid-btn--notstarted:after {
+  content: "Not started";
+  font-size: 10px;
+  font-weight: 600;
+  background: #1e293b;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
+.bids-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

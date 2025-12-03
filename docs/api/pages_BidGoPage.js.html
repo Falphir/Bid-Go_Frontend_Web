@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/BidGoPage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/BidGoPage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from "react";
+import "../styles/BidGoPage.css";
+import { useNavigate } from "react-router";
+import { useMe } from "../hooks/useMe";
+import TransportCard from "../components/domain/TransportCard";
+import StatusMessage from "../components/feedback/StatusMessage";
+import FiltersPanel from "../components/form/FiltersPanel";
+import useTransports from "../hooks/useTransports";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Pagination from "../components/pagination/Pagination";
+
+/**
+ * Main page of the Bid-Go web application.
+ *
+ * For drivers, it displays a list of available transport requests that
+ * can be filtered and paginated. For companies, it shows their own
+ * created transport requests and allows navigation to the creation
+ * screen.
+ *
+ * The page relies on {@link useMe} to detect the current user role and
+ * {@link useTransports} to load and manage the list of transports,
+ * including filters and pagination.
+ *
+ * @returns {JSX.Element} Rendered Bid-Go main page component.
+ */
+// Página principal: listagem e filtros de pedidos
+function BidGoPage() {
+  const navigate = useNavigate();
+  const { userId, isDriver, isCompany, loading: meLoading } = useMe();
+  const {
+    requests,
+    isRequestsEmpty,
+    loading,
+    error,
+    filters,
+    showFilters,
+    setShowFilters,
+    applyFilters,
+    clearFilters,
+  } = useTransports({ userId, isDriver, isCompany });
+  const CARDS_PER_PAGE = 8;
+  const [currentPage, setCurrentPage] = useState(1);
+  const list = Array.isArray(requests) ? requests : [];
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [requests]);
+  const isEmptySafe =
+    !Array.isArray(list) || list.length === 0 || isRequestsEmpty;
+  const totalPages = !isEmptySafe ? Math.ceil(list.length / CARDS_PER_PAGE) : 1;
+  const paginatedList = !isEmptySafe
+    ? list.slice(
+        (currentPage - 1) * CARDS_PER_PAGE,
+        currentPage * CARDS_PER_PAGE
+      )
+    : [];
+
+  if (meLoading)
+    return &lt;StatusMessage type="loading">Validating session…&lt;/StatusMessage>;
+  if (loading)
+    return &lt;StatusMessage type="loading">Loading transports…&lt;/StatusMessage>;
+  if (error) return &lt;StatusMessage type="error">{error}&lt;/StatusMessage>;
+
+  return (
+    &lt;div className="page-container">
+      &lt;main className="main-content">
+        {isDriver &amp;&amp; (
+          &lt;div className="filters-top-wrapper">
+            &lt;button
+              type="button"
+              className={`filters-toggle-top ${showFilters ? "active" : ""}`}
+              onClick={() => setShowFilters((s) => !s)}
+              aria-expanded={showFilters}
+              aria-controls="filtersTopPanel"
+            >
+              {showFilters ? "Hide filters" : "Show filters"}
+            &lt;/button>
+
+            {showFilters &amp;&amp; (
+              &lt;FiltersPanel
+                initialFilters={filters}
+                onApply={(f) => applyFilters(f)}
+                onClear={(cleared) => clearFilters(cleared)}
+              />
+            )}
+          &lt;/div>
+        )}
+
+        &lt;div className="title-row">
+          &lt;h2 className="section-title">
+            {isDriver
+              ? "Available Transports for Bidding"
+              : "Transport Requests"}
+          &lt;/h2>
+
+          {!isDriver &amp;&amp; (
+            &lt;button
+              className="create-request-btn"
+              onClick={() => navigate("/createRequest")}
+            >
+              Create
+              &lt;span className="icon">
+                &lt;FontAwesomeIcon icon={faPlus} />
+              &lt;/span>
+            &lt;/button>
+          )}
+        &lt;/div>
+
+        &lt;div className="cards-container">
+          {isEmptySafe ? (
+            &lt;p className="no-bids">No requests found.&lt;/p>
+          ) : (
+            paginatedList.map((req) => (
+              &lt;TransportCard
+                key={req.id}
+                data={req}
+                isCompany={isCompany}
+                isDriver={isDriver}
+                onView={(id) => navigate(`/transportRequest/${id}`)}
+              />
+            ))
+          )}
+        &lt;/div>
+        {!isEmptySafe &amp;&amp; totalPages > 1 &amp;&amp; (
+          &lt;Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
+      &lt;/main>
+    &lt;/div>
+  );
+}
+
+export default BidGoPage;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AcceptRejectOverlay">AcceptRejectOverlay</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#AvatarCropper">AvatarCropper</a></li><li><a href="global.html#AvatarSection">AvatarSection</a></li><li><a href="global.html#BidCard">BidCard</a></li><li><a href="global.html#BidGoPage">BidGoPage</a></li><li><a href="global.html#BidList">BidList</a></li><li><a href="global.html#CompanyFormGrid">CompanyFormGrid</a></li><li><a href="global.html#CompanyRegisterForm">CompanyRegisterForm</a></li><li><a href="global.html#DeactivateAccountModal">DeactivateAccountModal</a></li><li><a href="global.html#DriverDocsSection">DriverDocsSection</a></li><li><a href="global.html#DriverFormGrid">DriverFormGrid</a></li><li><a href="global.html#DriverRegisterForm">DriverRegisterForm</a></li><li><a href="global.html#HistoryPage">HistoryPage</a></li><li><a href="global.html#LoginForm">LoginForm</a></li><li><a href="global.html#LoginPage">LoginPage</a></li><li><a href="global.html#PasswordChangeModal">PasswordChangeModal</a></li><li><a href="global.html#ProfilePage">ProfilePage</a></li><li><a href="global.html#RecoverPasswordPage">RecoverPasswordPage</a></li><li><a href="global.html#RegisterPage">RegisterPage</a></li><li><a href="global.html#RequestDetailsPage">RequestDetailsPage</a></li><li><a href="global.html#ToastCtx">ToastCtx</a></li><li><a href="global.html#ToastProvider">ToastProvider</a></li><li><a href="global.html#TransportDetailsCard">TransportDetailsCard</a></li><li><a href="global.html#aliases">aliases</a></li><li><a href="global.html#api">api</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#bidsService">bidsService</a></li><li><a href="global.html#buildQueryString">buildQueryString</a></li><li><a href="global.html#cancelBid">cancelBid</a></li><li><a href="global.html#cancelTransport">cancelTransport</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#claimsArrayToObject">claimsArrayToObject</a></li><li><a href="global.html#createBid">createBid</a></li><li><a href="global.html#createDraftForm">createDraftForm</a></li><li><a href="global.html#createDraftJson">createDraftJson</a></li><li><a href="global.html#createTransportForm">createTransportForm</a></li><li><a href="global.html#createTransportJson">createTransportJson</a></li><li><a href="global.html#deactivateAccount">deactivateAccount</a></li><li><a href="global.html#fetchNotifications">fetchNotifications</a></li><li><a href="global.html#fmtDate">fmtDate</a></li><li><a href="global.html#formatError">formatError</a></li><li><a href="global.html#getActiveBids">getActiveBids</a></li><li><a href="global.html#getApiErrorMessage">getApiErrorMessage</a></li><li><a href="global.html#getBidsByDriver">getBidsByDriver</a></li><li><a href="global.html#getCompanyHistory">getCompanyHistory</a></li><li><a href="global.html#getCompanyTransports">getCompanyTransports</a></li><li><a href="global.html#getDriverHistory">getDriverHistory</a></li><li><a href="global.html#getDriverTransports">getDriverTransports</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getTransportById">getTransportById</a></li><li><a href="global.html#historyService">historyService</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#manualBidAction">manualBidAction</a></li><li><a href="global.html#mapStatusToClass">mapStatusToClass</a></li><li><a href="global.html#markAllAsRead">markAllAsRead</a></li><li><a href="global.html#markAsRead">markAsRead</a></li><li><a href="global.html#normalizeHistoryCompany">normalizeHistoryCompany</a></li><li><a href="global.html#normalizeHistoryDriver">normalizeHistoryDriver</a></li><li><a href="global.html#normalizeTransportList">normalizeTransportList</a></li><li><a href="global.html#notificationsService">notificationsService</a></li><li><a href="global.html#prettyStatus">prettyStatus</a></li><li><a href="global.html#profileService">profileService</a></li><li><a href="global.html#publishCompanyTransport">publishCompanyTransport</a></li><li><a href="global.html#recoverPassword">recoverPassword</a></li><li><a href="global.html#registerCompany">registerCompany</a></li><li><a href="global.html#registerDriver">registerDriver</a></li><li><a href="global.html#resetPassword">resetPassword</a></li><li><a href="global.html#sortByNewest">sortByNewest</a></li><li><a href="global.html#updateBid">updateBid</a></li><li><a href="global.html#updateCompany">updateCompany</a></li><li><a href="global.html#updateDriver">updateDriver</a></li><li><a href="global.html#updateTransport">updateTransport</a></li><li><a href="global.html#updateTransportStatus">updateTransportStatus</a></li><li><a href="global.html#useCreateTransport">useCreateTransport</a></li><li><a href="global.html#useHistory">useHistory</a></li><li><a href="global.html#useLogin">useLogin</a></li><li><a href="global.html#useMe">useMe</a></li><li><a href="global.html#useMyBids">useMyBids</a></li><li><a href="global.html#useNotifications">useNotifications</a></li><li><a href="global.html#useProfile">useProfile</a></li><li><a href="global.html#useRecoverPassword">useRecoverPassword</a></li><li><a href="global.html#useRegister">useRegister</a></li><li><a href="global.html#useRequestDetails">useRequestDetails</a></li><li><a href="global.html#useSortedBids">useSortedBids</a></li><li><a href="global.html#useToast">useToast</a></li><li><a href="global.html#validateTransportFields">validateTransportFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 03 2025 16:18:17 GMT+0000 (Hora padrão da Europa Ocidental)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+.bid-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 24px;
+  border: 1px solid #e5eaf2;
+  border-radius: 14px;
+  padding: 24px;
+  background-color: #fdfdfd;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.bid-card:hover {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.bid-info {
+  flex: 2;
+  min-width: 0;
+}
+
+.bid-title {
+  color: #1d4ed8;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.bid-driver {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.bid-rating,
+.driver-rating {
+  color: #fbbf24;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.bid-value {
+  font-size: 16px;
+  color: #294766;
+  margin: 0 0 6px;
+}
+
+.bid-value span {
+  font-weight: 700;
+}
+
+.bid-deadline {
+  font-size: 14px;
+  color: #294766;
+  margin: 0;
+}
+
+.bid-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.bid-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.bid-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.edit-icon-btn,
+.cancel-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: #eef2ff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.edit-icon-btn:hover,
+.cancel-icon-btn:hover {
+  background: #e0e7ff;
+  transform: translateY(-1px);
+}
+
+.edit-icon-btn:active,
+.cancel-icon-btn:active {
+  transform: translateY(0);
+}
+
+.edit-icon-btn:focus-visible,
+.cancel-icon-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.edit-icon {
+  color: #64748b;
+  font-size: 16px;
+  transition: color 0.2s ease;
+}
+
+.edit-icon-btn:hover .edit-icon {
+  color: #294766;
+}
+
+.cancel-icon {
+  color: rgba(181, 0, 0, 0.5);
+  font-size: 16px;
+  transition: color 0.2s ease;
+}
+
+.cancel-icon-btn:hover .cancel-icon {
+  color: #b50000;
+}
+
+.accept-btn,
+.reject-btn {
+  font-weight: 600;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.accept-btn {
+  background-color: #4caf50;
+}
+
+.reject-btn {
+  background-color: #f44336;
+}
+
+.accept-btn:hover {
+  color: #667a91;
+  font-size: 14px;
+}
+
+.reject-btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.05);
+}

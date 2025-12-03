@@ -1,0 +1,341 @@
+/*
+ * Styling for the BidGoPage.
+ */
+
+.page-container {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7fbff;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.main-content {
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.new-request-btn {
+  background-color: #0066cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 32px;
+  transition: background-color 0.2s ease;
+}
+
+.new-request-btn:hover {
+  background-color: #004fa1;
+}
+
+.section-title {
+  color: #0a43a5;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  padding-top: 4px;
+}
+
+.filters-top-wrapper {
+  position: absolute;
+  top: 21px;
+  right: 0;
+  margin: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filters-toggle-top {
+  background: #eef4fb;
+  color: #0a43a5;
+  border: 1px solid #dbe5f3;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.filters-toggle-top.active {
+  background: #dfe9f8;
+}
+
+.filters-top {
+  position: absolute;
+  right: -12px;
+  top: calc(100% + 8px);
+  display: inline-block;
+  width: auto;
+  max-width: 90vw;
+  background: #ffffff;
+  border: 1px solid #e6eef8;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
+  padding: 10px;
+  text-align: left;
+  z-index: 10;
+}
+
+.filters-top .filters-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  justify-items: start;
+}
+
+.filters-top input,
+.filters-top select {
+  width: 180px;
+  max-width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #dbe5f3;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.filters-top input::placeholder {
+  font-size: 11.5px;
+  color: #9aa9c1;
+}
+
+.filters-top .filters-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.filters-top .bid-btn {
+  background-color: #eef4fb;
+  color: #0066cc;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filters-top .bid-btn:hover {
+  background-color: #d8e4f7;
+}
+
+.cards-container {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 75px;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-image img {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+}
+
+.card-body {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.title-with-badge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0px;
+}
+
+.title-with-badge .card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #062e5c;
+}
+
+.title-with-badge .status-badge {
+  margin: 0;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #062e5c;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.status-active {
+  background: #10b981;
+}
+
+.status-canceled {
+  background: #ef4444;
+}
+
+.status-completed {
+  background: #0ea5e9;
+}
+
+.status-pending {
+  background: #f59e0b;
+}
+
+.status-intransit {
+  background: #6366f1;
+}
+
+.status-draft {
+  background: #94a3b8;
+}
+
+.status-waitingpickup {
+  background: #f97316;
+}
+
+.card-route {
+  font-size: 4px;
+  color: #0066cc;
+  text-decoration: underline;
+  margin-bottom: 0px;
+}
+
+.card-time {
+  font-size: 13px;
+  color: #7a8fa6;
+  margin-bottom: 16px;
+}
+
+.bid-btn {
+  background-color: #eef4fb;
+  color: #0066cc;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: stretch;
+}
+
+.bid-btn:hover {
+  background-color: #d8e4f7;
+}
+
+.label-small {
+  font-size: 12px;
+  color: #555;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+.title-row {
+  position: relative;
+  display: block;
+  text-align: center;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.title-row .section-title {
+  display: inline-block;
+}
+
+.title-row .create-request-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.create-request-btn {
+  background: #0a5ad8;
+  color: #fff;
+  font-family: inherit;
+  padding: 0.45em 1.1em;
+  padding-right: 3.2em;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  height: 2.6em;
+  box-shadow: 0 3px 10px rgba(10, 90, 216, 0.20);
+  transition: background 0.25s, box-shadow 0.25s;
+}
+
+.create-request-btn:hover {
+  background: #084fbf;
+  box-shadow: 0 4px 14px rgba(10, 90, 216, 0.30);
+}
+
+.create-request-btn .icon {
+  position: absolute;
+  right: 0.35em;
+  height: 2em;
+  width: 2em;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: width 0.25s, background 0.25s;
+}
+
+.create-request-btn:hover .icon {
+  width: calc(100% - 0.7em);
+  background: #e8f0ff;
+}
+
+.create-request-btn .icon svg {
+  width: 1.1em;
+  height: 1.1em;
+  color: #0a5ad8;
+  transition: transform 0.25s;
+}
+
+.create-request-btn:hover .icon svg {
+  transform: translateX(0.15em);
+}

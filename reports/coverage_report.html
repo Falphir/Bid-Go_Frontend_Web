@@ -1,0 +1,611 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Cobertura - Bid-Go Web</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; color: #333; line-height: 1.5; max-width: 900px; margin: 0 auto; padding: 40px; background-color: #fff; }
+        h1 { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #000; }
+        p { margin-bottom: 15px; text-align: justify; font-size: 14px; }
+        .summary-box { background-color: #f9f9f9; border: 1px solid #ccc; padding: 15px; margin-bottom: 30px; border-radius: 4px; }
+        .summary-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .metric-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
+        .metric-label { font-weight: bold; color: #555; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        th { text-align: left; border-bottom: 2px solid #333; padding: 8px; background-color: #fff; }
+        td { border-bottom: 1px solid #eee; padding: 8px; }
+        .bar-container { background-color: #e9ecef; width: 100px; height: 10px; border-radius: 5px; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        .bar-fill { height: 100%; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Cobertura de Testes (Web)</h1>
+    
+    <p>O presente relatório apresenta os resultados da análise de cobertura de testes do sistema <strong>Bid-Go (Web)</strong>, com o objetivo de avaliar a abrangência e a eficácia dos testes automatizados implementados. A cobertura de testes constitui um indicador essencial da qualidade do <em>software</em>, permitindo identificar as áreas de código que foram, ou não, verificadas durante a execução dos testes.</p>
+    
+    <p>Os resultados foram obtidos através da recolha de métricas durante a execução dos testes E2E, abrangendo componentes, páginas e a lógica de interface da aplicação. Este relatório fornece uma visão detalhada sobre a percentagem de linhas e ramos de código testados, possibilitando uma avaliação objetiva da robustez e da fiabilidade do sistema.</p>
+    <div class="summary-box">
+        <div class="summary-title">Coverage Summary</div>
+        <div class="metric-row"><span class="metric-label">Files:</span> <span>71</span></div>
+        <div class="metric-row"><span class="metric-label">Line coverage:</span> <span>34.5% (594 of 1721)</span></div>
+        <div class="metric-row"><span class="metric-label">Uncovered lines:</span> <span>1127</span></div>
+    </div>
+
+    <h2>Coverage Details</h2>
+    <table>
+        <thead><tr><th>Name</th><th>Line Coverage</th><th>Lines (Hit/Total)</th></tr></thead>
+        <tbody>
+            
+                <tr>
+                    <td>src\components\AvatarCropper\AvatarCropper.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 26</td>
+                </tr>
+                <tr>
+                    <td>src\components\PasswordInput\PasswordInput.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 3</td>
+                </tr>
+                <tr>
+                    <td>src\components\domain\NotificationCard.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 21</td>
+                </tr>
+                <tr>
+                    <td>src\components\domain\TransportCard.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 22</td>
+                </tr>
+                <tr>
+                    <td>src\components\feedback\StatusBadge.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 3</td>
+                </tr>
+                <tr>
+                    <td>src\components\form\CompanyRegisterForm.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 10</td>
+                </tr>
+                <tr>
+                    <td>src\components\form\DriverRegisterForm.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 10</td>
+                </tr>
+                <tr>
+                    <td>src\components\form\FiltersPanel.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 14</td>
+                </tr>
+                <tr>
+                    <td>src\components\form\LoginForm.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 7</td>
+                </tr>
+                <tr>
+                    <td>src\components\history\HistoryTable.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 6</td>
+                </tr>
+                <tr>
+                    <td>src\components\pagination\Pagination.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 4</td>
+                </tr>
+                <tr>
+                    <td>src\components\profile\AvatarSection.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 1</td>
+                </tr>
+                <tr>
+                    <td>src\components\profile\CompanyFormGrid.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 7</td>
+                </tr>
+                <tr>
+                    <td>src\components\profile\DeactivateAccountModal.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 1</td>
+                </tr>
+                <tr>
+                    <td>src\components\profile\DriverDocsSection.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 3</td>
+                </tr>
+                <tr>
+                    <td>src\components\profile\DriverFormGrid.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 5</td>
+                </tr>
+                <tr>
+                    <td>src\components\profile\PasswordChangeModal.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 5</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useHistory.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 25</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useLogin.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 18</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useMyBids.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 18</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useNotifications.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 36</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useProfile.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 26</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useRecoverPassword.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 32</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useRegister.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 30</td>
+                </tr>
+                <tr>
+                    <td>src\pages\HistoryPage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 13</td>
+                </tr>
+                <tr>
+                    <td>src\pages\LoginPage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 31</td>
+                </tr>
+                <tr>
+                    <td>src\pages\MyBidsPage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 13</td>
+                </tr>
+                <tr>
+                    <td>src\pages\NotificationPage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 11</td>
+                </tr>
+                <tr>
+                    <td>src\pages\ProfilePage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 89</td>
+                </tr>
+                <tr>
+                    <td>src\pages\RecoverPasswordPage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 42</td>
+                </tr>
+                <tr>
+                    <td>src\pages\RegisterPage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 98</td>
+                </tr>
+                <tr>
+                    <td>src\utils\httpError.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 22</td>
+                </tr>
+                <tr>
+                    <td>src\utils\normalizers.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 0%; background-color: #dc3545;"></div></div>
+                        <strong>0.0%</strong>
+                    </td>
+                    <td>0 / 34</td>
+                </tr>
+                <tr>
+                    <td>src\services\profileService.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 8.333333333333332%; background-color: #dc3545;"></div></div>
+                        <strong>8.3%</strong>
+                    </td>
+                    <td>1 / 12</td>
+                </tr>
+                <tr>
+                    <td>src\services\authService.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 9.090909090909092%; background-color: #dc3545;"></div></div>
+                        <strong>9.1%</strong>
+                    </td>
+                    <td>1 / 11</td>
+                </tr>
+                <tr>
+                    <td>src\services\notificationsService.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 12.5%; background-color: #dc3545;"></div></div>
+                        <strong>12.5%</strong>
+                    </td>
+                    <td>1 / 8</td>
+                </tr>
+                <tr>
+                    <td>src\components\EditTransportModal\EditTransportModal.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 13.793103448275861%; background-color: #dc3545;"></div></div>
+                        <strong>13.8%</strong>
+                    </td>
+                    <td>4 / 29</td>
+                </tr>
+                <tr>
+                    <td>src\services\historyService.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 14.285714285714285%; background-color: #dc3545;"></div></div>
+                        <strong>14.3%</strong>
+                    </td>
+                    <td>1 / 7</td>
+                </tr>
+                <tr>
+                    <td>src\utils\status.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 14.285714285714285%; background-color: #dc3545;"></div></div>
+                        <strong>14.3%</strong>
+                    </td>
+                    <td>1 / 7</td>
+                </tr>
+                <tr>
+                    <td>src\components\domain\BidCard.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 20%; background-color: #dc3545;"></div></div>
+                        <strong>20.0%</strong>
+                    </td>
+                    <td>1 / 5</td>
+                </tr>
+                <tr>
+                    <td>src\services\transportsService.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 21.052631578947366%; background-color: #dc3545;"></div></div>
+                        <strong>21.1%</strong>
+                    </td>
+                    <td>8 / 38</td>
+                </tr>
+                <tr>
+                    <td>src\reportWebVitals.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 25%; background-color: #dc3545;"></div></div>
+                        <strong>25.0%</strong>
+                    </td>
+                    <td>2 / 8</td>
+                </tr>
+                <tr>
+                    <td>src\components\domain\AcceptRejectOverlay.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 25%; background-color: #dc3545;"></div></div>
+                        <strong>25.0%</strong>
+                    </td>
+                    <td>1 / 4</td>
+                </tr>
+                <tr>
+                    <td>src\components\EditBidModal\EditBidModal.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 33.92857142857143%; background-color: #dc3545;"></div></div>
+                        <strong>33.9%</strong>
+                    </td>
+                    <td>19 / 56</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useTransports.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 36.206896551724135%; background-color: #dc3545;"></div></div>
+                        <strong>36.2%</strong>
+                    </td>
+                    <td>21 / 58</td>
+                </tr>
+                <tr>
+                    <td>src\services\bidsService.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 40%; background-color: #dc3545;"></div></div>
+                        <strong>40.0%</strong>
+                    </td>
+                    <td>6 / 15</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useSortedBids.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 41.66666666666667%; background-color: #dc3545;"></div></div>
+                        <strong>41.7%</strong>
+                    </td>
+                    <td>5 / 12</td>
+                </tr>
+                <tr>
+                    <td>src\components\Navbar\Navbar.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 44.5945945945946%; background-color: #dc3545;"></div></div>
+                        <strong>44.6%</strong>
+                    </td>
+                    <td>33 / 74</td>
+                </tr>
+                <tr>
+                    <td>src\pages\RequestDetailsPage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 47.82608695652174%; background-color: #dc3545;"></div></div>
+                        <strong>47.8%</strong>
+                    </td>
+                    <td>77 / 161</td>
+                </tr>
+                <tr>
+                    <td>src\components\domain\TransportDetailsCard.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 50%; background-color: #ffc107;"></div></div>
+                        <strong>50.0%</strong>
+                    </td>
+                    <td>2 / 4</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useCreateTransport.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 56.52173913043478%; background-color: #ffc107;"></div></div>
+                        <strong>56.5%</strong>
+                    </td>
+                    <td>13 / 23</td>
+                </tr>
+                <tr>
+                    <td>src\components\domain\BidList.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 57.14285714285714%; background-color: #ffc107;"></div></div>
+                        <strong>57.1%</strong>
+                    </td>
+                    <td>4 / 7</td>
+                </tr>
+                <tr>
+                    <td>src\api\axiosConfig.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 58.82352941176471%; background-color: #ffc107;"></div></div>
+                        <strong>58.8%</strong>
+                    </td>
+                    <td>10 / 17</td>
+                </tr>
+                <tr>
+                    <td>src\components\form\PriceAutoSelectionFields.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 66.66666666666666%; background-color: #ffc107;"></div></div>
+                        <strong>66.7%</strong>
+                    </td>
+                    <td>2 / 3</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useRequestDetails.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 66.66666666666666%; background-color: #ffc107;"></div></div>
+                        <strong>66.7%</strong>
+                    </td>
+                    <td>60 / 90</td>
+                </tr>
+                <tr>
+                    <td>src\pages\CreateTransportPage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 68.78980891719745%; background-color: #ffc107;"></div></div>
+                        <strong>68.8%</strong>
+                    </td>
+                    <td>108 / 157</td>
+                </tr>
+                <tr>
+                    <td>src\pages\BidGoPage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 69.56521739130434%; background-color: #ffc107;"></div></div>
+                        <strong>69.6%</strong>
+                    </td>
+                    <td>16 / 23</td>
+                </tr>
+                <tr>
+                    <td>src\components\feedback\ToastContext.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 90%; background-color: #28a745;"></div></div>
+                        <strong>90.0%</strong>
+                    </td>
+                    <td>9 / 10</td>
+                </tr>
+                <tr>
+                    <td>src\components\Countdown\Countdown.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 92.5925925925926%; background-color: #28a745;"></div></div>
+                        <strong>92.6%</strong>
+                    </td>
+                    <td>25 / 27</td>
+                </tr>
+                <tr>
+                    <td>src\components\AddBidModal\AddBidModal.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 94.5945945945946%; background-color: #28a745;"></div></div>
+                        <strong>94.6%</strong>
+                    </td>
+                    <td>70 / 74</td>
+                </tr>
+                <tr>
+                    <td>src\hooks\useMe.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 96.66666666666667%; background-color: #28a745;"></div></div>
+                        <strong>96.7%</strong>
+                    </td>
+                    <td>58 / 60</td>
+                </tr>
+                <tr>
+                    <td>src\App.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>1 / 1</td>
+                </tr>
+                <tr>
+                    <td>src\AppRouter.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>1 / 1</td>
+                </tr>
+                <tr>
+                    <td>src\index.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>3 / 3</td>
+                </tr>
+                <tr>
+                    <td>src\components\Button\Button.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>1 / 1</td>
+                </tr>
+                <tr>
+                    <td>src\components\ConfirmDialog\ConfirmDialog.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>11 / 11</td>
+                </tr>
+                <tr>
+                    <td>src\components\feedback\StatusMessage.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>5 / 5</td>
+                </tr>
+                <tr>
+                    <td>src\components\form\AuctionDatesFields.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>3 / 3</td>
+                </tr>
+                <tr>
+                    <td>src\components\form\DateFields.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>3 / 3</td>
+                </tr>
+                <tr>
+                    <td>src\components\form\DimensionFields.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>6 / 6</td>
+                </tr>
+                <tr>
+                    <td>src\components\form\ImageUpload.js</td>
+                    <td>
+                        <div class="bar-container"><div class="bar-fill" style="width: 100%; background-color: #28a745;"></div></div>
+                        <strong>100.0%</strong>
+                    </td>
+                    <td>1 / 1</td>
+                </tr>
+        </tbody>
+    </table>
+</body>
+</html>
