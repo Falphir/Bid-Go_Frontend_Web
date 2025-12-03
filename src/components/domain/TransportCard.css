@@ -1,14 +1,15 @@
-/* Styles for TransportCard (copied from styles/BidGoPage.css) */
 .card {
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   width: 280px;
+  height: 365px;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -35,12 +36,14 @@
   width: 100%;
   margin-bottom: 0;
 }
+
 .title-with-badge .card-title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
   color: #062e5c;
 }
+
 .title-with-badge .status-badge {
   margin: 0;
 }
@@ -58,6 +61,7 @@
   text-decoration: underline;
   margin-bottom: 0;
 }
+
 .card-time {
   font-size: 13px;
   color: #7a8fa6;
@@ -76,6 +80,7 @@
   transition: background-color 0.2s ease;
   align-self: stretch;
 }
+
 .bid-btn:hover {
   background-color: #d8e4f7;
 }

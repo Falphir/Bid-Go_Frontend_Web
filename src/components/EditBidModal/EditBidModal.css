@@ -1,4 +1,3 @@
-/* Overlay e modal */
 .ebm-overlay {
   position: fixed;
   inset: 0;
@@ -30,6 +29,7 @@
   flex-direction: column;
   gap: 12px;
 }
+
 .ebm-label {
   display: flex;
   flex-direction: column;
@@ -61,7 +61,6 @@
   margin-top: 6px;
 }
 
-/* Botões */
 .ebm-btn {
   border: none;
   border-radius: 8px;
@@ -101,6 +100,7 @@
   background: #e2e8f0;
   color: #0f172a;
 }
+
 .ebm-save {
   background: #16a34a;
   color: #fff;

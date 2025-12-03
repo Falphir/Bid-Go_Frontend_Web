@@ -1,9 +1,5 @@
 /*
  * Styling for the LoginPage component.
- *
- * Este ficheiro define um formulário de login centrado com um leve drop shadow.
- * As cores seguem o design BidGo – azuis para ações e azul-escuro para rótulos.
- * Inputs ganham destaque ao focar, e há um link discreto de “esqueceu-se da palavra-passe?”.
  */
 
 .login-page {
@@ -13,8 +9,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* recoloca o conteúdo centrado verticalmente (como antes) */
-  padding: 40px 20px; /* espaço confortável ao redor, mantém o logo bem posicionado */
+  justify-content: center;
+  padding: 40px 20px;
 }
 
 .login-container {
@@ -27,7 +23,6 @@
   box-sizing: border-box;
 }
 
-/* Logo no topo da página de login (como estava antes) */
 .page-logo {
   width: 180px;
   margin-bottom: 10px;
@@ -126,7 +121,6 @@
   border-radius: 4px;
 }
 
-/* foco visível no checkbox */
 .login-remember input[type="checkbox"]:focus-visible {
   outline: 2px solid rgba(0, 102, 204, 0.35);
   outline-offset: 2px;
@@ -166,32 +160,32 @@
 .forgot-password:hover {
   text-decoration: underline;
 }
-/* Register section above the form */
+
 .login-register {
-    width: 360px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 6px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #294766;
+  width: 360px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #294766;
 }
 
 .login-register-text {
-    font-weight: 500;
-    color: #294766;
+  font-weight: 500;
+  color: #294766;
 }
 
 .login-register-link {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 14px;
-    color: #0066cc;
-    cursor: pointer;
-    font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  color: #0066cc;
+  cursor: pointer;
+  font-weight: 600;
 }
 
 .login-register-link:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }

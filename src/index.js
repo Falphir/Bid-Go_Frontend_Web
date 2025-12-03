@@ -1,3 +1,11 @@
+/**
+ * Application entry point.
+ *
+ * This file bootstraps the React application, rendering the root
+ * `App` component into the DOM and wiring any global configuration
+ * such as performance reporting.
+ */
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";

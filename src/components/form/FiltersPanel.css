@@ -1,4 +1,3 @@
-/* Styles for FiltersPanel (migrated from BidGoPage.css) */
 .filters-top {
   position: absolute;
   right: -12px;
@@ -14,12 +13,14 @@
   text-align: left;
   z-index: 10;
 }
+
 .filters-top .filters-row {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
   justify-items: start;
 }
+
 .filters-top input,
 .filters-top select {
   width: 180px;
@@ -31,16 +32,19 @@
   line-height: 1.2;
   box-sizing: border-box;
 }
+
 .filters-top input::placeholder {
   font-size: 11.5px;
   color: #9aa9c1;
 }
+
 .filters-top .filters-actions {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
   margin-top: 8px;
 }
+
 .filters-top .bid-btn {
   background-color: #eef4fb;
   color: #0066cc;
@@ -51,6 +55,7 @@
   font-weight: 600;
   cursor: pointer;
 }
+
 .filters-top .bid-btn:hover {
   background-color: #d8e4f7;
 }

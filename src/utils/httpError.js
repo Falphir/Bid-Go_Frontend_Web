@@ -1,11 +1,19 @@
-// src/utils/httpError.js
+/**
+ * Extracts a user-friendly error message from an HTTP/Axios error.
+ *
+ * This utility inspects common Axios error shapes (network errors,
+ * validation errors, structured `errors` arrays/objects, RFC7807-style
+ * payloads, etc.) and converts them into a single localized string that
+ * can be displayed in the UI.
+ *
+ * @param {any} err - Error object thrown by Axios or by the HTTP layer.
+ * @returns {string} Human-readable error message suitable for display to the user.
+ */
 export function getApiErrorMessage(err) {
-  // Request was cancelled
   if (err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
     return "Request canceled.";
   }
 
-  // No response (network/DNS/CORS)
   if (!err?.response) {
     return err?.message
       ? `Network error: ${err.message}`
@@ -24,7 +32,6 @@ export function getApiErrorMessage(err) {
     if (lines.length) return lines.join("\n");
   }
 
-  // Common shapes
   if (typeof data === "string" && data.trim()) return data;
   if (data?.message) return data.message;
   if (data?.error?.message) return data.error.message;
@@ -38,6 +45,5 @@ export function getApiErrorMessage(err) {
   if (data?.title) return data.title;
   if (data?.detail) return data.detail;
 
-  // Fallback including status
   return `Request failed (${status}).`;
 }

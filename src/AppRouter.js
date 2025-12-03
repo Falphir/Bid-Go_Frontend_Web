@@ -12,6 +12,15 @@ import MyBidsPage from "./pages/MyBidsPage";
 import RegisterPage from "./pages/RegisterPage";
 import NotificationPage from "./pages/NotificationPage";
 
+/**
+ * Main routing configuration for the Bid-Go application.
+ *
+ * It defines the mapping between URL paths and page components, both
+ * for public and authenticated areas of the system.
+ *
+ * @returns {JSX.Element} React Router configuration component.
+ */
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -29,11 +38,10 @@ export default function AppRouter() {
             <Route path="/notifications" element={<NotificationPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/myBids" element={<MyBidsPage />} />
-              <Route path="/myTransports" element={<BidGoPage />} />
-
+            <Route path="/myTransports" element={<BidGoPage />} />
           </Route>
           <Route path="/Login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/recover" element={<RecoverPasswordPage />} />
           <Route path="*" element={<div>NOT FOUND</div>} />
         </Routes>

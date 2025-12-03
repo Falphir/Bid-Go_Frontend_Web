@@ -1,4 +1,3 @@
-/* Styles for BidCard (migrated from styles/RequestDetails.css) */
 .bid-card {
   display: flex;
   justify-content: space-between;
@@ -34,7 +33,6 @@
   margin: 0 0 8px;
 }
 
-/* Keep original selector and support `.driver-rating` used in component */
 .bid-rating,
 .driver-rating {
   color: #fbbf24;
@@ -142,6 +140,7 @@
 .accept-btn {
   background-color: #4caf50;
 }
+
 .reject-btn {
   background-color: #f44336;
 }
@@ -150,6 +149,7 @@
   color: #667a91;
   font-size: 14px;
 }
+
 .reject-btn:hover {
   background-color: #dc2626;
   transform: scale(1.05);

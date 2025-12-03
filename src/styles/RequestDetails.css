@@ -8,7 +8,6 @@
   box-sizing: border-box;
 }
 
-/* Page title: bold and centred above the transport card */
 .page-title {
   text-align: center;
   font-size: 28px;
@@ -17,7 +16,6 @@
   margin-bottom: 32px;
 }
 
-/* Title row when actions (buttons) appear beside the title */
 .title-row {
   display: flex;
   align-items: center;
@@ -37,16 +35,17 @@
   align-items: center;
   gap: 8px;
 }
+
 .cancel-request-btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
   transform: none;
 }
 
-/* Badge shown when a transport request is already canceled */
 .canceled-badge {
   display: inline-block;
-  background: #ef4444; /* red */
+  background: #ef4444;
+  /* red */
   color: #fff;
   padding: 8px 12px;
   border-radius: 999px;
@@ -55,13 +54,8 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-/* Transport card layout: image on the left and details on the right */
-/* Transport details styles moved to components/domain/TransportDetailsCard.css */
-
-/* Action buttons positioned at top-right of the transport card */
 .transport-card .transport-actions {
   position: absolute;
-  /* overlap the top edge of the card, at the right side; moved further up so buttons are detached from the card */
   top: -40px;
   right: 20px;
   display: flex;
@@ -88,22 +82,22 @@
   background: #06b6d4;
   color: #fff;
 }
+
 .transport-details .transport-actions .btn-edit:hover {
   filter: brightness(0.95);
   transform: translateY(-1px);
 }
+
 .transport-details .transport-actions .btn-publish {
   background: #2563eb;
   color: #fff;
 }
+
 .transport-details .transport-actions .btn-publish[disabled] {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-/* detail-label moved to component */
-
-/* Observations box in the transport section */
 .notes-box {
   border: 1px solid #ccd6e2;
   background-color: #f7fbff;
@@ -113,10 +107,6 @@
   font-size: 14px;
 }
 
-/* Bids section container moved to components/domain/BidList.css */
-
-/* Bid card styles moved to components/domain/BidCard.css */
-
 .status-actions {
   display: flex;
   gap: 10px;
@@ -125,7 +115,7 @@
   margin-top: 12px;
 }
 
-.bid-card > .status-actions {
+.bid-card>.status-actions {
   margin-left: auto;
   margin-top: 0;
   align-self: flex-end;
@@ -155,10 +145,12 @@
   background: #2563eb;
   color: #fff;
 }
+
 .status-btn--primary:hover:not(:disabled) {
   filter: brightness(0.95);
   transform: translateY(-1px);
 }
+
 .status-btn--primary:active:not(:disabled) {
   transform: translateY(0);
 }
@@ -167,10 +159,12 @@
   background: #16a34a;
   color: #fff;
 }
+
 .status-btn--success:hover:not(:disabled) {
   filter: brightness(0.95);
   transform: translateY(-1px);
 }
+
 .status-btn--success:active:not(:disabled) {
   transform: translateY(0);
 }
@@ -179,10 +173,12 @@
   background: #ef4444;
   color: #fff;
 }
+
 .status-btn--danger:hover:not(:disabled) {
   filter: brightness(0.95);
   transform: translateY(-1px);
 }
+
 .status-btn--danger:active:not(:disabled) {
   transform: translateY(0);
 }
@@ -191,33 +187,28 @@
   background: #f59e0b;
   color: #1f2937;
 }
+
 .status-btn--warning:hover:not(:disabled) {
   filter: brightness(0.95);
   transform: translateY(-1px);
 }
+
 .status-btn--warning:active:not(:disabled) {
   transform: translateY(0);
 }
 
-/* Status messages */
-/* StatusMessage moved to components/feedback/StatusMessage.css */
-
-/* Confirmation modal styles moved to components/domain/AcceptRejectOverlay.css */
-
-/* No bids found */
 .no-bids {
   text-align: center;
   color: #667a91;
   font-size: 14px;
 }
 
-/* Toast moved to components/feedback/ToastContext.css */
-
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(15px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

@@ -1,8 +1,14 @@
-// src/hooks/useMe.js
 import { useEffect, useState } from "react";
 import api from "../api/axiosConfig";
 import axios from "axios";
 
+/**
+ * Converts an array of claim objects into a simpler user descriptor.
+ *
+ * @param {Object[]} [claims] - Raw claims array returned by the backend.
+ * @returns {{nameId: (string|null), userId: (number|null), userType: (string|null), exp: (number|null), iss: (string|null), aud: (string|null)}}
+ *   Normalized user claims object.
+ */
 function claimsArrayToObject(claims = []) {
   const map = {};
   for (const c of claims) map[c.type] = c.value;
@@ -19,10 +25,25 @@ function claimsArrayToObject(claims = []) {
   };
 }
 
+/**
+ * Hook that exposes information about the currently authenticated user.
+ *
+ * It tries to parse the JWT token stored in local/session storage for a
+ * quick synchronous initialization and then validates the session by
+ * calling the `auth/me` endpoint. It derives convenience flags for the
+ * user role (driver/company).
+ *
+ * @returns {{
+ *   me: (Object|null),
+ *   userId: (number|null),
+ *   role: (string|null),
+ *   isDriver: boolean,
+ *   isCompany: boolean,
+ *   loading: boolean,
+ *   error: any
+ * }} User descriptor and related state flags.
+ */
 export function useMe() {
-  // Fast-path: synchronously derive initial `me` from token so userId is
-  // available on first render (avoids components racing with the background
-  // auth/me request).
   const parseJwtSync = (tokenStr) => {
     try {
       const parts = tokenStr.split(".");
@@ -65,7 +86,7 @@ export function useMe() {
         : payload.sub
         ? Number(payload.sub)
         : null,
-      userType: payload.userType ?? payload.role ?? null,
+      userType: payload.role ?? null,
       exp: payload.exp ? Number(payload.exp) : null,
       iss: payload.iss ?? null,
       aud: payload.aud ?? null,
@@ -79,7 +100,6 @@ export function useMe() {
     let cancelled = false;
     const controller = new AbortController();
 
-    // Try to synchronously derive claims from the token (fast path)
     const token =
       localStorage.getItem("token") || sessionStorage.getItem("token");
     const parseJwt = (tokenStr) => {
@@ -107,7 +127,6 @@ export function useMe() {
     if (token) {
       const payload = parseJwt(token);
       if (payload) {
-        // Map common claim names into the same object shape
         const quick = {
           nameId:
             payload[
@@ -118,7 +137,7 @@ export function useMe() {
             : payload.sub
             ? Number(payload.sub)
             : null,
-          userType: payload.userType ?? payload.role ?? null,
+          userType: payload.role ?? null,
           exp: payload.exp ? Number(payload.exp) : null,
           iss: payload.iss ?? null,
           aud: payload.aud ?? null,
@@ -128,11 +147,9 @@ export function useMe() {
       }
     }
 
-    // Background: refresh authoritative user claims from API
     (async () => {
       try {
-        // Only call if component still mounted
-        const res = await api.get("auth/me", { signal: controller.signal }); // ajusta rota se preciso
+        const res = await api.get("auth/me", { signal: controller.signal });
         if (!cancelled) setMe(claimsArrayToObject(res.data?.claims || []));
       } catch (e) {
         if (!axios.isCancel(e) && !cancelled) setError(e);

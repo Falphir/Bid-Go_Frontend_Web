@@ -1,8 +1,26 @@
 import React from "react";
 import Countdown from "../../components/Countdown/Countdown";
 import "./TransportCard.css";
+import defaultTransportImage from "../../assets/Image-not-found.png";
 
-// Reusable transport card. Keeps existing CSS classes.
+/**
+ * @typedef {Object} TransportCardProps
+ * @property {Object} data - Normalized transport object to display.
+ * @property {boolean} [isCompany] - True if the current user represents a company.
+ * @property {boolean} [isDriver] - True if the current user represents a driver.
+ * @property {function(*)} [onView] - Callback invoked when the user clicks to view details.
+ */
+
+/**
+ * Summary card component for a transport request.
+ *
+ * It shows basic information such as package, route, origin/destination,
+ * maximum price, current status and bidding countdown depending on the
+ * user role.
+ *
+ * @param {TransportCardProps} props - Card configuration and transport data.
+ * @returns {JSX.Element|null} Rendered card or null when no data is provided.
+ */
 export default function TransportCard({ data, isCompany, isDriver, onView }) {
     if (!data) return null;
     const {
@@ -17,7 +35,6 @@ export default function TransportCard({ data, isCompany, isDriver, onView }) {
         status,
     } = data;
 
-    // Determine status text (replicates original logic)
     const statusText = (() => {
         if (status == null) return null;
         if (typeof status === "number") {
@@ -50,7 +67,10 @@ export default function TransportCard({ data, isCompany, isDriver, onView }) {
     return (
         <div className="card" key={id}>
             <div className="card-image">
-                <img src={image} alt={pkg} />
+                <img src={image} alt={pkg} onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = defaultTransportImage;
+                }}/>
             </div>
             <div className="card-body">
                 <div className="title-with-badge">

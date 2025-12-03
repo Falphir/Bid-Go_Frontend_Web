@@ -53,7 +53,6 @@
   display: contents;
 }
 
-/* Clean header */
 .bid-header {
   display: flex;
   align-items: center;
@@ -90,7 +89,6 @@
   margin: 8px 0;
 }
 
-/* Status badges */
 .status-badge {
   display: inline-block;
   vertical-align: baseline;
@@ -101,47 +99,52 @@
   line-height: 1.2;
 }
 
-/* Softer status colors for a clean look */
 .status-pending {
   background: #fff7e6;
   color: #b45309;
 }
+
 .status-accepted,
 .status-active {
   background: #ecfdf5;
   color: #065f46;
 }
+
 .status-rejected,
 .status-canceled,
 .status-cancelled {
   background: #fef2f2;
   color: #991b1b;
 }
+
 .status-completed,
 .status-finished {
   background: #eff6ff;
   color: #075985;
 }
+
 .status-intransit,
 .status-in_transit {
   background: #eef2ff;
   color: #4338ca;
 }
+
 .status-waitingpickup,
 .status-waiting_pickup {
   background: #fff7ed;
   color: #9a3412;
 }
+
 .status-draft {
   background: #f1f5f9;
   color: #334155;
 }
+
 .status-unknown {
   background: #f1f5f9;
   color: #334155;
 }
 
-/* Compact label above badges */
 .label-small {
   font-size: 12px;
   color: #556b88;
@@ -149,7 +152,6 @@
   letter-spacing: 0.1px;
 }
 
-/* Badges row */
 .badges-row {
   display: flex;
   align-items: baseline;
@@ -158,9 +160,6 @@
   justify-content: flex-start;
 }
 
-/* (reverted) badges now contain their own labels */
-
-/* Meta info row */
 .bid-meta {
   display: flex;
   align-items: center;
@@ -173,17 +172,18 @@
   gap: 6px;
   align-items: baseline;
 }
+
 .meta-label {
   font-size: 12px;
   color: #7a8fa6;
   font-weight: 600;
 }
+
 .meta-value {
   font-size: 14px;
   color: #233449;
 }
 
-/* Primary action button */
 .bid-btn {
   background: transparent;
   color: #0b63c9;
@@ -199,6 +199,7 @@
 .bid-btn:hover {
   background-color: #eef4fb;
 }
+
 .bid-btn:active {
   background-color: #e2ecf9;
 }

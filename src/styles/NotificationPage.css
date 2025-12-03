@@ -31,18 +31,12 @@
   gap: 12px;
 }
 
-/* Card styles moved to components/domain/NotificationCard.css */
-
 .notif-card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-}
-
-.notif-date {
-  /* moved to component stylesheet */
 }
 
 .notif-empty-page {
@@ -57,6 +51,7 @@
   font-size: 16px;
   color: #6b7280;
 }
+
 .notif-filters {
   display: flex;
   gap: 12px;
@@ -75,7 +70,7 @@
 .notif-filters select:hover {
   background: #f1f5fb;
 }
-/* Wrapper para centrar no ecrã */
+
 .notif-wrapper {
   width: 100%;
   display: flex;
@@ -83,7 +78,6 @@
   padding-top: 40px;
 }
 
-/* Card branco estilo login */
 .notif-card-container {
   width: 100%;
   max-width: 780px;
@@ -93,7 +87,6 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-/* Ajusta filtros */
 .notif-filters {
   display: flex;
   gap: 16px;

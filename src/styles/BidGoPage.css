@@ -1,8 +1,7 @@
 /*
- * Styling for the BidGoPage component.
+ * Styling for the BidGoPage.
  */
 
-/* Global container styles */
 .page-container {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f7fbff;
@@ -11,15 +10,13 @@
   box-sizing: border-box;
 }
 
-/* Main content styling — sempre centrado */
 .main-content {
   text-align: center;
   max-width: 1200px;
-  margin: 0 auto; /* mantém o título e os cards centrados */
-  position: relative; /* para ancorar o toggle/painel sem empurrar o título */
+  margin: 0 auto;
+  position: relative;
 }
 
-/* Botão criar pedido */
 .new-request-btn {
   background-color: #0066cc;
   color: #ffffff;
@@ -32,6 +29,7 @@
   margin-bottom: 32px;
   transition: background-color 0.2s ease;
 }
+
 .new-request-btn:hover {
   background-color: #004fa1;
 }
@@ -41,15 +39,14 @@
   font-size: 28px;
   font-weight: 700;
   margin: 0;
-    padding-top: 4px;
+  padding-top: 4px;
 }
 
-/* ===== Filtros no topo (embutidos) ===== */
 .filters-top-wrapper {
-  position: absolute; /* não ocupa altura, não afasta o título da navbar */
+  position: absolute;
   top: 21px;
   right: 0;
-  margin: 0; /* sem impacto no fluxo */
+  margin: 0;
   display: flex;
   justify-content: flex-end;
 }
@@ -59,44 +56,44 @@
   color: #0a43a5;
   border: 1px solid #dbe5f3;
   border-radius: 8px;
-  padding: 6px 10px; /* mais compacto */
+  padding: 6px 10px;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
 }
+
 .filters-toggle-top.active {
   background: #dfe9f8;
 }
 
 .filters-top {
   position: absolute;
-  right: -12px; /* ligeiro ajuste mais à direita */
+  right: -12px;
   top: calc(100% + 8px);
-  display: inline-block; /* adapta ao tamanho dos campos */
+  display: inline-block;
   width: auto;
-  max-width: 90vw; /* proteção para ecrãs pequenos */
+  max-width: 90vw;
   background: #ffffff;
   border: 1px solid #e6eef8;
   border-radius: 10px;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
-  padding: 10px; /* menos padding */
+  padding: 10px;
   text-align: left;
   z-index: 10;
 }
 
-/* === Mantém um por linha, mas com largura curta === */
 .filters-top .filters-row {
   display: grid;
-  grid-template-columns: 1fr; /* um campo por linha */
+  grid-template-columns: 1fr;
   gap: 8px;
-  justify-items: start; /* alinha inputs à esquerda */
+  justify-items: start;
 }
 
 .filters-top input,
 .filters-top select {
-  width: 180px; /* <<< largura pequena */
+  width: 180px;
   max-width: 100%;
-  padding: 6px 8px; /* inputs menores */
+  padding: 6px 8px;
   border: 1px solid #dbe5f3;
   border-radius: 6px;
   font-size: 12px;
@@ -113,7 +110,7 @@
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  margin-top: 8px; /* menos espaço acima dos botões */
+  margin-top: 8px;
 }
 
 .filters-top .bid-btn {
@@ -121,22 +118,22 @@
   color: #0066cc;
   border: none;
   border-radius: 8px;
-  padding: 6px 10px; /* botões mais pequenos */
+  padding: 6px 10px;
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
 }
+
 .filters-top .bid-btn:hover {
   background-color: #d8e4f7;
 }
 
-/* ====== Layout de cartões ====== */
 .cards-container {
   display: flex;
-  justify-content: center; /* mantém os cards centrados */
+  justify-content: center;
   gap: 24px;
   flex-wrap: wrap;
-    margin-top: 75px;
+  margin-top: 75px;
 }
 
 .card {
@@ -149,6 +146,7 @@
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -175,12 +173,14 @@
   width: 100%;
   margin-bottom: 0px;
 }
+
 .title-with-badge .card-title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
   color: #062e5c;
 }
+
 .title-with-badge .status-badge {
   margin: 0;
 }
@@ -192,7 +192,6 @@
   color: #062e5c;
 }
 
-/* Status badge */
 .status-badge {
   display: inline-block;
   padding: 6px 10px;
@@ -202,24 +201,31 @@
   color: #fff;
   margin-bottom: 8px;
 }
+
 .status-active {
   background: #10b981;
 }
+
 .status-canceled {
   background: #ef4444;
 }
+
 .status-completed {
   background: #0ea5e9;
 }
+
 .status-pending {
   background: #f59e0b;
 }
+
 .status-intransit {
   background: #6366f1;
 }
+
 .status-draft {
   background: #94a3b8;
 }
+
 .status-waitingpickup {
   background: #f97316;
 }
@@ -249,6 +255,7 @@
   transition: background-color 0.2s ease;
   align-self: stretch;
 }
+
 .bid-btn:hover {
   background-color: #d8e4f7;
 }
@@ -259,64 +266,76 @@
   font-weight: 600;
   letter-spacing: 0.1px;
 }
+
 .title-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px; /* substitui a margem do botão */
-    width: 100%;
+  position: relative;
+  display: block;
+  text-align: center;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.title-row .section-title {
+  display: inline-block;
+}
+
+.title-row .create-request-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .create-request-btn {
-    background: #0a5ad8;
-    color: #fff;
-    font-family: inherit;
-    padding: 0.45em 1.1em;
-    padding-right: 3.2em;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 10px;
-    border: none;
-    letter-spacing: 0.02em;
-    display: flex;
-    align-items: center;
-    position: relative;
-    cursor: pointer;
-    height: 2.6em;
-    box-shadow: 0 3px 10px rgba(10, 90, 216, 0.20);
-    transition: background 0.25s, box-shadow 0.25s;
+  background: #0a5ad8;
+  color: #fff;
+  font-family: inherit;
+  padding: 0.45em 1.1em;
+  padding-right: 3.2em;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  height: 2.6em;
+  box-shadow: 0 3px 10px rgba(10, 90, 216, 0.20);
+  transition: background 0.25s, box-shadow 0.25s;
 }
 
 .create-request-btn:hover {
-    background: #084fbf;
-    box-shadow: 0 4px 14px rgba(10, 90, 216, 0.30);
+  background: #084fbf;
+  box-shadow: 0 4px 14px rgba(10, 90, 216, 0.30);
 }
 
 .create-request-btn .icon {
-    position: absolute;
-    right: 0.35em;
-    height: 2em;
-    width: 2em;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    transition: width 0.25s, background 0.25s;
+  position: absolute;
+  right: 0.35em;
+  height: 2em;
+  width: 2em;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: width 0.25s, background 0.25s;
 }
 
 .create-request-btn:hover .icon {
-    width: calc(100% - 0.7em);
-    background: #e8f0ff;
+  width: calc(100% - 0.7em);
+  background: #e8f0ff;
 }
 
 .create-request-btn .icon svg {
-    width: 1.1em;
-    height: 1.1em;
-    color: #0a5ad8;
-    transition: transform 0.25s;
+  width: 1.1em;
+  height: 1.1em;
+  color: #0a5ad8;
+  transition: transform 0.25s;
 }
 
 .create-request-btn:hover .icon svg {
-    transform: translateX(0.15em);
+  transform: translateX(0.15em);
 }

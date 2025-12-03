@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./Countdown.css";
 
+/**
+ * Countdown label for auction end time.
+ *
+ * Given an `endDate`, it displays a compact time-left string (e.g.
+ * `2d 5h` or `3h 10m`) and changes color as the deadline approaches.
+ *
+ * @param {{ endDate: (string|Date) }} props - Component props with the auction end date.
+ * @returns {JSX.Element} Formatted countdown span.
+ */
 export default function Countdown({ endDate }) {
   const [timeLeft, setTimeLeft] = useState("");
   const [diffMs, setDiffMs] = useState(0);
