@@ -49,13 +49,13 @@ const jsonFile = path.join(reportsDir, 'raw_playwright.json');
  * Path to the generated HTML execution report.
  * @type {string}
  */
-const htmlFile = path.join(reportsDir, 'relatorio_web.html');
+const htmlFile = path.join(reportsDir, 'execution_report.html');
 
 /**
  * Path to the generated PDF execution report.
  * @type {string}
  */
-const pdfFile = path.join(reportsDir, 'Relatorio_Web.pdf');
+const pdfFile = path.join(reportsDir, 'execution_report.pdf');
 
 console.log('A iniciar Testes de Execução (Web)...');
 console.log(`Raiz do projeto: ${rootDir}`);
@@ -221,10 +221,9 @@ function generateExecutionReport() {
 <body>
     <h1>Relatório de Execução de Testes (Web)</h1>
     
-    <p>O presente relatório apresenta os resultados da execução dos testes realizados no sistema <strong>Bid-Go</strong> (Web). O objetivo destes testes é validar o correto funcionamento dos diferentes componentes da aplicação, garantindo a fiabilidade, consistência e robustez das funcionalidades implementadas.</p>
+    <p>O presente relatório expõe os resultados da execução dos testes realizados ao sistema <strong>Bid-Go (Web)</strong>. O objetivo destes testes é validar o correto funcionamento dos diferentes componentes da aplicação, garantindo a fiabilidade, a consistência e a robustez das funcionalidades implementadas.</p>
     
-    <p>Os testes foram executados de forma automatizada, consistindo em testes de sistema (End-to-End), e foram gerados através da ferramenta <strong>Playwright</strong>. Este relatório documenta o resumo da execução, incluindo a taxa de sucesso, a duração total dos testes e os casos de teste executados, permitindo assim uma análise clara do estado atual da qualidade do software.</p>
-
+    <p>Os testes foram executados de forma automatizada, consistindo em testes de sistema (<em>End-to-End</em>), realizados através da ferramenta <strong>Playwright</strong>. Este documento apresenta o resumo da execução, incluindo a taxa de sucesso, a duração total e os casos de teste executados, permitindo, assim, uma análise clara do estado atual da qualidade do <em>software</em>.</p>
     <h2>Run Summary</h2>
     <div class="summary-grid">
         <div>
