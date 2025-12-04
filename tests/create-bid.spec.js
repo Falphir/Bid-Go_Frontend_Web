@@ -128,7 +128,6 @@ test.describe("System Test: Create Bid on existing transport", () => {
     );
     if (!trRows.length)
       throw new Error("Transport request não encontrada na BD após polling.");
-    console.log("Chaves TransportRequests:", Object.keys(trRows[0]));
     transportId =
       trRows[0].Id ||
       trRows[0].id ||

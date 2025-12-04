@@ -39,7 +39,6 @@ function buildQueryString(filters) {
 export async function getCompanyTransports(userId, signal) {
   if (!userId) return [];
   const res = await api.get(`/transports/company/${userId}`, { signal });
-  console.log("Company Transports Response:", res);
   return normalizeTransportList(res?.data);
 }
 
