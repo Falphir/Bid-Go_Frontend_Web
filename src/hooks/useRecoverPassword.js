@@ -45,7 +45,7 @@ export function useRecoverPassword() {
     } catch (err) {
       if (err?.name === "CanceledError") return null;
       setError(
-        err?.response?.data?.message || err?.message || "Recover failed"
+        err?.message || "Recover failed"
       );
       throw err;
     } finally {
@@ -64,7 +64,7 @@ export function useRecoverPassword() {
       return res;
     } catch (err) {
       if (err?.name === "CanceledError") return null;
-      setError(err?.response?.data?.message || err?.message || "Reset failed");
+      setError(err?.message || "Reset failed");
       throw err;
     } finally {
       setLoading(false);

@@ -53,7 +53,6 @@ export function useHistory({ userId, isDriver, isCompany } = {}) {
       } catch (err) {
         if (err?.name === "CanceledError") return;
         setError(
-          err?.response?.data?.message ||
             err?.message ||
             "Unable to load history."
         );

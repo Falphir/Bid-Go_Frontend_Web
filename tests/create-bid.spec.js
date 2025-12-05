@@ -86,7 +86,7 @@ test.describe("System Test: Create Bid on existing transport", () => {
     );
     if (!companyRows.length)
       throw new Error("Empresa não encontrada na BD após polling.");
-    companyId = companyRows[0].Id || companyRows[0].id;
+    companyId = companyRows[0].Id;
 
     // Login da empresa e criação do transporte via UI
     await page.goto("http://localhost:3000/Login");
@@ -122,17 +122,14 @@ test.describe("System Test: Create Bid on existing transport", () => {
 
     // Obter transportId na BD (polling para garantir inserção)
     const trRows = await pollRow(
-      "SELECT * FROM TransportRequests WHERE CompanyId = ? AND Origin = ?",
+      "SELECT * FROM TransportRequests WHERE CompanyId = ? AND Origin = ? ORDER BY TransportRequestId DESC LIMIT 1",
       [companyId, "Porto"],
       { attempts: 40, delay: 1000 }
     );
     if (!trRows.length)
       throw new Error("Transport request não encontrada na BD após polling.");
-    transportId =
-      trRows[0].Id ||
-      trRows[0].id ||
-      trRows[0].TransportRequestId ||
-      trRows[0].transportRequestId;
+
+    transportId = trRows[0].TransportRequestId;
 
     // Registo do driver via UI
     await page.goto("http://localhost:3000/Register");
@@ -153,9 +150,10 @@ test.describe("System Test: Create Bid on existing transport", () => {
       [driverData.email],
       { attempts: 40, delay: 1000 }
     );
+
     if (!dRows.length)
       throw new Error("Driver não encontrado na BD após polling.");
-    driverId = dRows[0].Id || dRows[0].id;
+    driverId = dRows[0].Id;
 
     await page.close();
     await context.close();
@@ -167,9 +165,10 @@ test.describe("System Test: Create Bid on existing transport", () => {
         await db.query("DELETE FROM Bids WHERE TransportRequestId = ?", [
           transportId,
         ]);
-        await db.query("DELETE FROM TransportRequests WHERE CompanyId = ?", [
-          companyId,
-        ]);
+        await db.query(
+          "DELETE FROM TransportRequests WHERE TransportRequestId = ?",
+          [transportId]
+        );
       }
       if (driverId)
         await db.query("DELETE FROM Users WHERE Id = ?", [driverId]);
@@ -203,9 +202,7 @@ test.describe("System Test: Create Bid on existing transport", () => {
 
     // Abrir modal de Bid
     const newBidBtn = page
-      .locator(
-        'button:has-text("New Bid"), button:has-text("Fazer proposta"), button:has-text("Add Bid"), button:has-text("Make a bid"), button:has-text("Fazer Oferta")'
-      )
+      .locator('button:has-text("New Bid")')
       .first();
     await expect(newBidBtn).toBeVisible();
     await newBidBtn.click();
@@ -221,9 +218,7 @@ test.describe("System Test: Create Bid on existing transport", () => {
     await page.fill('input[type="date"]', iso);
 
     const submitBtn = page
-      .locator(
-        'button:has-text("Submit Bid"), button:has-text("Submit"), button:has-text("Enviar"), button:has-text("Salvar proposta"), button:has-text("Enviar proposta")'
-      )
+      .locator('button:has-text("Submit Bid")')
       .first();
     await expect(submitBtn).toBeVisible();
     await submitBtn.click();

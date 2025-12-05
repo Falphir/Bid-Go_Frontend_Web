@@ -95,7 +95,7 @@ function RequestDetailsPage() {
     !!transport && isCompany && transport?.companyId === userId;
 
   const isOwnerDriver = (bid) => {
-    const bidDriverId = bid?.driverId ?? bid?.driver?.driverId;
+    const bidDriverId = bid?.driverId;
     return isDriver && String(bidDriverId) === String(userId);
   };
 
