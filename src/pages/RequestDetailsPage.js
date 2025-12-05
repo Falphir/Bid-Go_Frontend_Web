@@ -553,6 +553,7 @@ function RequestDetailsPage() {
           await updateTransportStatus(confirmStatusAction.target);
         }}
         onCancel={() => setConfirmStatusAction(null)}
+        confirmVariant="primary"
       />
 
       <AcceptRejectOverlay
