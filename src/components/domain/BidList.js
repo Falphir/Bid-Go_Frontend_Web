@@ -93,11 +93,12 @@ function BidList({
         ) : (
           bids.map((bid) => (
 
+
             <BidCard
               key={bid.bidId}
               bid={bid}
               isOwnerDriver={
-                isDriver && String(bid?.driverId ?? bid?.driver?.driverId) === String(currentUserId)
+                isDriver && String(bid?.driver?.driverId) === String(currentUserId)
               }
               isCompany={isCompany}
               onEdit={onEditBid}

@@ -162,7 +162,7 @@ function formatError(err) {
 function sortByNewest(list) {
   if (!Array.isArray(list)) return [];
   const getTime = (t) => {
-    const d = new Date(t.createdAt || t.biddingEndDate || 0);
+    const d = new Date(t.biddingEndDate || 0);
     const time = d.getTime();
     return isNaN(time) ? 0 : time;
   };

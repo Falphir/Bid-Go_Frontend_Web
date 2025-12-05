@@ -100,7 +100,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     if (!companyRows.length) {
       throw new Error("Erro: Company não encontrada na BD após polling.");
     }
-    companyId = companyRows[0].Id || companyRows[0].id;
+    companyId = companyRows[0].Id;
     console.log("CompanyId para history:", companyId);
 
     try {
@@ -134,7 +134,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     if (!driverRows.length) {
       throw new Error("Erro: Driver não encontrado na BD após polling.");
     }
-    driverId = driverRows[0].Id || driverRows[0].id;
+    driverId = driverRows[0].Id;
     console.log("DriverId para history:", driverId);
 
     console.log("A criar TransportRequest via UI para company...");
@@ -196,7 +196,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
         "Erro: TransportRequest não foi encontrado na BD após polling."
       );
     }
-    transportRequestId = trRows[0].TransportRequestId || trRows[0].id;
+    transportRequestId = trRows[0].TransportRequestId;
     console.log(
       "TransportRequestId para history (via UI):",
       transportRequestId
@@ -218,13 +218,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     await expect(page.getByText(/Lisbon/i)).toBeVisible();
 
     const newBidBtn = page
-      .locator(
-        'button:has-text("New Bid"), ' +
-          'button:has-text("Fazer proposta"), ' +
-          'button:has-text("Add Bid"), ' +
-          'button:has-text("Make a bid"), ' +
-          'button:has-text("Fazer Oferta")'
-      )
+      .locator('button:has-text("New Bid")')
       .first();
     await expect(newBidBtn).toBeVisible();
     await newBidBtn.click();
@@ -240,13 +234,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     await page.fill('input[type="date"]', iso);
 
     const submitBtn = page
-      .locator(
-        'button:has-text("Submit Bid"), ' +
-          'button:has-text("Submit"), ' +
-          'button:has-text("Enviar"), ' +
-          'button:has-text("Salvar proposta"), ' +
-          'button:has-text("Enviar proposta")'
-      )
+      .locator('button:has-text("Submit Bid")')
       .first();
     await expect(submitBtn).toBeVisible();
     await submitBtn.click();
@@ -263,7 +251,7 @@ test.describe("System Test: History Page (Driver & Company)", () => {
     if (!bidRows.length) {
       throw new Error("Erro: Bid não encontrada na BD após polling.");
     }
-    bidId = bidRows[0].BidId || bidRows[0].id;
+    bidId = bidRows[0].BidId;
     console.log("BidId para history (via UI):", bidId);
 
     await page.close();
