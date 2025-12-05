@@ -32,6 +32,7 @@ export default function ConfirmDialog({
   loading = false,
   onConfirm,
   onCancel,
+  confirmVariant = "danger",
 }) {
   const dialogRef = useRef(null);
   const confirmBtnRef = useRef(null);
@@ -67,7 +68,7 @@ export default function ConfirmDialog({
           </Button>
 
           <Button
-            variant="danger"
+            variant={confirmVariant}
             onClick={onConfirm}
             disabled={loading}
             ref={confirmBtnRef}

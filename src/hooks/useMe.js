@@ -66,11 +66,7 @@ export function useMe() {
     }
   };
 
-  const tokenSync =
-    localStorage.getItem("token") ||
-    localStorage.getItem("access_token") ||
-    sessionStorage.getItem("token") ||
-    sessionStorage.getItem("access_token");
+  const tokenSync = localStorage.getItem("token")
 
   const initialMe = (() => {
     if (!tokenSync) return null;
@@ -101,7 +97,7 @@ export function useMe() {
     const controller = new AbortController();
 
     const token =
-      localStorage.getItem("token") || sessionStorage.getItem("token");
+      localStorage.getItem("token");
     const parseJwt = (tokenStr) => {
       try {
         const parts = tokenStr.split(".");

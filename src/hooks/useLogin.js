@@ -40,7 +40,7 @@ export function useLogin() {
       return data;
     } catch (err) {
       if (err?.name === "CanceledError") return null;
-      setError(err?.response?.data?.message || err?.message || "Login failed");
+      setError(err?.message || "Login failed");
       throw err;
     } finally {
       setLoading(false);

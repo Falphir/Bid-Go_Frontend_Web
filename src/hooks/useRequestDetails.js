@@ -140,8 +140,7 @@ export function useRequestDetails({ transportId } = {}) {
         const isCanceled =
           err?.name === "CanceledError" ||
           err?.code === "ERR_CANCELED" ||
-          err?.message === "canceled" ||
-          err?.name === "AbortError";
+          err?.message === "canceled"
         if (!isCanceled) {
           setError(err?.message || "Failed to load data.");
         }

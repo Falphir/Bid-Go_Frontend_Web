@@ -58,7 +58,7 @@ function LoginPage() {
     } catch (err) {
       if (err?.name === "CanceledError") return;
       const msg =
-        err?.response?.data?.message || err?.message || "Login failed";
+        err?.message || "Login failed";
 
       showToast(msg, "error");
     }

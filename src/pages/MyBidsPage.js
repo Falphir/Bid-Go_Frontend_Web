@@ -23,7 +23,7 @@ export default function MyBidsPage() {
     const navigate = useNavigate();
 
     const pickDate = (bid) => {
-        const d = bid?.updatedAt || bid?.createdAt || bid?.deliveryDeadline || bid?.deadline || bid?.transportRequest?.biddingEndDate || bid?.transportRequest?.biddingStartDate;
+        const d = bid?.deliveryDeadline;
         const dt = d ? new Date(d) : null;
         return dt && !isNaN(dt) ? dt.getTime() : 0;
     };
@@ -52,7 +52,7 @@ export default function MyBidsPage() {
                                 <article
                                     className="bid-card"
                                     key={
-                                        bid.id || bid.bidId || bid.transportRequestId || JSON.stringify(bid)
+                                        bid.bidId
                                     }
                                 >
                                     <div className="bid-header">

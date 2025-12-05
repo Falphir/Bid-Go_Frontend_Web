@@ -78,8 +78,8 @@ test.describe("System Test: Create Transport Request", () => {
       }
 
       if (rows.length > 0) {
-          userId = rows[0].Id || rows[0].id;
-          console.log(`✅ User encontrado! ID: ${userId}`);
+          userId = rows[0].Id;
+          console.log(`User encontrado! ID: ${userId}`);
       } else {
           throw new Error("Erro Crítico: O user registado não apareceu na base de dados (Tabela vazia ou email diferente).");
       }

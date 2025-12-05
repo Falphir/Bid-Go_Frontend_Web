@@ -42,7 +42,7 @@ export function useRegister() {
     } catch (err) {
       if (err?.name === "CanceledError") return null;
       setError(
-        err?.response?.data?.message || err?.message || "Registration failed"
+        err?.message || "Registration failed"
       );
       throw err;
     } finally {
@@ -62,7 +62,7 @@ export function useRegister() {
     } catch (err) {
       if (err?.name === "CanceledError") return null;
       setError(
-        err?.response?.data?.message || err?.message || "Registration failed"
+        err?.message || "Registration failed"
       );
       throw err;
     } finally {

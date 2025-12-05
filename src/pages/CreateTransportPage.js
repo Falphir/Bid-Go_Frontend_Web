@@ -153,7 +153,7 @@ function CreateTransportPage() {
         formData.append("volume", Number(volume) || null);
         const token = localStorage.getItem("token");
         const tokenPayload = parseJwt(token);
-        const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+        const userId = tokenPayload?.userId || null;
         formData.append("companyId", String(userId));
         formData.append(
           "isAutomaticSelectionEnabled",
@@ -164,7 +164,7 @@ function CreateTransportPage() {
       } else {
         const token = localStorage.getItem("token");
         const tokenPayload = parseJwt(token);
-        const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+        const userId = tokenPayload?.userId || null;
 
         const payload = {
           origin,
@@ -238,7 +238,7 @@ function CreateTransportPage() {
         formData.append("volume", Number(volume) || null);
         const token = localStorage.getItem("token");
         const tokenPayload = parseJwt(token);
-        const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+        const userId = tokenPayload?.userId || null;
         formData.append("companyId", String(userId));
         formData.append(
           "isAutomaticSelectionEnabled",
@@ -249,7 +249,7 @@ function CreateTransportPage() {
       } else {
         const token = localStorage.getItem("token");
         const tokenPayload = parseJwt(token);
-        const userId = tokenPayload?.userId || tokenPayload?.sub || null;
+        const userId = tokenPayload?.userId || null;
 
         const payload = {
           origin,

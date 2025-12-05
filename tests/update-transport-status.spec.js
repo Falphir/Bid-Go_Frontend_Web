@@ -169,7 +169,7 @@ test.describe("System Test: Transport Status Flow", () => {
     }
     if (!companyRows.length)
       throw new Error("Company não encontrada na BD após polling.");
-    companyId = companyRows[0].Id || companyRows[0].id;
+    companyId = companyRows[0].Id;
     console.log("CompanyId:", companyId);
 
     // Registar driver
@@ -214,7 +214,7 @@ test.describe("System Test: Transport Status Flow", () => {
     }
     if (!driverRows.length)
       throw new Error("Driver não encontrado na BD após polling.");
-    driverId = driverRows[0].Id || driverRows[0].id;
+    driverId = driverRows[0].Id;
     console.log("DriverId:", driverId);
 
     // Login company e criar TransportRequest
@@ -267,7 +267,7 @@ test.describe("System Test: Transport Status Flow", () => {
     );
     if (!trRows.length)
       throw new Error("TransportRequest não encontrado na BD após criação.");
-    transportRequestId = trRows[0].TransportRequestId || trRows[0].id;
+    transportRequestId = trRows[0].TransportRequestId;
     console.log("TransportRequestId:", transportRequestId);
 
     // Login driver e criar Bid
@@ -284,9 +284,7 @@ test.describe("System Test: Transport Status Flow", () => {
     await expect(page.getByText(/Lisbon/i)).toBeVisible();
 
     const newBidBtn = page
-      .locator(
-        'button:has-text("New Bid"), button:has-text("Add Bid"), button:has-text("Make a bid"), button:has-text("Fazer proposta"), button:has-text("Fazer Oferta")'
-      )
+      .locator('button:has-text("New Bid")')
       .first();
     await expect(newBidBtn).toBeVisible();
     await newBidBtn.click();
@@ -301,9 +299,7 @@ test.describe("System Test: Transport Status Flow", () => {
     await page.fill('input[type="date"]', isoDeadline);
 
     const submitBidBtn = page
-      .locator(
-        'button:has-text("Submit Bid"), button:has-text("Submit"), button:has-text("Enviar"), button:has-text("Salvar proposta"), button:has-text("Enviar proposta")'
-      )
+      .locator('button:has-text("Submit Bid")')
       .first();
     await expect(submitBidBtn).toBeVisible();
     await submitBidBtn.click();
@@ -319,7 +315,7 @@ test.describe("System Test: Transport Status Flow", () => {
     );
     if (!bidRows.length)
       throw new Error("Bid não encontrada na BD após criação.");
-    bidId = bidRows[0].BidId || bidRows[0].id;
+    bidId = bidRows[0].BidId;
     console.log("BidId:", bidId);
 
     await page.close();
@@ -411,9 +407,7 @@ test.describe("System Test: Transport Status Flow", () => {
 
     // Company marca WAITINGPICKUP
     const markPickupBtn = page
-      .locator(
-        'button:has-text("Mark Pickup"), button:has-text("Mark as Waiting for Pickup")'
-      )
+      .locator('button:has-text("Mark Pickup")')
       .first();
     await expect(markPickupBtn).toBeVisible({ timeout: 20000 });
     await markPickupBtn.click();
@@ -497,9 +491,7 @@ test.describe("System Test: Transport Status Flow", () => {
     await startTransportBtn.click();
 
     const startConfirm = page
-      .locator(
-        '.cd-modal button:has-text("Yes"), .cd-modal button:has-text("Confirm")'
-      )
+      .locator('.cd-modal button:has-text("Yes")')
       .first();
     if (await startConfirm.isVisible()) await startConfirm.click();
 
@@ -550,17 +542,13 @@ test.describe("System Test: Transport Status Flow", () => {
 
     if (beforeComplete.status !== "COMPLETED") {
       const completeBtn = page
-        .locator(
-          'button:has-text("Complete"), button:has-text("Mark as Completed")'
-        )
+        .locator('button:has-text("Complete"), button:has-text("Mark as Completed")')
         .first();
       await expect(completeBtn).toBeVisible({ timeout: 20000 });
       await completeBtn.click();
 
       const completeConfirm = page
-        .locator(
-          '.cd-modal button:has-text("Yes"), .cd-modal button:has-text("Confirm")'
-        )
+        .locator('.cd-modal button:has-text("Yes")')
         .first();
       if (await completeConfirm.isVisible()) await completeConfirm.click();
     }

@@ -29,6 +29,8 @@ function TransportDetailsCard({
                                   showDescription = true,
                               }) {
     if (!transport) return null;
+
+    console.log(transport);
     return (
         <div className="transport-card">
             <img

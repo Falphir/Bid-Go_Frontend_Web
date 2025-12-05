@@ -37,7 +37,7 @@ export function useMyBids({ userId } = {}) {
       } catch (err) {
         if (err?.name === "CanceledError") return;
         setError(
-          err?.response?.data?.message || err?.message || "Unable to load bids."
+          err?.message || "Unable to load bids."
         );
       } finally {
         setLoading(false);
