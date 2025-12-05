@@ -151,21 +151,15 @@ export async function getTransportById(transportId, signal) {
  */
 export async function updateTransport(transportId, payload, signal) {
   try {
-    const res = await api.post(
+    const res = await api.put(
       `/transports/updateTransport/${transportId}`,
       payload,
-      { signal }
+      { signal, headers: { "Content-Type": "multipart/form-data" }}
+
     );
     return res.data;
   } catch (err) {
-    if (err.response && err.response.status === 405) {
-      const res = await api.put(
-        `/transports/updateTransport/${transportId}`,
-        payload,
-        { signal }
-      );
-      return res.data;
-    }
+
     throw err;
   }
 }
