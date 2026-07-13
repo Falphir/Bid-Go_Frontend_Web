@@ -3,8 +3,11 @@ import "../styles/LoginPage.css";
 import { useNavigate, useLocation } from "react-router";
 import logo from "../assets/logo.png";
 import LoginForm from "../components/form/LoginForm";
+import DemoLogin from "../components/form/DemoLogin";
 import { useToast } from "../components/feedback/ToastContext";
 import useLogin from "../hooks/useLogin";
+
+const isDemo = process.env.REACT_APP_DEMO_MODE === "true";
 
 /**
  * Login page for the Bid-Go web application.
@@ -44,24 +47,33 @@ function LoginPage() {
     };
   }, []);
 
+  // Shared by the form and the demo buttons. The demo path passes its credentials in
+  // directly rather than going through state, which would not have flushed yet.
+  const signIn = async (emailToUse, passwordToUse) => {
+    try {
+      const res = await login(emailToUse, passwordToUse);
+      const { token } = res || {};
+      if (remember && token) localStorage.setItem("token", token);
+      navigate("/");
+    } catch (err) {
+      if (err?.name === "CanceledError") return;
+      showToast(err?.message || "Login failed", "error");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       showToast("Preencha email e password.", "error");
       return;
     }
-    try {
-      const res = await login(email, password);
-      const { token } = res || {};
-      if (remember && token) localStorage.setItem("token", token);
-      navigate("/");
-    } catch (err) {
-      if (err?.name === "CanceledError") return;
-      const msg =
-        err?.message || "Login failed";
+    await signIn(email, password);
+  };
 
-      showToast(msg, "error");
-    }
+  const handleDemoLogin = async (demoEmail, demoPassword) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    await signIn(demoEmail, demoPassword);
   };
 
   return (
@@ -80,6 +92,10 @@ function LoginPage() {
             onToggleRemember={setRemember}
             onSubmit={handleSubmit}
           />
+
+          {isDemo && (
+            <DemoLogin onDemoLogin={handleDemoLogin} loading={loading} />
+          )}
 
           <div className="login-register">
             <span className="login-register-text">Don’t have an account?</span>
