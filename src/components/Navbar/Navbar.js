@@ -69,7 +69,7 @@ export default function Navbar() {
         setUser({
           name: profile.name || "User",
           role: userType || "No type",
-          avatar: profile.profileImage || "/Images/default-avatar.png",
+          avatar: profile.profileImage || DefaultUser,
         });
       } catch (err) {
         console.warn("Error loading navbar:", err);
@@ -239,6 +239,10 @@ export default function Navbar() {
               src={user.avatar || DefaultUser}
               alt="Avatar"
               className="avatar"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = DefaultUser;
+              }}
             />
 
             <div className="user-text">

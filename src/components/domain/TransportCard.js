@@ -67,7 +67,7 @@ export default function TransportCard({ data, isCompany, isDriver, onView }) {
     return (
         <div className="card" key={id}>
             <div className="card-image">
-                <img src={image} alt={pkg} onError={(e) => {
+                <img src={image || defaultTransportImage} alt={pkg} onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = defaultTransportImage;
                 }}/>
@@ -80,10 +80,10 @@ export default function TransportCard({ data, isCompany, isDriver, onView }) {
                     )}
                 </div>
                 <p className="card-route">{route}</p>
-                <div>
+                <div className="card-locations" title={`${origin} → ${destination}`}>
                     {origin} → {destination}
                 </div>
-                <div>
+                <div className="card-price">
                     <span className="label-small">Max Price:</span> {maxPrice}€
                 </div>
                 <p className="card-time">

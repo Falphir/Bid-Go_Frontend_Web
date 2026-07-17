@@ -34,7 +34,7 @@ function TransportDetailsCard({
     return (
         <div className="transport-card">
             <img
-                src={transport.image || "https://via.placeholder.com/400x250"}
+                src={transport.image || defaultTransportImage}
                 alt={transport.package || "Item"}
                 className="transport-image"
                 onError={(e) => {
