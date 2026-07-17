@@ -10,6 +10,7 @@
 import React from "react";
 import { FiEdit2, FiCamera } from "react-icons/fi";
 import "./AvatarSection.css";
+import defaultAvatar from "../../assets/person.png";
 
 
 /**
@@ -31,12 +32,14 @@ function AvatarSection({
         <img
           src={
             previewAvatar ||
-            (profile?.profileImage?.trim()
-              ? profile.profileImage
-              : "/Images/default-avatar.png")
+            (profile?.profileImage?.trim() ? profile.profileImage : defaultAvatar)
           }
           alt="Profile Avatar"
           className="avatar-img"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = defaultAvatar;
+          }}
         />
         {editing && (
           <>
