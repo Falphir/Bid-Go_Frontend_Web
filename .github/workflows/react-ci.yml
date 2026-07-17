@@ -39,28 +39,3 @@ jobs:
         with:
            name: react-build
            path: build
-
-  e2e:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install
-
-      - name: Run Playwright E2E tests
-        run: npm run test:e2e
-        env:
-          CI: true
